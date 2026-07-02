@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Policy Intelligence Stewardship Tool</title>
+<link rel="stylesheet" href="styles.css?v=15" />
+</head>
+<body>
+  <!-- ============ TOP NAV ============ -->
+  <header class="topnav">
+    <div class="brand">
+      <span class="logo">PI</span>
+      <span class="brand-title">Policy Intelligence Stewardship Tool</span>
+    </div>
+    <nav class="nav-tabs">
+      <a class="nav-tab active" data-tab="stewardship">Stewardship Tool</a>
+      <a class="nav-tab" data-tab="metric">Metric Dashboard</a>
+      <a class="nav-tab" data-tab="wins">Policy Wins</a>
+      <div class="nav-dropdown">
+        <a class="nav-tab">Helpful Links ▾</a>
+        <div class="dropdown-menu">
+          <a>MMIT Portal</a>
+          <a>Policy Reporter</a>
+          <a>GATE Reference</a>
+          <a>Training Docs</a>
+        </div>
+      </div>
+      <a class="nav-tab" href="multi-form.html">Policy Intelligence Update Form</a>
+      <a class="nav-tab" data-tab="reporter">Policy Reporter</a>
+      <a class="nav-tab help">⌕ Help</a>
+    </nav>
+    <div class="autosave" id="autosave">
+      <span class="dot"></span><span id="autosaveText">Auto save</span>
+    </div>
+  </header>
+
+  <!-- ============ BODY ============ -->
+  <div class="layout">
+    <!-- ===== LEFT SIDEBAR (FILTERS) ===== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="filters-title">⚙ Filters</span>
+        <button class="link-btn" id="resetFilters">Reset ↻</button>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" /> OCREVUS ZUNOVO <span class="cbar"><i style="width:100%"></i></span><span class="count">293</span></label>
+          <label><input type="checkbox" class="filter-cb" /> VABYSMO <span class="cbar"><i style="width:45%"></i></span><span class="count">132</span></label>
+          <label><input type="checkbox" class="filter-cb" /> ACTEMRA SC <span class="cbar"><i style="width:8%"></i></span><span class="count">22</span></label>
+          <label><input type="checkbox" class="filter-cb" /> OCREVUS <span class="cbar"><i style="width:3%"></i></span><span class="count">8</span></label>
+          <label><input type="checkbox" class="filter-cb" /> XOLAIR AUTOINJECTOR <span class="cbar"><i style="width:2%"></i></span><span class="count">5</span></label>
+          <button class="show-more">Show more</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>INDICATION <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" /> Primary Progressive Multiple… <span class="count">18</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Multiple Sclerosis <span class="count">17</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Rheumatoid Arthritis <span class="count">15</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Neovascular Age Related Macul… <span class="count">9</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Food Allergy <span class="count">8</span></label>
+          <button class="show-more">Show more</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>LIVES COVERED <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" checked /> &lt; 1,000,000 (100) <span class="count">100</span></label>
+          <label><input type="checkbox" class="filter-cb" /> 1M - 5M (180) <span class="count">180</span></label>
+          <label><input type="checkbox" class="filter-cb" /> 5M - 10M (250) <span class="count">250</span></label>
+          <label><input type="checkbox" class="filter-cb" /> 10M - 20M (310) <span class="count">310</span></label>
+          <label><input type="checkbox" class="filter-cb" /> &gt; 20,000,000 (405) <span class="count">405</span></label>
+          <div class="range-note" id="rangeNote">Range: 0M – 50M+</div>
+          <input type="range" min="0" max="100" value="50" class="slider" id="livesSlider" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Aetna" /> Aetna <span class="count">120</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Cigna" /> Blue Cross Blue Shield <span class="count">47</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="CVS Health" /> CVS Health <span class="count">15</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Humana" /> Humana <span class="count">14</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>POLICY STATUS <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" /> PA REQUIRED NO C… <span class="cbar"><i style="width:100%"></i></span><span class="count">273</span></label>
+          <label><input type="checkbox" class="filter-cb" /> TO PI OR BETTER <span class="cbar"><i style="width:46%"></i></span><span class="count">125</span></label>
+          <label><input type="checkbox" class="filter-cb" /> TO PI WITH CRITERIA <span class="cbar"><i style="width:35%"></i></span><span class="count">97</span></label>
+          <label><input type="checkbox" class="filter-cb" /> BIO MANAGED 1 <span class="cbar"><i style="width:33%"></i></span><span class="count">92</span></label>
+          <label><input type="checkbox" class="filter-cb" /> NO ST <span class="cbar"><i style="width:33%"></i></span><span class="count">92</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>BENEFIT TYPE <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" /> PHARMACY BENEFIT <span class="count">494</span></label>
+          <label><input type="checkbox" class="filter-cb" /> MEDICAL BENEFIT <span class="count">408</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Commercial" /> COMMERCIAL <span class="count">350</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Medicaid Managed" /> MEDICAID_MANAGED <span class="count">299</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Medicare Advantage" /> MEDICARE_ADVANTAGE <span class="count">141</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Medicaid FFS" /> MEDICAID_FFS <span class="count">66</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Government" /> GOVERNMENT <span class="count">41</span></label>
+        </div>
+      </div>
+
+      <!-- LEGENDS -->
+      <div class="legend">
+        <div class="legend-title">DCR STATUS</div>
+        <div class="legend-row"><span class="swatch s-new"></span> NEW <span class="cbar"><i style="width:100%"></i></span><span class="count">834</span></div>
+        <div class="legend-row"><span class="swatch s-created"></span> DCR Created <span class="cbar"><i style="width:6%"></i></span><span class="count">33</span></div>
+        <div class="legend-row"><span class="swatch s-bridging"></span> Bridging Issues <span class="count">9</span></div>
+        <div class="legend-row"><span class="swatch s-notreq"></span> Not Required <span class="count">9</span></div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-title">MMIT Verification STATUS</div>
+        <div class="legend-row"><span class="swatch v-new"></span> NEW <span class="cbar"><i style="width:100%"></i></span><span class="count">834</span></div>
+        <div class="legend-row"><span class="swatch v-correct"></span> Correct <span class="cbar"><i style="width:6%"></i></span><span class="count">33</span></div>
+        <div class="legend-row"><span class="swatch v-review"></span> Under MMIT Review</div>
+        <div class="legend-row"><span class="swatch v-assess"></span> Incorrect : Assessment Error</div>
+        <div class="legend-row"><span class="swatch v-lag"></span> Incorrect : Policy Lag</div>
+        <div class="legend-row"><span class="swatch v-mdm"></span> Bridging Issue : Under MDM Review</div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="content">
+      <!-- Section header + toolbar -->
+      <div class="content-head">
+        <div class="section-tag">Policies</div>
+        <div class="subtabs">
+          <a class="subtab active" data-view="all">All Requests</a>
+          <a class="subtab" data-view="open">Open Requests</a>
+          <a class="subtab" data-view="mine">My Requests</a>
+          <a class="subtab" data-view="completed">Completed Requests</a>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-edit" id="editBtn">EDIT</button>
+          <button class="btn btn-save" id="saveBtn" disabled>Save</button>
+          <button class="btn btn-multi" id="createMultiBtn" disabled>Create Multiple DCR</button>
+          <button class="btn btn-bulk" id="bulkAssignBtn" disabled>⇲ Bulk Assign</button>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap">
+        <table class="grid" id="grid">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="selectAll" /></th>
+              <th>Req-ID</th>
+              <th>Steward Assigned</th>
+              <th>Payer</th>
+              <th>Brand</th>
+              <th>Indication</th>
+              <th>Book of Business</th>
+              <th>Benefit Type</th>
+              <th>Formulary ID</th>
+              <th>Lives Covered</th>
+              <th>MMIT Policy Link1</th>
+              <th>MMIT Policy Link2</th>
+              <th>MMIT Policy Link3</th>
+              <th>MMIT Policy Link4</th>
+              <th>Policy Reporter Link 1</th>
+              <th>Policy Reporter Link 2</th>
+              <th>Policy Reporter Link 3</th>
+              <th>MMIT HPM (May-26)</th>
+              <th>MMIT Verification Status</th>
+              <th>DCR Status</th>
+              <th>Create DCR</th>
+              <th>GNE HPM Status</th>
+              <th class="col-wide">PA and PI Summary</th>
+              <th class="col-wide">Comments / Links or Queries</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="gridBody"><!-- rows injected by JS --></tbody>
+        </table>
+      </div>
+      <div class="footer-bar">
+        <span id="rowCount">0</span> requests shown · <span id="selCount">0</span> selected
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ BULK ASSIGN MODAL ============ -->
+  <div class="modal-overlay" id="bulkModal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>BulkAssignSingleStewardToMultipleDCR</span>
+        <button class="modal-x" id="bulkClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <label class="modal-label">Reviewer Id <span class="req">*</span></label>
+        <select class="modal-select" id="reviewerSelect">
+          <option value="">Select an option...</option>
+          <option>A. Martinez (Steward)</option>
+          <option>J. Chen (Steward)</option>
+          <option>R. Patel (Steward)</option>
+          <option>S. Okafor (Steward)</option>
+          <option>L. Nguyen (Steward)</option>
+        </select>
+        <div class="modal-hint" id="bulkHint">No DCRs selected yet.</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="bulkCancel">Cancel</button>
+        <button class="btn btn-bulk" id="bulkAssignConfirm">Assign Bulk DCRs</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ HISTORY POPUP ============ -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal modal-lg">
+      <div class="modal-head">
+        <span id="historyTitle">Edit History</span>
+        <button class="modal-x" id="historyClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr><th>Timestamp</th><th>Field</th><th>Old Value</th><th>New Value</th><th>User</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DCR CREATED TOAST ============ -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js?v=15"></script>
+</body>
+</html>

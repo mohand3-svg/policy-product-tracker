@@ -1,0 +1,6 @@
+# Build/bundle artifacts
+stewardship-mockup.zip
+
+# OS / editor
+.DS_Store
+*.swp

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UAT Policy Intelligence Update Form — Multiple Policies</title>
+<link rel="stylesheet" href="styles.css?v=10" />
+<link rel="stylesheet" href="form.css?v=10" />
+</head>
+<body class="form-page">
+  <!-- ===== TOP BAR ===== -->
+  <header class="form-topbar">
+    <div class="form-brand">
+      <span class="form-logo">▤</span>
+      <span class="form-title">UAT Policy Intelligence Update Form</span>
+    </div>
+    <nav class="form-nav">
+      <a class="form-tab">Single Policy update form</a>
+      <a class="form-tab active">Multiple Policies update form</a>
+      <a class="form-tab">Bulk Upload</a>
+      <a class="form-tab">My Submissions</a>
+    </nav>
+    <div class="form-actions-top">
+      <button class="form-btn ghost">✦ Suggest Improvement</button>
+      <button class="form-btn ghost">？ Help ▾</button>
+    </div>
+  </header>
+
+  <div class="form-layout">
+    <!-- ===== LEFT SEARCH PANEL ===== -->
+    <aside class="form-sidebar">
+      <div class="search-head">
+        <span class="search-title">Search Payer</span>
+        <button class="link-btn">↻ Reset</button>
+      </div>
+      <p class="req-note">Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
+
+      <label class="fld-label">PAYER <span class="req">*</span></label>
+      <div class="fld-select"><span>Search…</span><i>▾</i></div>
+
+      <label class="fld-label">BOOK OF BUSINESS <span class="req">*</span></label>
+      <div class="fld-select"><span>Search…</span><i>▾</i></div>
+
+      <label class="fld-label">PRODUCT <span class="req">*</span></label>
+      <div class="fld-select"><span>Search…</span><i>▾</i></div>
+
+      <label class="fld-label">INDICATION <span class="req">*</span></label>
+      <div class="fld-select"><span>Search…</span><i>▾</i></div>
+
+      <label class="fld-label">BENEFIT TYPE <span class="req">*</span></label>
+      <div class="fld-select"><span>Search…</span><i>▾</i></div>
+
+      <label class="fld-label">STATE</label>
+      <div class="fld-box">NATIONAL</div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="form-main">
+      <div class="form-main-head">
+        <div>
+          <h2 class="payer-details">Payer Details</h2>
+          <div class="user-guide">ⓘ User guide for Multiple Policies update form</div>
+        </div>
+        <div class="form-main-actions">
+          <button class="form-btn ghost" id="cancelBtn">Cancel</button>
+          <button class="form-btn primary" id="reviewBtn">✔ Review &amp; Create DCRs</button>
+        </div>
+      </div>
+
+      <div class="banner" id="banner"></div>
+
+      <div class="form-table-wrap">
+        <table class="form-grid" id="formGrid">
+          <thead>
+            <tr>
+              <th class="fcheck"><input type="checkbox" id="formSelectAll" checked /></th>
+              <th>Payer</th>
+              <th>Book Of Business</th>
+              <th>Product</th>
+              <th>Indication</th>
+              <th>Benefit Type</th>
+              <th>Prior Authorization Required</th>
+              <th>Step Edit</th>
+              <th>Number Of Steps</th>
+              <th>Step Therapy Placement</th>
+              <th>Step Products</th>
+              <th>Req-ID</th>
+              <th>DCR Status</th>
+            </tr>
+          </thead>
+          <tbody id="formGridBody"></tbody>
+        </table>
+      </div>
+      <div class="form-foot" id="formFoot"></div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="multi-form.js?v=10"></script>
+</body>
+</html>
