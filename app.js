@@ -13,7 +13,7 @@ const MMIT_OPTS = [
 ];
 
 const DCR_OPTS = [
-  { v: "New", label: "New", cls: "d-val-New" },
+  { v: "New", label: "-", cls: "d-val-New" },
   { v: "DCRCreated", label: "DCR Created", cls: "d-val-DCRCreated" },
   { v: "BridgingIssues", label: "Bridging Issues", cls: "d-val-BridgingIssues" },
   { v: "NotRequired", label: "Not Required", cls: "d-val-NotRequired" },
@@ -147,7 +147,7 @@ function renderRows() {
 
     // simple text cells
     const textCells = [
-      r.parentPayer || "—", r.payer, r.brand, r.indication, r.bob, r.benefit, r.form, fmtLives(r.lives),
+      r.parentPayer || "—", r.payer, r.brand, r.indication, r.bob, r.benefit, fmtLives(r.lives),
       `<span class="link-cell">Policy</span>`,
       `<span class="link-cell">PA Form</span>`,
       `<span class="link-cell">Drug List</span>`,
