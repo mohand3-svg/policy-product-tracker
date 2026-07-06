@@ -1,7 +1,7 @@
 /* DCR detail — shows the data the DCR was pre-populated with,
    resolved from the originating product coverage record. */
 
-const STORE_KEY = "pist_rows_v2";
+const STORE_KEY = "pist_rows_v4";
 const COVERAGE = {
   "REQ-1042": { product:"ENBREL", priorAuth:"Yes", stepEdit:"Yes", numSteps:1, stepPlacement:"ST Single Generic", stepProducts:"1 of [methotrexate]" },
   "REQ-1043": { product:"HUMIRA", priorAuth:"Yes", stepEdit:"Yes", numSteps:2, stepPlacement:"ST Generic and Brand", stepProducts:"2 of [methotrexate, sulfasalazine]" },

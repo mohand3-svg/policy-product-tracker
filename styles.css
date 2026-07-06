@@ -326,6 +326,9 @@ body {
 .modal-x { background:none; border:none; font-size:16px; cursor:pointer; color:var(--muted); }
 .modal-body { padding: 18px 16px; }
 .modal-label { font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px; }
+.modal-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.modal-label-row .modal-label { margin-bottom: 0; }
+.modal-assign-me { width: auto; margin-top: 0; padding: 4px 10px; }
 .req { color: var(--red); }
 .modal-select {
   width: 100%; padding: 9px 10px; border: 1px solid var(--border);

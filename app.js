@@ -26,16 +26,16 @@ const GNE_OPTS = [
 
 // ---- seed data ---------------------------------------------------
 const SEED_ROWS = [
-  { id:"REQ-1042", steward:"Syed Riyaz", payer:"UnitedHealthcare", brand:"Brand A", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"DRUG COVERED WITH NO PA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1043", steward:"Syed Riyaz", payer:"Aetna", brand:"Brand B", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Bio Managed 2", mmit:"IncorrectAssessmentError", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"NARROWER THAN PI", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1044", steward:"Syed Riyaz", payer:"Cigna", brand:"Brand C", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Drug Covered with No PA", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"TO PI OR BETTER", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1045", steward:"Adriana Jazbor", payer:"UnitedHealthcare", brand:"Brand A", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"3187225", lives:6580, mmitHpm:"Bio Managed 1", mmit:"IncorrectPolicyLag", dcr:"BridgingIssues", dcrCode:"DCR-CFD39", gne:"NO PA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1046", steward:"A. Martinez", payer:"Aetna", brand:"Brand D", indication:"Multiple Sclerosis", bob:"Commercial", benefit:"Medical", form:"3187225", lives:7110, mmitHpm:"Clinical Criteria Required", mmit:"UnderMMITReview", dcr:"New", dcrCode:"", gne:"NOT COVERED", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1047", steward:"A. Martinez", payer:"Cigna", brand:"Brand E", indication:"Psoriasis", bob:"Medicare Advantage", benefit:"Pharmacy", form:"3187225", lives:12450, mmitHpm:"Clinical Criteria Required", mmit:"New", dcr:"New", dcrCode:"", gne:"Unknown", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1048", steward:"A. Martinez", payer:"CVS Health", brand:"Brand F", indication:"Crohn's Disease", bob:"Commercial", benefit:"Medical", form:"3287338", lives:9920, mmitHpm:"Clinical Criteria Required", mmit:"BridgingMDM", dcr:"BridgingIssues", dcrCode:"DCR-CFD39", gne:"TO PI WITH CRITERIA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1049", steward:"", payer:"Cigna", brand:"Brand C", indication:"Plaque Psoriasis", bob:"Medicaid Managed", benefit:"Pharmacy", form:"3287338", lives:4180, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"NARROWER THAN PI", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1050", steward:"", payer:"Humana", brand:"Brand G", indication:"Ulcerative Colitis", bob:"Medicare Advantage", benefit:"Medical", form:"3401119", lives:15870, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"NotRequired", dcrCode:"", gne:"TO PI OR BETTER", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1051", steward:"", payer:"Aetna", brand:"Brand H", indication:"Atopic Dermatitis", bob:"Commercial", benefit:"Pharmacy", form:"3401119", lives:22340, mmitHpm:"Bio Managed 2", mmit:"New", dcr:"New", dcrCode:"", gne:"NO PA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1042", steward:"Syed Riyaz", parentPayer:"UNITEDHEALTH GROUP", payer:"UnitedHealthcare", brand:"OCREVUS ZUNOVO", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"DRUG COVERED WITH NO PA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1043", steward:"Syed Riyaz", parentPayer:"CVS HEALTH CORPORATION", payer:"Aetna", brand:"VABYSMO", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Bio Managed 2", mmit:"IncorrectAssessmentError", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"NARROWER THAN PI", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1044", steward:"Syed Riyaz", parentPayer:"THE CIGNA GROUP", payer:"Cigna", brand:"ACTEMRA SC", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Drug Covered with No PA", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"TO PI OR BETTER", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1045", steward:"Adriana Jazbor", parentPayer:"UNITEDHEALTH GROUP", payer:"UnitedHealthcare", brand:"OCREVUS ZUNOVO", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"3187225", lives:6580, mmitHpm:"Bio Managed 1", mmit:"IncorrectPolicyLag", dcr:"BridgingIssues", dcrCode:"DCR-CFD39", gne:"NO PA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1046", steward:"A. Martinez", parentPayer:"CVS HEALTH CORPORATION", payer:"Aetna", brand:"OCREVUS", indication:"Multiple Sclerosis", bob:"Commercial", benefit:"Medical", form:"3187225", lives:7110, mmitHpm:"Clinical Criteria Required", mmit:"UnderMMITReview", dcr:"New", dcrCode:"", gne:"NOT COVERED", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1047", steward:"A. Martinez", parentPayer:"THE CIGNA GROUP", payer:"Cigna", brand:"XOLAIR AUTOINJECTOR", indication:"Psoriasis", bob:"Medicare Advantage", benefit:"Pharmacy", form:"3187225", lives:12450, mmitHpm:"Clinical Criteria Required", mmit:"New", dcr:"New", dcrCode:"", gne:"Unknown", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1048", steward:"A. Martinez", parentPayer:"CVS HEALTH CORPORATION", payer:"CVS Health", brand:"OCREVUS ZUNOVO", indication:"Crohn's Disease", bob:"Commercial", benefit:"Medical", form:"3287338", lives:9920, mmitHpm:"Clinical Criteria Required", mmit:"BridgingMDM", dcr:"BridgingIssues", dcrCode:"DCR-CFD39", gne:"TO PI WITH CRITERIA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1049", steward:"", parentPayer:"THE CIGNA GROUP", payer:"Cigna", brand:"ACTEMRA SC", indication:"Plaque Psoriasis", bob:"Medicaid Managed", benefit:"Pharmacy", form:"3287338", lives:4180, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"NARROWER THAN PI", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1050", steward:"", parentPayer:"HUMANA INC", payer:"Humana", brand:"VABYSMO", indication:"Ulcerative Colitis", bob:"Medicare Advantage", benefit:"Medical", form:"3401119", lives:15870, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"NotRequired", dcrCode:"", gne:"TO PI OR BETTER", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1051", steward:"", parentPayer:"CVS HEALTH CORPORATION", payer:"Aetna", brand:"ACTEMRA SC", indication:"Atopic Dermatitis", bob:"Commercial", benefit:"Pharmacy", form:"3401119", lives:22340, mmitHpm:"Bio Managed 2", mmit:"New", dcr:"New", dcrCode:"", gne:"NO PA", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
 ];
 
 // Stewards available for assignment
@@ -58,7 +58,7 @@ const COVERAGE = {
 };
 
 // ---- persistence (survive navigation to the form page) ----------
-const STORE_KEY = "pist_rows_v2";
+const STORE_KEY = "pist_rows_v4";
 function loadRows() {
   try {
     const saved = sessionStorage.getItem(STORE_KEY);
@@ -147,7 +147,7 @@ function renderRows() {
 
     // simple text cells
     const textCells = [
-      r.payer, r.brand, r.indication, r.bob, r.benefit, r.form, fmtLives(r.lives),
+      r.parentPayer || "—", r.payer, r.brand, r.indication, r.bob, r.benefit, r.form, fmtLives(r.lives),
       `<span class="link-cell">Policy</span>`,
       `<span class="link-cell">PA Form</span>`,
       `<span class="link-cell">Drug List</span>`,
@@ -303,9 +303,11 @@ let currentView = "all";
 function filterRows() {
   const payers = [...document.querySelectorAll(".payer-cb:checked")].map(c => c.value);
   const bobs = [...document.querySelectorAll(".bob-cb:checked")].map(c => c.value);
+  const brands = [...document.querySelectorAll(".brand-cb:checked")].map(c => c.value);
   return ROWS.filter(r => {
     const payerOk = payers.length === 0 ? true : payers.includes(r.payer);
     const bobOk = bobs.length === 0 ? true : bobs.includes(r.bob);
+    const brandOk = brands.length === 0 ? true : brands.includes(r.brand);
 
     // subtab view filter
     let viewOk = true;
@@ -319,7 +321,7 @@ function filterRows() {
       viewOk = r.steward === CURRENT_USER;
     }
 
-    return payerOk && bobOk && viewOk;
+    return payerOk && bobOk && brandOk && viewOk;
   });
 }
 
@@ -460,6 +462,12 @@ document.getElementById("bulkAssignBtn").addEventListener("click", () => {
 });
 document.getElementById("bulkClose").addEventListener("click", () => bulkModal.classList.remove("open"));
 document.getElementById("bulkCancel").addEventListener("click", () => bulkModal.classList.remove("open"));
+// "Assign to me" — preselect the current user in the reviewer dropdown
+document.getElementById("bulkAssignMe").addEventListener("click", () => {
+  const select = document.getElementById("reviewerSelect");
+  const match = [...select.options].find(o => o.value.startsWith(CURRENT_USER) || o.text.startsWith(CURRENT_USER));
+  if (match) select.value = match.value;
+});
 document.getElementById("bulkAssignConfirm").addEventListener("click", () => {
   const reviewer = document.getElementById("reviewerSelect").value;
   if (!reviewer) { showToast("Please select a reviewer", true); return; }
