@@ -89,6 +89,10 @@ function buildSelect(opts, current, kind) {
     const opt = document.createElement("option");
     opt.value = o.v; opt.textContent = o.label;
     if (o.v === current) opt.selected = true;
+    // "DCR Created" is auto-populated only; users can't pick it manually
+    if (kind === "dcr" && o.v === "DCRCreated" && current !== "DCRCreated") {
+      opt.disabled = true;
+    }
     sel.appendChild(opt);
   });
   const applyColor = () => {
