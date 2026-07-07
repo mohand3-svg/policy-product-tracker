@@ -455,7 +455,7 @@ const bulkModal = document.getElementById("bulkModal");
 document.getElementById("bulkAssignBtn").addEventListener("click", () => {
   const sel = getSelectedRows();
   const hint = document.getElementById("bulkHint");
-  hint.textContent = `${sel.length} DCR(s) will be assigned to the selected reviewer.`;
+  hint.textContent = `${sel.length} record(s) will be assigned to the selected reviewer.`;
   hint.classList.remove("warn");
   document.getElementById("reviewerSelect").value = "";
   bulkModal.classList.add("open");
@@ -475,7 +475,7 @@ document.getElementById("bulkAssignConfirm").addEventListener("click", () => {
   targets.forEach(r => logHistory(r.id, "Steward Assigned", "—", reviewer));
   bulkModal.classList.remove("open");
   markDirty();
-  showToast(`Assigned ${reviewer} to ${targets.length} DCR(s)`, false);
+  showToast(`Assigned ${reviewer} to ${targets.length} record(s)`, false);
 });
 
 // ============ HISTORY MODAL ============
