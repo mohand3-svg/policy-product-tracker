@@ -20,6 +20,7 @@ const DCR_OPTS = [
 ];
 
 const GNE_OPTS = [
+  "-",
   "DRUG COVERED WITH NO PA", "NARROWER THAN PI", "TO PI OR BETTER",
   "NO PA", "NOT COVERED", "Unknown", "TO PI WITH CRITERIA",
 ];
