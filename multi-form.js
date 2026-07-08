@@ -4,7 +4,7 @@
    creates one DCR per record, then returns with the results.
    ============================================================ */
 
-const STORE_KEY = "pist_rows_v4";
+const STORE_KEY = "pist_rows_v5";
 
 // Coverage attributes mirrored from the main app so each DCR can be
 // pre-populated from its product coverage record.
