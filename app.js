@@ -157,9 +157,9 @@ function renderRows() {
       `<span class="link-cell">PA Form</span>`,
       `<span class="link-cell">Drug List</span>`,
       `<span class="link-cell">PA List</span>`,
-      `<span class="link-cell">${r.prLink1 || "23-07-2025 Tecentriq, Tecentriq Hybreza (Commercial, Medicare)"}</span>`,
-      `<span class="na-cell">#N/A</span>`,
-      `<span class="na-cell">#N/A</span>`,
+      `<span class="freetext">&lt;free text&gt;</span>`,
+      `<span class="freetext">&lt;free text&gt;</span>`,
+      `<span class="freetext">&lt;free text&gt;</span>`,
       r.relAccess || "—",
       r.mmitHpm,
     ];
