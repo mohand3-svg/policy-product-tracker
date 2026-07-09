@@ -160,6 +160,7 @@ function renderRows() {
       `<span class="freetext">&lt;free text&gt;</span>`,
       `<span class="freetext">&lt;free text&gt;</span>`,
       `<span class="freetext">&lt;free text&gt;</span>`,
+      "",
       r.relAccess || "—",
       r.mmitHpm,
     ];
