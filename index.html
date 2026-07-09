@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=28" />
+<link rel="stylesheet" href="styles.css?v=29" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -147,10 +147,10 @@
       <div class="content-head">
         <div class="section-tag">Policies</div>
         <div class="subtabs">
-          <a class="subtab active" data-view="all">All Requests</a>
-          <a class="subtab" data-view="open">Open Requests</a>
-          <a class="subtab" data-view="mine">My Requests</a>
-          <a class="subtab" data-view="completed">Completed Requests</a>
+          <a class="subtab active" data-view="all">All Requests <span class="subtab-count" id="count-all">0</span></a>
+          <a class="subtab" data-view="open">Open Requests <span class="subtab-count" id="count-open">0</span></a>
+          <a class="subtab" data-view="mine">My Requests <span class="subtab-count" id="count-mine">0</span></a>
+          <a class="subtab" data-view="completed">Completed Requests <span class="subtab-count" id="count-completed">0</span></a>
         </div>
         <div class="toolbar">
           <button class="btn btn-edit" id="editBtn">EDIT</button>
@@ -253,6 +253,6 @@
   <!-- ============ DCR CREATED TOAST ============ -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=28"></script>
+  <script src="app.js?v=29"></script>
 </body>
 </html>

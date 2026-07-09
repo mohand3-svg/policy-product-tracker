@@ -220,6 +220,7 @@ function renderRows() {
 
   wireRowEvents();
   updateCounts();
+  updateTabCounts();
 }
 
 function buildFreeText(r, field) {
@@ -316,20 +317,25 @@ function filterRows() {
     const bobOk = bobs.length === 0 ? true : bobs.includes(r.bob);
     const brandOk = brands.length === 0 ? true : brands.includes(r.brand);
 
-    // subtab view filter
-    let viewOk = true;
-    if (currentView === "open") {
-      // open = work still to do: DCR Status is Bridging Issues or New
-      viewOk = r.dcr === "BridgingIssues" || r.dcr === "New";
-    } else if (currentView === "completed") {
-      // completed = DCR created or not required
-      viewOk = r.dcr === "DCRCreated" || r.dcr === "NotRequired";
-    } else if (currentView === "mine") {
-      viewOk = r.steward === CURRENT_USER;
-    }
-
-    return payerOk && bobOk && brandOk && viewOk;
+    return payerOk && bobOk && brandOk && matchesView(r, currentView);
   });
+}
+
+// shared view-matching rule (used by filtering and tab counts)
+function matchesView(r, view) {
+  if (view === "open") return r.dcr === "BridgingIssues" || r.dcr === "New";
+  if (view === "completed") return r.dcr === "DCRCreated" || r.dcr === "NotRequired";
+  if (view === "mine") return r.steward === CURRENT_USER;
+  return true; // "all"
+}
+
+// update the count badge on each subtab
+function updateTabCounts() {
+  const set = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
+  set("count-all", ROWS.filter(r => matchesView(r, "all")).length);
+  set("count-open", ROWS.filter(r => matchesView(r, "open")).length);
+  set("count-mine", ROWS.filter(r => matchesView(r, "mine")).length);
+  set("count-completed", ROWS.filter(r => matchesView(r, "completed")).length);
 }
 
 // ---- counts ------------------------------------------------------
