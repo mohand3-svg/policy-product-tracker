@@ -401,27 +401,30 @@ function markDirty() {
   }, 1200);
 }
 
-// ============ EDIT / SAVE ============
-const editBtn = document.getElementById("editBtn");
-const saveBtn = document.getElementById("saveBtn");
+// ============ EDIT / SUBMIT (toggle) ============
+const editToggleBtn = document.getElementById("editToggleBtn");
 const tableWrap = document.querySelector(".table-wrap");
 
-editBtn.addEventListener("click", () => {
-  editMode = true;
-  tableWrap.classList.add("editable");
-  editBtn.disabled = true;
-  saveBtn.disabled = false;
-  renderRows();
-  showToast("Edit mode enabled — fields are now editable", false);
-});
-
-saveBtn.addEventListener("click", () => {
-  editMode = false;
-  tableWrap.classList.remove("editable");
-  editBtn.disabled = false;
-  saveBtn.disabled = true;
-  renderRows();
-  showToast("Changes saved successfully", false);
+editToggleBtn.addEventListener("click", () => {
+  if (!editMode) {
+    // Enter edit mode
+    editMode = true;
+    tableWrap.classList.add("editable");
+    editToggleBtn.textContent = "Submit Changes";
+    editToggleBtn.classList.remove("btn-edit");
+    editToggleBtn.classList.add("btn-save");
+    renderRows();
+    showToast("Edit mode enabled — fields are now editable", false);
+  } else {
+    // Submit changes, back to read-only
+    editMode = false;
+    tableWrap.classList.remove("editable");
+    editToggleBtn.textContent = "Edit";
+    editToggleBtn.classList.remove("btn-save");
+    editToggleBtn.classList.add("btn-edit");
+    renderRows();
+    showToast("Changes submitted successfully", false);
+  }
 });
 
 // ============ CREATE DCR ============
