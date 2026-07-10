@@ -160,7 +160,6 @@ function renderRows() {
       `<span class="freetext">&lt;free text&gt;</span>`,
       `<span class="freetext">&lt;free text&gt;</span>`,
       `<span class="freetext">&lt;free text&gt;</span>`,
-      "",
       r.relAccess || "—",
       r.mmitHpm,
     ];
@@ -205,6 +204,13 @@ function renderRows() {
     tdGne.appendChild(buildGneSelect(r));
     tr.appendChild(tdGne);
 
+    // Restrictive Policy (blank)
+    const tdRestrict = document.createElement("td");
+    tr.appendChild(tdRestrict);
+
+    // Rationale for Restriction (editable free text)
+    tr.appendChild(buildFreeText(r, "rationale"));
+
     // PA and PI Summary (editable free text)
     tr.appendChild(buildFreeText(r, "pa"));
     // Comments / Links or Queries
@@ -223,17 +229,18 @@ function renderRows() {
   updateTabCounts();
 }
 
+const FREETEXT_LABELS = { pa: "PA/PI Summary", comments: "Comments", rationale: "Rationale for Restriction" };
 function buildFreeText(r, field) {
   const td = document.createElement("td");
   td.className = "freetext";
   td.dataset.field = field;
-  td.textContent = r[field];
+  td.textContent = r[field] || "<Free Text>";
   if (editMode) {
     td.contentEditable = "true";
     td.addEventListener("blur", () => {
       const val = td.textContent.trim();
-      if (val !== r[field]) {
-        logHistory(r.id, field === "pa" ? "PA/PI Summary" : "Comments", r[field], val);
+      if (val !== (r[field] || "")) {
+        logHistory(r.id, FREETEXT_LABELS[field] || field, r[field] || "—", val);
         r[field] = val;
         markDirty();
       }
