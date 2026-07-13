@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=30" />
+<link rel="stylesheet" href="styles.css?v=34" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -16,7 +16,7 @@
     <nav class="nav-tabs">
       <a class="nav-tab active" data-tab="stewardship">Product Tracker</a>
       <a class="nav-tab" data-tab="metric">Metric Dashboard</a>
-      <a class="nav-tab" data-tab="wins">Policy Wins</a>
+      <a class="nav-tab" data-tab="wins" hidden>Policy Wins</a>
       <div class="nav-dropdown">
         <a class="nav-tab">Helpful Links ▾</a>
         <div class="dropdown-menu">
@@ -44,6 +44,8 @@
         <button class="link-btn" id="resetFilters">Reset ↻</button>
       </div>
 
+      <!-- ===== STEWARDSHIP FILTERS ===== -->
+      <div id="stewardshipFilters">
       <div class="filter-group">
         <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
         <div class="fg-body">
@@ -139,10 +141,33 @@
         <div class="legend-row"><span class="swatch v-lag"></span> Incorrect : Policy Lag</div>
         <div class="legend-row"><span class="swatch v-mdm"></span> Bridging Issue : Under MDM Review</div>
       </div>
+      </div><!-- /#stewardshipFilters -->
+
+      <!-- ===== WINS FILTERS (populated by JS) ===== -->
+      <div id="winsFilters" hidden>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterBrand"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>INDICATION <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterIndication"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterBob"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BENEFIT TYPE <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterBenefit"></div>
+        </div>
+      </div>
     </aside>
 
     <!-- ===== MAIN CONTENT ===== -->
     <main class="content">
+      <!-- ===== STEWARDSHIP (Product Tracker) VIEW ===== -->
+      <div id="stewardshipView">
       <!-- Section header + toolbar -->
       <div class="content-head">
         <div class="section-tag">Policies</div>
@@ -188,7 +213,7 @@
               <th>Create DCR</th>
               <th>GNE HPM Status</th>
               <th>Restrictive Policy</th>
-              <th>Rationale for Restriction</th>
+              <th>Restriction Rationale</th>
               <th class="col-wide">PA and PI Summary</th>
               <th class="col-wide">Comments / Links or Queries</th>
               <th>Action</th>
@@ -200,6 +225,131 @@
       <div class="footer-bar">
         <span id="rowCount">0</span> requests shown · <span id="selCount">0</span> selected
       </div>
+      </div><!-- /#stewardshipView -->
+
+      <!-- ===== METRICS DASHBOARD VIEW ===== -->
+      <div id="metricView" class="dash" hidden>
+        <!-- Metric subtabs -->
+        <div class="metric-subtabs">
+          <a class="metric-subtab active" data-metric="dcrs">DCRs</a>
+          <a class="metric-subtab" data-metric="wins">Policy Wins</a>
+        </div>
+
+        <!-- ===== DCRs SUBVIEW ===== -->
+        <div id="metricDcrs" class="metric-panel">
+        <div class="dash-head">
+          <div class="section-tag">Metrics Dashboard</div>
+          <div class="dash-sub">Overview of policy stewardship activity across all requests</div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Requests</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-foot" id="kpiLives">0 lives covered</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">DCRs Created</div>
+            <div class="kpi-value" id="kpiDcr">0</div>
+            <div class="kpi-foot" id="kpiDcrPct">0% of total</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Bridging Issues</div>
+            <div class="kpi-value" id="kpiBridging">0</div>
+            <div class="kpi-foot">requiring MDM review</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Unassigned</div>
+            <div class="kpi-value" id="kpiUnassigned">0</div>
+            <div class="kpi-foot">awaiting steward</div>
+          </div>
+        </div>
+
+        <!-- Chart panels -->
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">DCR Status Breakdown</div>
+            <div class="bar-chart" id="chartDcr"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">MMIT Verification Status</div>
+            <div class="bar-chart" id="chartMmit"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Requests by Brand</div>
+            <div class="bar-chart" id="chartBrand"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Requests by Steward</div>
+            <div class="bar-chart" id="chartSteward"></div>
+          </div>
+        </div>
+        </div><!-- /#metricDcrs -->
+
+        <!-- ===== POLICY WINS SUBVIEW ===== -->
+        <div id="metricWins" class="metric-panel" hidden>
+        <div class="dash-head">
+          <div class="section-tag">Policy Wins</div>
+          <div class="dash-sub">Data from 2026-06-18 (first auto-approved WIN)</div>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total WINs Created</div>
+            <div class="kpi-value" id="winTotal">0</div>
+            <div class="kpi-foot" id="winShown">0 shown</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total WINs Approved</div>
+            <div class="kpi-value" id="winApproved">0</div>
+            <div class="kpi-foot" id="winApprovedPct">0% of created</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Auto-Approved WINs</div>
+            <div class="kpi-value" id="winAuto">0</div>
+            <div class="kpi-foot">no manual review needed</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">First Auto-Approved</div>
+            <div class="kpi-value kpi-value-sm" id="winFirstDate">—</div>
+            <div class="kpi-foot">earliest WIN date</div>
+          </div>
+        </div>
+
+        <!-- Pie chart + table -->
+        <div class="wins-layout">
+          <div class="chart-card">
+            <div class="chart-title">WINs by Brand</div>
+            <div class="pie-wrap">
+              <svg class="pie" id="winPie" viewBox="0 0 200 200"></svg>
+              <div class="pie-legend" id="winPieLegend"></div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">WINs Detail <span class="chart-count" id="winTableCount">0</span></div>
+            <div class="wins-table-wrap">
+              <table class="wins-table" id="winsTable">
+                <thead>
+                  <tr>
+                    <th>Win ID</th>
+                    <th>Created</th>
+                    <th>Payer</th>
+                    <th>Brand</th>
+                    <th>Book of Business</th>
+                    <th>Benefit Type</th>
+                    <th>Sub-Indication</th>
+                  </tr>
+                </thead>
+                <tbody id="winsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        </div><!-- /#metricWins -->
+      </div><!-- /#metricView -->
     </main>
   </div>
 
@@ -253,6 +403,6 @@
   <!-- ============ DCR CREATED TOAST ============ -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=30"></script>
+  <script src="app.js?v=34"></script>
 </body>
 </html>

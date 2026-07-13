@@ -208,7 +208,7 @@ function renderRows() {
     const tdRestrict = document.createElement("td");
     tr.appendChild(tdRestrict);
 
-    // Rationale for Restriction (editable free text)
+    // Restriction Rationale (editable free text)
     tr.appendChild(buildFreeText(r, "rationale"));
 
     // PA and PI Summary (editable free text)
@@ -229,7 +229,7 @@ function renderRows() {
   updateTabCounts();
 }
 
-const FREETEXT_LABELS = { pa: "PA/PI Summary", comments: "Comments", rationale: "Rationale for Restriction" };
+const FREETEXT_LABELS = { pa: "PA/PI Summary", comments: "Comments", rationale: "Restriction Rationale" };
 function buildFreeText(r, field) {
   const td = document.createElement("td");
   td.className = "freetext";
@@ -530,7 +530,12 @@ document.getElementById("historyClose").addEventListener("click", () => historyM
 document.querySelectorAll(".filter-cb").forEach(cb => cb.addEventListener("change", renderRows));
 document.getElementById("resetFilters").addEventListener("click", () => {
   document.querySelectorAll(".filter-cb").forEach(c => c.checked = false);
-  renderRows();
+  // Clear wins filter state too, so switching tabs stays consistent
+  winFilters.brand.clear(); winFilters.subInd.clear();
+  winFilters.bob.clear(); winFilters.benefit.clear();
+  document.querySelectorAll("#winsFilters .filter-cb").forEach(c => c.checked = false);
+  // Re-render whichever view is currently visible
+  if (!winsFilters.hidden) renderWins(); else renderRows();
   showToast("Filters reset", false);
 });
 document.querySelectorAll("[data-toggle]").forEach(t => {
@@ -547,13 +552,328 @@ slider.addEventListener("input", () => {
   document.getElementById("rangeNote").textContent = `Range: ${min} – ${maxVals[idx]}`;
 });
 
+// ============ METRICS DASHBOARD ============
+const DCR_LABELS = { New: "New", DCRCreated: "DCR Created", BridgingIssues: "Bridging Issues", NotRequired: "Not Required" };
+const DCR_COLORS = { New: "", DCRCreated: "c-green", BridgingIssues: "c-orange", NotRequired: "c-red" };
+const MMIT_COLORS = {
+  New: "", Correct: "c-green", UnderMMITReview: "c-teal",
+  IncorrectAssessmentError: "c-orange", IncorrectPolicyLag: "c-red", BridgingMDM: "c-purple",
+};
+
+// Count rows by a key-producing function
+function countBy(fn) {
+  const m = {};
+  ROWS.forEach(r => { const k = fn(r); if (k === "" || k == null) return; m[k] = (m[k] || 0) + 1; });
+  return m;
+}
+
+// Render a horizontal bar chart into a container.
+// items: [{ label, value, cls }]
+function renderBarChart(el, items) {
+  el.innerHTML = "";
+  const max = Math.max(1, ...items.map(i => i.value));
+  items.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    const pct = Math.round((it.value / max) * 100);
+    row.innerHTML =
+      `<span class="bar-label" title="${it.label}">${it.label}</span>` +
+      `<span class="bar-track"><span class="bar-fill ${it.cls || ""}" style="width:${pct}%"></span></span>` +
+      `<span class="bar-val">${it.value}</span>`;
+    el.appendChild(row);
+  });
+}
+
+function renderDashboard() {
+  const total = ROWS.length;
+  const dcrCreated = ROWS.filter(r => r.dcr === "DCRCreated").length;
+  const bridging = ROWS.filter(r => r.dcr === "BridgingIssues" || r.mmit === "BridgingMDM").length;
+  const unassigned = ROWS.filter(r => !r.steward || r.steward.trim() === "").length;
+  const totalLives = ROWS.reduce((s, r) => s + (r.lives || 0), 0);
+
+  // KPI cards
+  document.getElementById("kpiTotal").textContent = total;
+  document.getElementById("kpiLives").textContent = fmtLives(totalLives) + " lives covered";
+  document.getElementById("kpiDcr").textContent = dcrCreated;
+  document.getElementById("kpiDcrPct").textContent =
+    (total ? Math.round((dcrCreated / total) * 100) : 0) + "% of total";
+  document.getElementById("kpiBridging").textContent = bridging;
+  document.getElementById("kpiUnassigned").textContent = unassigned;
+
+  // DCR status chart (fixed order)
+  const dcrCounts = countBy(r => r.dcr);
+  renderBarChart(document.getElementById("chartDcr"),
+    DCR_OPTS.map(o => ({ label: DCR_LABELS[o.v] || o.v, value: dcrCounts[o.v] || 0, cls: DCR_COLORS[o.v] })));
+
+  // MMIT verification chart (fixed order)
+  const mmitCounts = countBy(r => r.mmit);
+  renderBarChart(document.getElementById("chartMmit"),
+    MMIT_OPTS.map(o => ({ label: o.label, value: mmitCounts[o.v] || 0, cls: MMIT_COLORS[o.v] })));
+
+  // Brand chart (sorted desc)
+  const brandCounts = countBy(r => r.brand);
+  renderBarChart(document.getElementById("chartBrand"),
+    Object.entries(brandCounts).sort((a, b) => b[1] - a[1])
+      .map(([label, value]) => ({ label, value, cls: "c-purple" })));
+
+  // Steward chart (sorted desc, unassigned bucketed)
+  const stewardCounts = countBy(r => (r.steward && r.steward.trim()) ? r.steward : "Unassigned");
+  renderBarChart(document.getElementById("chartSteward"),
+    Object.entries(stewardCounts).sort((a, b) => b[1] - a[1])
+      .map(([label, value]) => ({ label, value, cls: label === "Unassigned" ? "c-red" : "c-teal" })));
+}
+
+// ============ POLICY WINS ============
+// Fixed summary figures supplied by the business.
+const WIN_SUMMARY = {
+  firstAutoApproved: "2026-06-18",
+  totalCreated: 238,
+  totalApproved: 37,
+  autoApproved: 37,
+};
+
+// Detail records: [winId, date, payer, brand, bob, benefit, subIndication]
+const WINS = [
+  ["WIN-01AA8B","2026-06-18","SAMARITAN HEALTH","ACTEMRA SC","MEDICARE_ADVANTAGE","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-037384","2026-06-18","PIH HEALTH (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-04EEBE","2026-06-18","WASHOE COUNTY SCHOOL DISTRICT (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-09061E","2026-06-18","WISCONSIN PHYSICIAN'S SERVICE","XOLAIR VIAL","COMMERCIAL","MEDICAL BENEFIT","Asthma"],
+  ["WIN-12698C","2026-06-18","LIBERTY UNIVERSITY (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-28DB34","2026-06-18","CARESOURCE WI (COMMON GROUND HEALTHCARE)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-318A79","2026-06-18","RELX GROUP (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-4409B2","2026-06-18","WASHOE COUNTY SCHOOL DISTRICT (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-4C7F4C","2026-06-18","CITY OF NORFOLK (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-51F062","2026-06-18","SILGAN (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-5AB5FB","2026-06-18","WISCONSIN PHYSICIAN'S SERVICE","XOLAIR PFS","COMMERCIAL","MEDICAL BENEFIT","Asthma"],
+  ["WIN-65DFE5","2026-06-18","IOWA TOTAL CARE","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-67FE19","2026-06-18","CITY OF SAN JOSE (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-68E8F4","2026-07-01","SAMARITAN HEALTH","XOLAIR AUTOINJECTOR","COMMERCIAL","PHARMACY BENEFIT","Food Allergy"],
+  ["WIN-6B35DE","2026-06-18","CITY OF MILWAUKEE (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-6D6B89","2026-06-18","CITY OF NORFOLK (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-6E7863","2026-06-18","CAPITAL BLUECROSS","GAZYVA","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Follicular Lymphoma"],
+  ["WIN-7E63F3","2026-06-18","STRYKER CORPORATION (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-80615C","2026-06-18","CITY OF SAN JOSE (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-81472B","2026-06-18","COUNTY OF PALM BEACH (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-92E171","2026-06-18","SOUTH COUNTRY HEALTH ALLIANCE","ACTEMRA SC","MEDICAID_MANAGED","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-959B53","2026-06-18","WELLCARE","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-9D20FD","2026-06-18","PIH HEALTH (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-9EE949","2026-06-23","SUMMACARE","TECENTRIQ","COMMERCIAL","MEDICAL BENEFIT","Small Cell Lung Cancer"],
+  ["WIN-AE1FFB","2026-06-18","ANALOG DEVICES (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-B083C6","2026-06-18","NEW HAMPSHIRE HEALTHY FAMILIES","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-B45D48","2026-06-18","SILGAN (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-BF26C8","2026-06-18","ACUSHNET (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-C251DA","2026-06-18","DELAWARE FIRST HEALTH","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-C851F3","2026-06-18","LIFEWISE HEALTH (WA)","GAZYVA","COMMERCIAL","MEDICAL BENEFIT","Follicular Lymphoma"],
+  ["WIN-D95C0B","2026-06-18","SILVERSUMMIT","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-DC0817","2026-06-23","COMMONWEALTH CARE ALLIANCE","TECENTRIQ HYBREZA","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Hepatocellular Carcinoma"],
+  ["WIN-DDE05F","2026-06-18","STATE OF NEBRASKA (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-DE4D74","2026-06-18","GENENTECH (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-EFCDE9","2026-06-18","LIBERTY UNIVERSITY (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
+  ["WIN-F6E072","2026-06-18","PROCTER & GAMBLE (P&G) (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-FD8F06","2026-06-18","AMERICAN GREETINGS (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+].map(a => ({ id:a[0], date:a[1], payer:a[2], brand:a[3], bob:a[4], benefit:a[5], subInd:a[6] }));
+
+// Palette used for the pie chart (cycled).
+const PIE_COLORS = ["#4a3b8a","#2f9e6b","#e8732c","#1f8aa0","#6b4fa0","#d6452c","#f4c542","#5b8def","#9c6ade","#3aa17e"];
+
+// Active wins filters: { brand:Set, subInd:Set, bob:Set, benefit:Set }
+const winFilters = { brand: new Set(), subInd: new Set(), bob: new Set(), benefit: new Set() };
+
+// Return wins matching the active filters.
+function filteredWins() {
+  return WINS.filter(w =>
+    (winFilters.brand.size === 0 || winFilters.brand.has(w.brand)) &&
+    (winFilters.subInd.size === 0 || winFilters.subInd.has(w.subInd)) &&
+    (winFilters.bob.size === 0 || winFilters.bob.has(w.bob)) &&
+    (winFilters.benefit.size === 0 || winFilters.benefit.has(w.benefit))
+  );
+}
+
+// Build a checkbox filter group body. `values` is [ [value, count], ... ].
+function buildWinFilter(containerId, values, setKey) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = "";
+  values.forEach(([val, cnt]) => {
+    const lab = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.className = "filter-cb"; cb.value = val;
+    cb.addEventListener("change", () => {
+      if (cb.checked) winFilters[setKey].add(val); else winFilters[setKey].delete(val);
+      renderWins();
+    });
+    lab.appendChild(cb);
+    lab.appendChild(document.createTextNode(" " + val + " "));
+    const c = document.createElement("span"); c.className = "count"; c.textContent = cnt;
+    lab.appendChild(c);
+    el.appendChild(lab);
+  });
+}
+
+// Tally distinct values (with counts) across all wins for a field.
+function winTally(field) {
+  const m = {};
+  WINS.forEach(w => { m[w[field]] = (m[w[field]] || 0) + 1; });
+  return Object.entries(m).sort((a, b) => b[1] - a[1]);
+}
+
+// Populate the four wins filter panels (once).
+function buildWinFilters() {
+  buildWinFilter("winFilterBrand", winTally("brand"), "brand");
+  buildWinFilter("winFilterIndication", winTally("subInd"), "subInd");
+  buildWinFilter("winFilterBob", winTally("bob"), "bob");
+  buildWinFilter("winFilterBenefit", winTally("benefit"), "benefit");
+}
+
+// Render an SVG donut/pie from [ [label, value], ... ].
+function renderPie(svg, legendEl, entries) {
+  svg.innerHTML = "";
+  legendEl.innerHTML = "";
+  const total = entries.reduce((s, e) => s + e[1], 0);
+  const cx = 100, cy = 100, r = 90;
+  if (total === 0) {
+    legendEl.innerHTML = `<div class="wins-empty">No data for current filters</div>`;
+    return;
+  }
+  let angle = 0;
+  entries.forEach((e, i) => {
+    const [label, value] = e;
+    const frac = value / total;
+    const color = PIE_COLORS[i % PIE_COLORS.length];
+    // Single full-circle slice needs special handling.
+    if (frac >= 0.9999) {
+      const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      c.setAttribute("cx", cx); c.setAttribute("cy", cy); c.setAttribute("r", r);
+      c.setAttribute("fill", color); c.setAttribute("class", "pie-slice");
+      svg.appendChild(c);
+    } else {
+      const a0 = angle * 2 * Math.PI;
+      const a1 = (angle + frac) * 2 * Math.PI;
+      const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+      const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+      const large = frac > 0.5 ? 1 : 0;
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} Z`);
+      path.setAttribute("fill", color);
+      path.setAttribute("class", "pie-slice");
+      svg.appendChild(path);
+    }
+    angle += frac;
+    // Legend row
+    const row = document.createElement("div");
+    row.className = "leg-row";
+    row.innerHTML =
+      `<span class="leg-dot" style="background:${color}"></span>` +
+      `<span class="leg-name" title="${label}">${label}</span>` +
+      `<span class="leg-val">${value}</span>` +
+      `<span class="leg-pct">${Math.round(frac * 100)}%</span>`;
+    legendEl.appendChild(row);
+  });
+}
+
+// Render the wins table body.
+function renderWinsTable(rows) {
+  const body = document.getElementById("winsBody");
+  body.innerHTML = "";
+  if (rows.length === 0) {
+    body.innerHTML = `<tr><td colspan="7" class="wins-empty">No WINs match the current filters</td></tr>`;
+    return;
+  }
+  rows.forEach(w => {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      `<td class="win-id">${w.id}</td>` +
+      `<td>${w.date}</td>` +
+      `<td>${w.payer}</td>` +
+      `<td>${w.brand}</td>` +
+      `<td>${w.bob}</td>` +
+      `<td>${w.benefit}</td>` +
+      `<td>${w.subInd}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+// Main wins render: summary cards + pie + table, honoring filters.
+function renderWins() {
+  const rows = filteredWins();
+
+  // Summary cards (fixed business figures; "shown" reflects filtered detail rows)
+  document.getElementById("winTotal").textContent = WIN_SUMMARY.totalCreated;
+  document.getElementById("winShown").textContent = rows.length + " of " + WINS.length + " detail rows shown";
+  document.getElementById("winApproved").textContent = WIN_SUMMARY.totalApproved;
+  document.getElementById("winApprovedPct").textContent =
+    Math.round((WIN_SUMMARY.totalApproved / WIN_SUMMARY.totalCreated) * 100) + "% of created";
+  document.getElementById("winAuto").textContent = WIN_SUMMARY.autoApproved;
+  document.getElementById("winFirstDate").textContent = WIN_SUMMARY.firstAutoApproved;
+
+  // Pie: WINs by brand (from filtered rows)
+  const brandTally = {};
+  rows.forEach(w => { brandTally[w.brand] = (brandTally[w.brand] || 0) + 1; });
+  const entries = Object.entries(brandTally).sort((a, b) => b[1] - a[1]);
+  renderPie(document.getElementById("winPie"), document.getElementById("winPieLegend"), entries);
+
+  // Table
+  document.getElementById("winTableCount").textContent = rows.length;
+  renderWinsTable(rows);
+}
+
 // ============ NAV TABS ============
+const stewardshipView = document.getElementById("stewardshipView");
+const metricView = document.getElementById("metricView");
+const metricDcrs = document.getElementById("metricDcrs");
+const metricWins = document.getElementById("metricWins");
+const stewardshipFilters = document.getElementById("stewardshipFilters");
+const winsFilters = document.getElementById("winsFilters");
+let winsBuilt = false;
+
+// Switch the active subtab within the Metric Dashboard.
+// which = "dcrs" | "wins"
+function showMetricSubtab(which) {
+  const isWins = which === "wins";
+  // Panels
+  metricDcrs.hidden = isWins;
+  metricWins.hidden = !isWins;
+  // Subtab highlight
+  document.querySelectorAll(".metric-subtab").forEach(s =>
+    s.classList.toggle("active", s.dataset.metric === which));
+  // Sidebar filters: DCRs uses stewardship filters, Wins uses wins filters
+  stewardshipFilters.hidden = isWins;
+  winsFilters.hidden = !isWins;
+
+  if (isWins) {
+    if (!winsBuilt) { buildWinFilters(); winsBuilt = true; }
+    renderWins();
+  } else {
+    renderDashboard();
+  }
+}
+
 document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
   t.addEventListener("click", () => {
     document.querySelectorAll(".nav-tab").forEach(x => x.classList.remove("active"));
     t.classList.add("active");
-    if (t.dataset.tab !== "stewardship") showToast(t.textContent.trim() + " — demo placeholder", false);
+    const tab = t.dataset.tab;
+    // "metric" and "wins" both open the Metric Dashboard, on different subtabs
+    const showMetrics = tab === "metric" || tab === "wins";
+    const showStewardship = tab === "stewardship";
+
+    stewardshipView.hidden = !showStewardship;
+    metricView.hidden = !showMetrics;
+
+    if (showMetrics) {
+      showMetricSubtab(tab === "wins" ? "wins" : "dcrs");
+    } else if (showStewardship) {
+      // Restore stewardship sidebar filters
+      stewardshipFilters.hidden = false;
+      winsFilters.hidden = true;
+    } else {
+      showToast(t.textContent.trim() + " — demo placeholder", false);
+    }
   });
+});
+
+// Metric subtab clicks (DCRs | Policy Wins)
+document.querySelectorAll(".metric-subtab").forEach(s => {
+  s.addEventListener("click", () => showMetricSubtab(s.dataset.metric));
 });
 document.querySelectorAll(".subtab").forEach(t => {
   t.addEventListener("click", () => {
