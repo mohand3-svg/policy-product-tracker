@@ -1,11 +1,19 @@
 services:
-  mockup-server:
-    name: Stewardship Mockup Server
-    description: Serves the static Policy Intelligence Stewardship Tool mockup on port 8080
+  dashboard-backend:
+    name: Stewardship Dashboard Backend
+    description: >-
+      FastAPI backend that serves the static frontend and read-only Foundry
+      endpoints (/api/wins, /api/metrics, /api/health) on port 8080.
+      Foundry config comes from env secrets: FOUNDRY_HOST and either
+      FOUNDRY_TOKEN or (FOUNDRY_CLIENT_ID + FOUNDRY_CLIENT_SECRET).
+      Optional: FOUNDRY_BRANCH (defaults to master).
     triggeredBy:
       - postDevcontainerStart
     commands:
       start: |
-        command -v python3 >/dev/null 2>&1 || (sudo apt-get update && sudo apt-get install -y python3)
-        cd /workspaces/workspaces && exec python3 -m http.server 8080 --bind 0.0.0.0
-      ready: curl -sf http://localhost:8080/index.html > /dev/null
+        cd /workspaces/workspaces/backend
+        python3 -m venv .venv
+        . .venv/bin/activate
+        pip install --disable-pip-version-check -q -r requirements.txt
+        exec uvicorn main:app --host 0.0.0.0 --port 8080
+      ready: curl -sf http://localhost:8080/api/health > /dev/null

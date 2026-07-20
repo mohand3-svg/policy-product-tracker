@@ -1,6 +1,16 @@
 # Build/bundle artifacts
 stewardship-mockup.zip
 
+# Python backend
+backend/.venv/
+backend/__pycache__/
+__pycache__/
+*.pyc
+
+# Local env (never commit AWS creds / secrets)
+.env
+.env.local
+
 # OS / editor
 .DS_Store
 *.swp

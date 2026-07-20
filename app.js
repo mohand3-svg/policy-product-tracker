@@ -204,13 +204,6 @@ function renderRows() {
     tdGne.appendChild(buildGneSelect(r));
     tr.appendChild(tdGne);
 
-    // Restrictive Policy (blank)
-    const tdRestrict = document.createElement("td");
-    tr.appendChild(tdRestrict);
-
-    // Restriction Rationale (editable free text)
-    tr.appendChild(buildFreeText(r, "rationale"));
-
     // PA and PI Summary (editable free text)
     tr.appendChild(buildFreeText(r, "pa"));
     // Comments / Links or Queries
@@ -229,7 +222,7 @@ function renderRows() {
   updateTabCounts();
 }
 
-const FREETEXT_LABELS = { pa: "PA/PI Summary", comments: "Comments", rationale: "Restriction Rationale" };
+const FREETEXT_LABELS = { pa: "PA/PI Summary", comments: "Comments" };
 function buildFreeText(r, field) {
   const td = document.createElement("td");
   td.className = "freetext";
@@ -624,8 +617,9 @@ function renderDashboard() {
 }
 
 // ============ POLICY WINS ============
-// Fixed summary figures supplied by the business.
-const WIN_SUMMARY = {
+// Fixed summary figures supplied by the business — used as fallback when the
+// backend API is unavailable (e.g. running the static mockup with no server).
+const WIN_SUMMARY_MOCK = {
   firstAutoApproved: "2026-06-18",
   totalCreated: 238,
   totalApproved: 37,
@@ -633,7 +627,7 @@ const WIN_SUMMARY = {
 };
 
 // Detail records: [winId, date, payer, brand, bob, benefit, subIndication]
-const WINS = [
+const WINS_MOCK = [
   ["WIN-01AA8B","2026-06-18","SAMARITAN HEALTH","ACTEMRA SC","MEDICARE_ADVANTAGE","PHARMACY BENEFIT","Rheumatoid Arthritis"],
   ["WIN-037384","2026-06-18","PIH HEALTH (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
   ["WIN-04EEBE","2026-06-18","WASHOE COUNTY SCHOOL DISTRICT (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
@@ -672,6 +666,39 @@ const WINS = [
   ["WIN-F6E072","2026-06-18","PROCTER & GAMBLE (P&G) (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
   ["WIN-FD8F06","2026-06-18","AMERICAN GREETINGS (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
 ].map(a => ({ id:a[0], date:a[1], payer:a[2], brand:a[3], bob:a[4], benefit:a[5], subInd:a[6] }));
+
+// Live state — defaults to the mock, replaced by API data when available.
+let WINS = WINS_MOCK;
+let WIN_SUMMARY = WIN_SUMMARY_MOCK;
+let winsSource = "mock"; // "mock" | "live"
+
+// Fetch live wins data from the backend. On any failure (no server, 503, 502,
+// network error) we keep the mock data so the static mockup still works.
+// Returns true if live data was loaded.
+async function loadWinsFromApi() {
+  try {
+    const res = await fetch("/api/wins", { headers: { Accept: "application/json" } });
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (!data || !Array.isArray(data.rows) || data.rows.length === 0) return false;
+    WINS = data.rows;
+    if (data.summary) {
+      const auto = data.summary.autoApproved ?? 0;
+      const steward = data.summary.stewardValidated ?? 0;
+      WIN_SUMMARY = {
+        firstAutoApproved: data.summary.firstAutoApproved ?? WIN_SUMMARY_MOCK.firstAutoApproved,
+        totalCreated: data.summary.totalCreated ?? data.rows.length,
+        // "Approved" = auto-approved + steward-validated
+        totalApproved: (data.summary.totalApproved ?? (auto + steward)),
+        autoApproved: auto,
+      };
+    }
+    winsSource = "live";
+    return true;
+  } catch (e) {
+    return false; // stay on mock data
+  }
+}
 
 // Palette used for the pie chart (cycled).
 const PIE_COLORS = ["#4a3b8a","#2f9e6b","#e8732c","#1f8aa0","#6b4fa0","#d6452c","#f4c542","#5b8def","#9c6ade","#3aa17e"];
@@ -798,7 +825,8 @@ function renderWins() {
 
   // Summary cards (fixed business figures; "shown" reflects filtered detail rows)
   document.getElementById("winTotal").textContent = WIN_SUMMARY.totalCreated;
-  document.getElementById("winShown").textContent = rows.length + " of " + WINS.length + " detail rows shown";
+  document.getElementById("winShown").textContent =
+    rows.length + " of " + WINS.length + " rows" + (winsSource === "live" ? " · live" : " · demo data");
   document.getElementById("winApproved").textContent = WIN_SUMMARY.totalApproved;
   document.getElementById("winApprovedPct").textContent =
     Math.round((WIN_SUMMARY.totalApproved / WIN_SUMMARY.totalCreated) * 100) + "% of created";
@@ -840,6 +868,13 @@ function showMetricSubtab(which) {
   winsFilters.hidden = !isWins;
 
   if (isWins) {
+    // Try live data on each open (real-time), then (re)build filters + render.
+    loadWinsFromApi().then(() => {
+      buildWinFilters();
+      winsBuilt = true;
+      renderWins();
+    });
+    // Render immediately with whatever we have so the UI isn't blank while fetching.
     if (!winsBuilt) { buildWinFilters(); winsBuilt = true; }
     renderWins();
   } else {
