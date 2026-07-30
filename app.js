@@ -848,22 +848,108 @@ function renderWins() {
 const stewardshipView = document.getElementById("stewardshipView");
 const metricView = document.getElementById("metricView");
 const metricDcrs = document.getElementById("metricDcrs");
+const metricUtil = document.getElementById("metricUtil");
 const metricWins = document.getElementById("metricWins");
 const stewardshipFilters = document.getElementById("stewardshipFilters");
 const winsFilters = document.getElementById("winsFilters");
 let winsBuilt = false;
 
+// ============ DCR UTILIZATION ============
+// Fallback mock (used when the backend/Foundry is unavailable). Shape mirrors
+// the /api/dcr-utilization response so render code is identical either way.
+const DCR_UTIL_MOCK = {
+  summary: { total: 1496, automated: 433, manual: 126, decided: 559, pending: 937, automationRate: 77 },
+  monthly: [
+    { month: "2026-06", automated: 43, manual: 126, total: 749 },
+    { month: "2026-07", automated: 390, manual: 0, total: 747 },
+  ],
+  assignment: [
+    { label: "UNASSIGNED", value: 1025 },
+    { label: "BULK", value: 276 },
+    { label: "SINGLE", value: 195 },
+  ],
+  brands: [
+    { label: "ACTEMRA SC", value: 101 }, { label: "XOLAIR VIAL", value: 48 },
+    { label: "ACTEMRA IV", value: 34 }, { label: "XOLAIR AUTOINJECTOR", value: 28 },
+    { label: "VABYSMO", value: 28 }, { label: "YUFLYMA", value: 27 },
+    { label: "XOLAIR PFS", value: 27 }, { label: "OCREVUS", value: 23 },
+  ],
+};
+
+let DCR_UTIL = DCR_UTIL_MOCK;
+let dcrUtilSource = "demo"; // "demo" | "live"
+
+// Fetch live utilization data; fall back to mock on any error.
+async function loadDcrUtilFromApi() {
+  try {
+    const res = await fetch("/api/dcr-utilization", { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    if (data && data.summary) {
+      DCR_UTIL = data;
+      dcrUtilSource = "live";
+    }
+  } catch (e) {
+    DCR_UTIL = DCR_UTIL_MOCK;
+    dcrUtilSource = "demo";
+  }
+}
+
+// Render the DCR Utilization subtab: KPIs, decision-mix pie, and bar charts.
+function renderDcrUtil() {
+  const d = DCR_UTIL;
+  const s = d.summary || {};
+
+  document.getElementById("utilRate").textContent = (s.automationRate ?? 0) + "%";
+  document.getElementById("utilAuto").textContent = s.automated ?? 0;
+  document.getElementById("utilManual").textContent = s.manual ?? 0;
+  document.getElementById("utilPending").textContent = s.pending ?? 0;
+  document.getElementById("utilTotalFoot").textContent = (s.total ?? 0) + " created";
+  document.getElementById("utilSub").textContent =
+    "How much DCR decisioning is automated vs. manual" +
+    (dcrUtilSource === "live" ? " · live" : " · demo data");
+
+  // Decision-mix pie (Automated / Manual / Pending)
+  const mix = [
+    ["Automated", s.automated ?? 0],
+    ["Manual", s.manual ?? 0],
+    ["Pending", s.pending ?? 0],
+  ].filter(e => e[1] > 0);
+  renderPie(document.getElementById("utilPie"), document.getElementById("utilPieLegend"), mix);
+
+  // Monthly automated vs manual (two bars per month)
+  const monthlyItems = [];
+  (d.monthly || []).forEach(m => {
+    monthlyItems.push({ label: m.month + " · Auto", value: m.automated, cls: "c-green" });
+    monthlyItems.push({ label: m.month + " · Manual", value: m.manual, cls: "c-teal" });
+  });
+  renderBarChart(document.getElementById("utilMonthly"), monthlyItems);
+
+  // Assignment type
+  renderBarChart(document.getElementById("utilAssign"),
+    (d.assignment || []).map(a => ({
+      label: a.label, value: a.value,
+      cls: a.label === "UNASSIGNED" ? "c-red" : a.label === "BULK" ? "c-purple" : "c-teal",
+    })));
+
+  // Top brands by automated decisions
+  renderBarChart(document.getElementById("utilBrand"),
+    (d.brands || []).map(b => ({ label: b.label, value: b.value, cls: "c-purple" })));
+}
+
 // Switch the active subtab within the Metric Dashboard.
-// which = "dcrs" | "wins"
+// which = "dcrs" | "util" | "wins"
 function showMetricSubtab(which) {
   const isWins = which === "wins";
+  const isUtil = which === "util";
   // Panels
-  metricDcrs.hidden = isWins;
+  metricDcrs.hidden = which !== "dcrs";
+  metricUtil.hidden = !isUtil;
   metricWins.hidden = !isWins;
   // Subtab highlight
   document.querySelectorAll(".metric-subtab").forEach(s =>
     s.classList.toggle("active", s.dataset.metric === which));
-  // Sidebar filters: DCRs uses stewardship filters, Wins uses wins filters
+  // Sidebar filters: Wins uses wins filters; DCRs/Utilization use stewardship filters
   stewardshipFilters.hidden = isWins;
   winsFilters.hidden = !isWins;
 
@@ -877,6 +963,9 @@ function showMetricSubtab(which) {
     // Render immediately with whatever we have so the UI isn't blank while fetching.
     if (!winsBuilt) { buildWinFilters(); winsBuilt = true; }
     renderWins();
+  } else if (isUtil) {
+    renderDcrUtil();               // paint with current data (mock on first open)
+    loadDcrUtilFromApi().then(renderDcrUtil);  // then refresh with live data
   } else {
     renderDashboard();
   }
@@ -906,7 +995,7 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
   });
 });
 
-// Metric subtab clicks (DCRs | Policy Wins)
+// Metric subtab clicks (DCRs | DCR Utilization | Policy Wins)
 document.querySelectorAll(".metric-subtab").forEach(s => {
   s.addEventListener("click", () => showMetricSubtab(s.dataset.metric));
 });

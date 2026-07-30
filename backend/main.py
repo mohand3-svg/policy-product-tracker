@@ -97,6 +97,69 @@ def wins():
     }
 
 
+@app.get("/api/dcr-utilization")
+def dcr_utilization():
+    """
+    DCR Utilization: automation adoption metrics.
+
+    Returns:
+      {
+        "summary": {total, automated, manual, decided, pending, automationRate},
+        "monthly": [{month, automated, manual, total}, ...],
+        "assignment": [{label, value}, ...],   # UNASSIGNED / BULK / SINGLE
+        "brands": [{label, value}, ...]         # top brands by automated count
+      }
+    """
+    if foundry.config_missing():
+        return JSONResponse(
+            {"error": "Foundry not configured — set FOUNDRY_HOST and auth secrets"},
+            status_code=503,
+        )
+    try:
+        summ = foundry.run_query(queries.DCR_UTIL_SUMMARY_SQL)
+        monthly = foundry.run_query(queries.DCR_UTIL_MONTHLY_SQL)
+        assign = foundry.run_query(queries.DCR_UTIL_ASSIGNMENT_SQL)
+        brands = foundry.run_query(queries.DCR_UTIL_BRAND_SQL)
+    except Exception as e:  # noqa: BLE001
+        return JSONResponse({"error": str(e)}, status_code=502)
+
+    s = summ[0] if summ else {}
+    total = _to_int(s.get("total"))
+    automated = _to_int(s.get("automated"))
+    manual = _to_int(s.get("manual"))
+    decided = automated + manual
+    pending = max(total - decided, 0)
+    rate = round((automated / decided) * 100) if decided else 0
+
+    return {
+        "summary": {
+            "total": total,
+            "automated": automated,
+            "manual": manual,
+            "decided": decided,
+            "pending": pending,
+            "automationRate": rate,
+        },
+        "monthly": [
+            {
+                "month": r.get("month"),
+                "automated": _to_int(r.get("automated")),
+                "manual": _to_int(r.get("manual")),
+                "total": _to_int(r.get("total")),
+            }
+            for r in monthly
+        ],
+        "assignment": [
+            {"label": r.get("assignment_type"), "value": _to_int(r.get("n"))}
+            for r in assign
+        ],
+        "brands": [
+            {"label": r.get("brand"), "value": _to_int(r.get("automated"))}
+            for r in brands
+        ],
+    }
+
+
 @app.get("/api/metrics")
 def metrics():
     """

@@ -84,3 +84,62 @@ WHERE request_date >= {AUTO_ERA_START}
 # Expected to return grouped counts the /api/metrics endpoint reshapes into
 # KPI cards and bar charts. Left as None so the endpoint reports "not configured".
 METRICS_SQL = None
+
+
+# =====================================================================
+# DCR Utilization: how much of the DCR decisioning is automated vs manual.
+# All figures are scoped to the automation era (request_date >= first
+# automated decision), consistent with the Policy Wins summary above.
+# =====================================================================
+
+# One-row summary of decision mix.
+#   total    : DCRs created in the automation era
+#   automated: AUTO/BULK machine decisions
+#   manual   : steward-approved (approve_or_reject_type = 'APPROVED')
+#   decided  : automated + manual (rows with any decision)
+#   pending  : created but not yet decided (NEW / IN PROGRESS / null)
+DCR_UTIL_SUMMARY_SQL = f"""
+SELECT
+  COUNT(*) AS total,
+  COUNT(CASE WHEN approve_or_reject_type IN {AUTO_TYPES} THEN 1 END) AS automated,
+  COUNT(CASE WHEN approve_or_reject_type = 'APPROVED' THEN 1 END) AS manual
+FROM {WINS_TABLE}
+WHERE request_date >= {AUTO_ERA_START}
+"""
+
+# Monthly automated vs manual decision counts (by DCR creation month).
+DCR_UTIL_MONTHLY_SQL = f"""
+SELECT
+  DATE_FORMAT(request_date, 'YYYY-MM') AS month,
+  COUNT(CASE WHEN approve_or_reject_type IN {AUTO_TYPES} THEN 1 END) AS automated,
+  COUNT(CASE WHEN approve_or_reject_type = 'APPROVED' THEN 1 END) AS manual,
+  COUNT(*) AS total
+FROM {WINS_TABLE}
+WHERE request_date >= {AUTO_ERA_START}
+GROUP BY DATE_FORMAT(request_date, 'YYYY-MM')
+ORDER BY month
+"""
+
+# Assignment-type mix in the automation era (UNASSIGNED / BULK / SINGLE).
+DCR_UTIL_ASSIGNMENT_SQL = f"""
+SELECT
+  COALESCE(assignment_type, 'UNKNOWN') AS assignment_type,
+  COUNT(*) AS n
+FROM {WINS_TABLE}
+WHERE request_date >= {AUTO_ERA_START}
+GROUP BY assignment_type
+ORDER BY n DESC
+"""
+
+# Top brands by number of automated decisions.
+DCR_UTIL_BRAND_SQL = f"""
+SELECT
+  brand,
+  COUNT(*) AS automated
+FROM {WINS_TABLE}
+WHERE approve_or_reject_type IN {AUTO_TYPES}
+  AND request_date >= {AUTO_ERA_START}
+GROUP BY brand
+ORDER BY automated DESC
+LIMIT 10
+"""

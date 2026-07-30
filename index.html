@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=36" />
+<link rel="stylesheet" href="styles.css?v=37" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -230,6 +230,7 @@
         <!-- Metric subtabs -->
         <div class="metric-subtabs">
           <a class="metric-subtab active" data-metric="dcrs">DCRs</a>
+          <a class="metric-subtab" data-metric="util">DCR Utilization</a>
           <a class="metric-subtab" data-metric="wins">Policy Wins</a>
         </div>
 
@@ -284,6 +285,61 @@
           </div>
         </div>
         </div><!-- /#metricDcrs -->
+
+        <!-- ===== DCR UTILIZATION SUBVIEW ===== -->
+        <div id="metricUtil" class="metric-panel" hidden>
+        <div class="dash-head">
+          <div class="section-tag">DCR Utilization</div>
+          <div class="dash-sub" id="utilSub">How much DCR decisioning is automated vs. manual</div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Automation Rate</div>
+            <div class="kpi-value" id="utilRate">0%</div>
+            <div class="kpi-foot">of decided DCRs</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Automated Decisions</div>
+            <div class="kpi-value" id="utilAuto">0</div>
+            <div class="kpi-foot">auto &amp; bulk</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Manual Decisions</div>
+            <div class="kpi-value" id="utilManual">0</div>
+            <div class="kpi-foot">steward approved</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Pending</div>
+            <div class="kpi-value" id="utilPending">0</div>
+            <div class="kpi-foot" id="utilTotalFoot">0 created</div>
+          </div>
+        </div>
+
+        <!-- Chart panels -->
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">Decision Mix</div>
+            <div class="pie-wrap">
+              <svg class="pie" id="utilPie" viewBox="0 0 200 200"></svg>
+              <div class="pie-legend" id="utilPieLegend"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Automated vs Manual by Month</div>
+            <div class="bar-chart" id="utilMonthly"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Assignment Type</div>
+            <div class="bar-chart" id="utilAssign"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Top Brands by Automated Decisions</div>
+            <div class="bar-chart" id="utilBrand"></div>
+          </div>
+        </div>
+        </div><!-- /#metricUtil -->
 
         <!-- ===== POLICY WINS SUBVIEW ===== -->
         <div id="metricWins" class="metric-panel" hidden>
@@ -401,6 +457,6 @@
   <!-- ============ DCR CREATED TOAST ============ -->
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=36"></script>
+  <script src="app.js?v=37"></script>
 </body>
 </html>
