@@ -1,0 +1,26 @@
+# Keep the build context small and never ship local/dev artifacts or secrets.
+.git
+.github
+.ona
+.devcontainer
+
+# Python
+backend/.venv/
+**/__pycache__/
+*.pyc
+
+# Local env / secrets — must NOT enter the image
+.env
+.env.local
+*.pem
+id_ed25519*
+
+# Editor / OS
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# Bundles / docs not needed at runtime
+stewardship-mockup.zip
+DEPLOY.md
