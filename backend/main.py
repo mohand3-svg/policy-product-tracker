@@ -77,18 +77,18 @@ def wins():
         {
             "id": r.get("win_identifier"),
             "date": r.get("creation_date"),
-            "payer": r.get("gne_payer_name"),
-            "brand": r.get("oasis_product_brand_name"),
-            "bob": r.get("gne_book_of_business"),
+            "payer": r.get("payer"),
+            "brand": r.get("brand"),
+            "bob": r.get("book_of_business"),
             "benefit": r.get("benefit_type"),
-            "subInd": r.get("oasis_sub_indication_value"),
+            "subInd": r.get("indication"),
         }
         for r in detail
     ]
     # Column names match the aliases in queries.WINS_SUMMARY_SQL.
     return {
         "summary": {
-            "totalCreated": _to_int(summary.get("total_num_of_cteated_dcrs")),
+            "totalCreated": _to_int(summary.get("total_num_of_created_dcrs")),
             "autoApproved": _to_int(summary.get("auto_approved")),
             "stewardValidated": _to_int(summary.get("steward_validated")),
             "firstAutoApproved": summary.get("auto_approve_start"),

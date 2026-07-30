@@ -4,7 +4,12 @@
 // See https://aka.ms/devcontainer.json for more information.
 {
 	"name": "Ona",
-	"image": "eu.repository.roche.com/cde-gitpod-docker-prd-l/ona-base:2.0"
+	"image": "eu.repository.roche.com/cde-gitpod-docker-prd-l/ona-base:2.0",
+	"features": {
+		"ghcr.io/devcontainers/features/python:1": {
+			"version": "3.12"
+		}
+	}
 	// Use "build":
 	// instead of the image to use a Dockerfile to build an image.
 	// "build": {

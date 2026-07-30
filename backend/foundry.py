@@ -1,19 +1,21 @@
 """
-Palantir Foundry SQL connector.
+Palantir Foundry SQL connector (Platform API v2).
 
 Runs Spark SQL against Foundry's SQL Query API and returns rows as
 list[dict]. Foundry executes queries asynchronously and returns results as
-an Apache Arrow stream, which we parse with pyarrow.
+an Apache Arrow IPC stream, which we parse with pyarrow.
 
-Configuration (set as Ona environment secrets):
-  FOUNDRY_HOST        - e.g. https://gene.palantirfoundry.com
-  Auth, pick ONE:
-    FOUNDRY_TOKEN                         - a bearer token, OR
-    FOUNDRY_CLIENT_ID + FOUNDRY_CLIENT_SECRET  - OAuth2 client credentials
-  FOUNDRY_BRANCH      - optional, defaults to "master"
+API flow (confirmed against gene.palantirfoundry.com):
+  POST /api/v2/sqlQueries/execute          {"query": "<sql>"}  -> {"queryId": ...}
+  GET  /api/v2/sqlQueries/{id}/getResults  -> Arrow IPC stream (200 when ready)
 
-Auth precedence: FOUNDRY_TOKEN wins if set; otherwise client-credentials are
-exchanged for a token at /multipass/api/oauth2/token.
+Configuration (environment variables / Ona secrets):
+  FOUNDRY_HOST   - defaults to https://gene.palantirfoundry.com
+  Token, first match wins:
+    GITHUB_DEV_WINS      (the working project token)
+    FOUNDRY_TOKEN        (generic override)
+  OAuth2 fallback (only if no token present):
+    FOUNDRY_CLIENT_ID + FOUNDRY_CLIENT_SECRET
 """
 
 import io
@@ -22,25 +24,35 @@ import time
 
 import requests
 
-_POLL_INTERVAL_SEC = 0.75
+_POLL_INTERVAL_SEC = 1.0
 _POLL_TIMEOUT_SEC = 90
-_HTTP_TIMEOUT_SEC = 30
+_HTTP_TIMEOUT_SEC = 60
 
-# Cached OAuth2 token: (access_token, expires_at_epoch)
+_DEFAULT_HOST = "https://gene.palantirfoundry.com"
+
+# Cached OAuth2 token (only used when no static token is set).
 _token_cache = {"token": None, "exp": 0}
 
 
 def foundry_config():
-    """Non-secret config for the health endpoint (never echoes token/secret)."""
+    """Non-secret config for the health endpoint (never echoes the token)."""
     return {
-        "host": os.environ.get("FOUNDRY_HOST"),
-        "branch": os.environ.get("FOUNDRY_BRANCH", "master"),
+        "host": _host(),
         "auth_mode": _auth_mode(),
     }
 
 
+def _host():
+    return (os.environ.get("FOUNDRY_HOST") or _DEFAULT_HOST).rstrip("/")
+
+
+def _static_token():
+    # Prefer the known-working project secret, then a generic override.
+    return os.environ.get("GITHUB_DEV_WINS") or os.environ.get("FOUNDRY_TOKEN")
+
+
 def _auth_mode():
-    if os.environ.get("FOUNDRY_TOKEN"):
+    if _static_token():
         return "bearer_token"
     if os.environ.get("FOUNDRY_CLIENT_ID") and os.environ.get("FOUNDRY_CLIENT_SECRET"):
         return "oauth2_client_credentials"
@@ -48,22 +60,18 @@ def _auth_mode():
 
 
 def config_missing():
-    """Return required env vars that are not set."""
+    """Return required config that is not set."""
     missing = []
-    if not os.environ.get("FOUNDRY_HOST"):
+    if not _host():
         missing.append("FOUNDRY_HOST")
     if _auth_mode() is None:
-        missing.append("FOUNDRY_TOKEN or (FOUNDRY_CLIENT_ID + FOUNDRY_CLIENT_SECRET)")
+        missing.append("GITHUB_DEV_WINS / FOUNDRY_TOKEN or (FOUNDRY_CLIENT_ID + FOUNDRY_CLIENT_SECRET)")
     return missing
-
-
-def _host():
-    return os.environ.get("FOUNDRY_HOST", "").rstrip("/")
 
 
 def _bearer():
     """Return a valid bearer token, exchanging client credentials if needed."""
-    static = os.environ.get("FOUNDRY_TOKEN")
+    static = _static_token()
     if static:
         return static
 
@@ -102,13 +110,12 @@ def run_query(sql):
     if missing:
         raise RuntimeError(f"Missing Foundry configuration: {', '.join(missing)}")
 
-    branch = os.environ.get("FOUNDRY_BRANCH", "master")
-    base = f"{_host()}/foundry-sql-server/api/queries"
+    base = f"{_host()}/api/v2/sqlQueries"
 
-    # 1) Start the query
+    # 1) Submit the query
     start = requests.post(
         f"{base}/execute",
-        json={"query": sql, "dialect": "SPARK", "fallbackBranchIds": [branch]},
+        json={"query": sql},
         headers=_headers(),
         timeout=_HTTP_TIMEOUT_SEC,
     )
@@ -118,30 +125,24 @@ def run_query(sql):
     if not query_id:
         raise RuntimeError(f"Foundry did not return a queryId: {payload}")
 
-    # 2) Poll until ready
+    # 2) Poll getResults until it returns 200 with a body (query finished).
+    #    While the query runs, getResults returns a non-200 / empty response.
     deadline = time.time() + _POLL_TIMEOUT_SEC
+    auth_only = {"Authorization": f"Bearer {_bearer()}"}
     while True:
-        st = requests.get(f"{base}/{query_id}/status", headers=_headers(), timeout=_HTTP_TIMEOUT_SEC)
-        st.raise_for_status()
-        status = st.json().get("status", {})
-        ready = status.get("ready") or status.get("type") == "ready"
-        failed = status.get("failed") or status.get("type") == "failed"
-        if ready:
-            break
-        if failed:
-            raise RuntimeError(f"Foundry query failed: {status}")
+        res = requests.get(
+            f"{base}/{query_id}/getResults",
+            headers=auth_only,
+            timeout=_HTTP_TIMEOUT_SEC,
+        )
+        if res.status_code == 200 and res.content:
+            return _arrow_to_rows(res.content)
+        if res.status_code >= 400 and res.status_code not in (202, 204, 409):
+            # 4xx/5xx that isn't a "still running" style code -> real error
+            raise RuntimeError(f"Foundry getResults {res.status_code}: {res.text[:300]}")
         if time.time() > deadline:
             raise RuntimeError(f"Foundry query timed out after {_POLL_TIMEOUT_SEC}s (id={query_id})")
         time.sleep(_POLL_INTERVAL_SEC)
-
-    # 3) Fetch Arrow results
-    res = requests.get(
-        f"{base}/{query_id}/results",
-        headers={"Authorization": f"Bearer {_bearer()}", "Accept": "application/octet-stream"},
-        timeout=_HTTP_TIMEOUT_SEC,
-    )
-    res.raise_for_status()
-    return _arrow_to_rows(res.content)
 
 
 def _arrow_to_rows(raw):
