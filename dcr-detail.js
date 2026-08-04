@@ -3,16 +3,16 @@
 
 const STORE_KEY = "pist_rows_v5";
 const COVERAGE = {
-  "REQ-1042": { product:"ENBREL", priorAuth:"Yes", stepEdit:"Yes", numSteps:1, stepPlacement:"ST Single Generic", stepProducts:"1 of [methotrexate]" },
-  "REQ-1043": { product:"HUMIRA", priorAuth:"Yes", stepEdit:"Yes", numSteps:2, stepPlacement:"ST Generic and Brand", stepProducts:"2 of [methotrexate, sulfasalazine]" },
-  "REQ-1044": { product:"HYRIMOZ", priorAuth:"Yes", stepEdit:"Yes", numSteps:4, stepPlacement:"ST Generic and Brand", stepProducts:"1 of [methotrexate]" },
-  "REQ-1045": { product:"OCREVUS ZUNOVO", priorAuth:"Yes", stepEdit:"Yes", numSteps:6, stepPlacement:"No Step", stepProducts:"Past to Future February 27th" },
-  "REQ-1046": { product:"COPAXONE", priorAuth:"No", stepEdit:"No", numSteps:0, stepPlacement:"No Step", stepProducts:"N/A" },
-  "REQ-1047": { product:"OTEZLA", priorAuth:"Yes", stepEdit:"Yes", numSteps:1, stepPlacement:"ST Single Generic", stepProducts:"1 of [topical corticosteroid]" },
-  "REQ-1048": { product:"STELARA", priorAuth:"Yes", stepEdit:"No", numSteps:0, stepPlacement:"No Step", stepProducts:"N/A" },
-  "REQ-1049": { product:"CYLTEZO", priorAuth:"Yes", stepEdit:"Yes", numSteps:4, stepPlacement:"ST Generic and Brand", stepProducts:"1 of [methotrexate]" },
-  "REQ-1050": { product:"ENTYVIO", priorAuth:"No", stepEdit:"No", numSteps:0, stepPlacement:"No Step", stepProducts:"N/A" },
-  "REQ-1051": { product:"DUPIXENT", priorAuth:"Yes", stepEdit:"Yes", numSteps:1, stepPlacement:"ST Single Brand", stepProducts:"1 of [topical]" },
+  "REQ-1042": { product:"Product P1", priorAuth:"No", stepEdit:"No", numSteps:1, stepPlacement:"Step Config 1", stepProducts:"Sample list 1" },
+  "REQ-1043": { product:"Product P2", priorAuth:"No", stepEdit:"Yes", numSteps:2, stepPlacement:"Step Config 2", stepProducts:"Sample list 2" },
+  "REQ-1044": { product:"Product P3", priorAuth:"No", stepEdit:"Yes", numSteps:5, stepPlacement:"Step Config 3", stepProducts:"Sample list 3" },
+  "REQ-1045": { product:"Product P4", priorAuth:"No", stepEdit:"No", numSteps:2, stepPlacement:"Step Config 1", stepProducts:"Sample list 4" },
+  "REQ-1046": { product:"Product P5", priorAuth:"Yes", stepEdit:"Yes", numSteps:3, stepPlacement:"Step Config 2", stepProducts:"Sample list 5" },
+  "REQ-1047": { product:"Product P6", priorAuth:"Yes", stepEdit:"Yes", numSteps:4, stepPlacement:"Step Config 3", stepProducts:"Sample list 6" },
+  "REQ-1048": { product:"Product P7", priorAuth:"Yes", stepEdit:"No", numSteps:1, stepPlacement:"Step Config 1", stepProducts:"Sample list 7" },
+  "REQ-1049": { product:"Product P8", priorAuth:"No", stepEdit:"Yes", numSteps:1, stepPlacement:"Step Config 2", stepProducts:"Sample list 8" },
+  "REQ-1050": { product:"Product P9", priorAuth:"No", stepEdit:"No", numSteps:1, stepPlacement:"Step Config 3", stepProducts:"Sample list 9" },
+  "REQ-1051": { product:"Product P10", priorAuth:"No", stepEdit:"No", numSteps:4, stepPlacement:"Step Config 1", stepProducts:"Sample list 10" },
 };
 
 const params = new URLSearchParams(location.search);
@@ -40,7 +40,7 @@ const rows = [
   ["Number Of Steps", c.numSteps ?? "—"],
   ["Step Therapy Placement", c.stepPlacement ?? "—"],
   ["Step Products", c.stepProducts ?? "—"],
-  ["Created By", "A. Martinez"],
+  ["Created By", "Steward C"],
   ["Created Via", "Multiple Policies update form"],
 ];
 

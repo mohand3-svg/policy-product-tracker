@@ -6,7 +6,7 @@ list[dict]. Foundry executes queries asynchronously and returns results as
 an Apache Arrow stream, which we parse with pyarrow.
 
 Configuration (set as Ona environment secrets):
-  FOUNDRY_HOST        - e.g. https://gene.palantirfoundry.com
+  FOUNDRY_HOST        - e.g. https://<your-foundry-host>
   Auth, pick ONE:
     FOUNDRY_TOKEN                         - a bearer token, OR
     FOUNDRY_CLIENT_ID + FOUNDRY_CLIENT_SECRET  - OAuth2 client credentials

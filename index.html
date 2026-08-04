@@ -49,11 +49,11 @@
       <div class="filter-group">
         <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
         <div class="fg-body">
-          <label><input type="checkbox" class="filter-cb brand-cb" value="OCREVUS ZUNOVO" /> OCREVUS ZUNOVO <span class="cbar"><i style="width:100%"></i></span><span class="count">293</span></label>
-          <label><input type="checkbox" class="filter-cb brand-cb" value="VABYSMO" /> VABYSMO <span class="cbar"><i style="width:45%"></i></span><span class="count">132</span></label>
-          <label><input type="checkbox" class="filter-cb brand-cb" value="ACTEMRA SC" /> ACTEMRA SC <span class="cbar"><i style="width:8%"></i></span><span class="count">22</span></label>
-          <label><input type="checkbox" class="filter-cb brand-cb" value="OCREVUS" /> OCREVUS <span class="cbar"><i style="width:3%"></i></span><span class="count">8</span></label>
-          <label><input type="checkbox" class="filter-cb brand-cb" value="XOLAIR AUTOINJECTOR" /> XOLAIR AUTOINJECTOR <span class="cbar"><i style="width:2%"></i></span><span class="count">5</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="Brand Alpha" /> Brand Alpha <span class="cbar"><i style="width:100%"></i></span><span class="count">293</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="Brand Bravo" /> Brand Bravo <span class="cbar"><i style="width:45%"></i></span><span class="count">132</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="Brand Charlie" /> Brand Charlie <span class="cbar"><i style="width:8%"></i></span><span class="count">22</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="Brand Delta" /> Brand Delta <span class="cbar"><i style="width:3%"></i></span><span class="count">8</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="Brand Echo" /> Brand Echo <span class="cbar"><i style="width:2%"></i></span><span class="count">5</span></label>
           <button class="show-more">Show more</button>
         </div>
       </div>
@@ -86,10 +86,10 @@
       <div class="filter-group">
         <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
         <div class="fg-body">
-          <label><input type="checkbox" class="filter-cb payer-cb" value="Aetna" /> Aetna <span class="count">120</span></label>
-          <label><input type="checkbox" class="filter-cb payer-cb" value="Cigna" /> Blue Cross Blue Shield <span class="count">47</span></label>
-          <label><input type="checkbox" class="filter-cb payer-cb" value="CVS Health" /> CVS Health <span class="count">15</span></label>
-          <label><input type="checkbox" class="filter-cb payer-cb" value="Humana" /> Humana <span class="count">14</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Payer 01" /> Payer 01 <span class="count">120</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Payer 02" /> Payer 02 <span class="count">47</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Payer 03" /> Payer 03 <span class="count">15</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Payer 04" /> Payer 04 <span class="count">14</span></label>
         </div>
       </div>
 
@@ -206,7 +206,7 @@
               <th>Policy Reporter Link 1</th>
               <th>Policy Reporter Link 2</th>
               <th>Policy Reporter Link 3</th>
-              <th>Relative Access Position (Only for brand = Actemra)</th>
+              <th>Relative Access Position (selected brands only)</th>
               <th>MMIT HPM (May-26)</th>
               <th>MMIT Verification Status</th>
               <th>DCR Status</th>
@@ -231,6 +231,8 @@
         <div class="metric-subtabs">
           <a class="metric-subtab active" data-metric="dcrs">DCRs</a>
           <a class="metric-subtab" data-metric="wins">Policy Wins</a>
+          <a class="metric-subtab" data-metric="dcrutil">DCR Utilization</a>
+          <a class="metric-subtab" data-metric="winsutil">Policy Wins Utilization</a>
         </div>
 
         <!-- ===== DCRs SUBVIEW ===== -->
@@ -347,6 +349,110 @@
           </div>
         </div>
         </div><!-- /#metricWins -->
+
+        <!-- ===== DCR UTILIZATION SUBVIEW ===== -->
+        <div id="metricDcrUtil" class="metric-panel" hidden>
+        <div class="dash-head">
+          <div class="section-tag">DCR Utilization — 2026 YTD</div>
+          <div class="dash-sub">How DCRs are submitted (User vs Steward) and approved (Auto vs Manual)</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total DCRs (2026)</div>
+            <div class="kpi-value" id="duTotal">0</div>
+            <div class="kpi-foot" id="duSubmitSplit">User 0 · Steward 0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Auto-Approved Share</div>
+            <div class="kpi-value" id="duAutoShare">0%</div>
+            <div class="kpi-foot" id="duAutoCount">0 of 0 decided</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Auto Approval Rate</div>
+            <div class="kpi-value" id="duAutoRate">0%</div>
+            <div class="kpi-foot" id="duManualRate">Manual 0%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Manual Review Avoided</div>
+            <div class="kpi-value" id="duAvoided">0</div>
+            <div class="kpi-foot">auto decisions, no steward needed</div>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">Submission Source — User vs Steward</div>
+            <div class="bar-chart" id="duChartSource"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Approval Method — Auto vs Manual</div>
+            <div class="bar-chart" id="duChartApproval"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Approval Adoption Shift — DCRs per Month</div>
+            <div class="bar-chart" id="duChartTrend"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Approval Rate — Auto vs Manual</div>
+            <div class="bar-chart" id="duChartRate"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Outcome Funnel — Auto vs Manual</div>
+            <div class="bar-chart" id="duChartFunnel"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Submission Source × Approval Method</div>
+            <div class="bar-chart" id="duChartMatrix"></div>
+          </div>
+        </div>
+        </div><!-- /#metricDcrUtil -->
+
+        <!-- ===== POLICY WINS UTILIZATION SUBVIEW ===== -->
+        <div id="metricWinsUtil" class="metric-panel" hidden>
+        <div class="dash-head">
+          <div class="section-tag">Policy Wins Utilization — 2026 YTD</div>
+          <div class="dash-sub">Policy Wins are auto-approved by P360 — near-total automation</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total WINs (2026)</div>
+            <div class="kpi-value" id="wuTotal">0</div>
+            <div class="kpi-foot" id="wuSplit">Auto 0 · Manual 0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Auto-Approved Share</div>
+            <div class="kpi-value" id="wuAutoShare">0%</div>
+            <div class="kpi-foot">no manual review needed</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Payers Reached (Auto)</div>
+            <div class="kpi-value" id="wuPayers">0</div>
+            <div class="kpi-foot" id="wuBrands">0 brands</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Manual Review Avoided</div>
+            <div class="kpi-value" id="wuAvoided">0</div>
+            <div class="kpi-foot">auto WINs, no steward needed</div>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">Approval Channel — Auto vs Manual</div>
+            <div class="bar-chart" id="wuChartChannel"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">WINs per Month — Auto vs Manual</div>
+            <div class="bar-chart" id="wuChartTrend"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Reach — Payers Covered</div>
+            <div class="bar-chart" id="wuChartPayers"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Reach — Brands Covered</div>
+            <div class="bar-chart" id="wuChartBrands"></div>
+          </div>
+        </div>
+        </div><!-- /#metricWinsUtil -->
       </div><!-- /#metricView -->
     </main>
   </div>
@@ -365,11 +471,11 @@
         </div>
         <select class="modal-select" id="reviewerSelect">
           <option value="">Select an option...</option>
-          <option>A. Martinez (Steward)</option>
-          <option>J. Chen (Steward)</option>
-          <option>R. Patel (Steward)</option>
-          <option>S. Okafor (Steward)</option>
-          <option>L. Nguyen (Steward)</option>
+          <option>Steward A (Steward)</option>
+          <option>Steward B (Steward)</option>
+          <option>Steward C (Steward)</option>
+          <option>Steward D (Steward)</option>
+          <option>Steward E (Steward)</option>
         </select>
         <div class="modal-hint" id="bulkHint">No DCRs selected yet.</div>
       </div>

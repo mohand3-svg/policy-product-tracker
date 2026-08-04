@@ -27,35 +27,35 @@ const GNE_OPTS = [
 
 // ---- seed data ---------------------------------------------------
 const SEED_ROWS = [
-  { id:"REQ-1042", steward:"Syed Riyaz", parentPayer:"UNITEDHEALTH GROUP", payer:"UnitedHealthcare", brand:"OCREVUS ZUNOVO", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"DRUG COVERED WITH NO PA", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1043", steward:"Syed Riyaz", parentPayer:"CVS HEALTH CORPORATION", payer:"Aetna", brand:"VABYSMO", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Bio Managed 2", mmit:"IncorrectAssessmentError", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"NARROWER THAN PI", relAccess:"Disadvantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1044", steward:"Syed Riyaz", parentPayer:"THE CIGNA GROUP", payer:"Cigna", brand:"ACTEMRA SC", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"2587123", lives:6580, mmitHpm:"Drug Covered with No PA", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"TO PI OR BETTER", relAccess:"At Par", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1045", steward:"Adriana Jazbor", parentPayer:"UNITEDHEALTH GROUP", payer:"UnitedHealthcare", brand:"OCREVUS ZUNOVO", indication:"Rheumatoid Arthritis (RA)", bob:"Commercial", benefit:"Medical", form:"3187225", lives:6580, mmitHpm:"Bio Managed 1", mmit:"IncorrectPolicyLag", dcr:"BridgingIssues", dcrCode:"DCR-CFD39", gne:"NO PA", relAccess:"At Par", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1046", steward:"A. Martinez", parentPayer:"CVS HEALTH CORPORATION", payer:"Aetna", brand:"OCREVUS", indication:"Multiple Sclerosis", bob:"Commercial", benefit:"Medical", form:"3187225", lives:7110, mmitHpm:"Clinical Criteria Required", mmit:"UnderMMITReview", dcr:"New", dcrCode:"", gne:"NOT COVERED", relAccess:"Disadvantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1047", steward:"A. Martinez", parentPayer:"THE CIGNA GROUP", payer:"Cigna", brand:"XOLAIR AUTOINJECTOR", indication:"Psoriasis", bob:"Medicare Advantage", benefit:"Pharmacy", form:"3187225", lives:12450, mmitHpm:"Clinical Criteria Required", mmit:"New", dcr:"New", dcrCode:"", gne:"Unknown", relAccess:"At Par", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1048", steward:"A. Martinez", parentPayer:"CVS HEALTH CORPORATION", payer:"CVS Health", brand:"OCREVUS ZUNOVO", indication:"Crohn's Disease", bob:"Commercial", benefit:"Medical", form:"3287338", lives:9920, mmitHpm:"Clinical Criteria Required", mmit:"BridgingMDM", dcr:"BridgingIssues", dcrCode:"DCR-CFD39", gne:"TO PI WITH CRITERIA", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1049", steward:"", parentPayer:"THE CIGNA GROUP", payer:"Cigna", brand:"ACTEMRA SC", indication:"Plaque Psoriasis", bob:"Medicaid Managed", benefit:"Pharmacy", form:"3287338", lives:4180, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-CFD39", gne:"NARROWER THAN PI", relAccess:"Disadvantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1050", steward:"", parentPayer:"HUMANA INC", payer:"Humana", brand:"VABYSMO", indication:"Ulcerative Colitis", bob:"Medicare Advantage", benefit:"Medical", form:"3401119", lives:15870, mmitHpm:"Clinical Criteria Required", mmit:"Correct", dcr:"NotRequired", dcrCode:"", gne:"TO PI OR BETTER", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
-  { id:"REQ-1051", steward:"", parentPayer:"CVS HEALTH CORPORATION", payer:"Aetna", brand:"ACTEMRA SC", indication:"Atopic Dermatitis", bob:"Commercial", benefit:"Pharmacy", form:"3401119", lives:22340, mmitHpm:"Bio Managed 2", mmit:"New", dcr:"New", dcrCode:"", gne:"NO PA", relAccess:"At Par", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1042", steward:"Steward A", parentPayer:"Payer Group 1", payer:"Payer 11", brand:"Brand Alpha", indication:"Indication B", bob:"Commercial", benefit:"Medical", form:"1000000", lives:4500, mmitHpm:"Managed Tier 1", mmit:"IncorrectPolicyLag", dcr:"NotRequired", dcrCode:"DCR-00000", gne:"TO PI OR BETTER", relAccess:"At Par", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1043", steward:"Steward B", parentPayer:"Payer Group 2", payer:"Payer 06", brand:"Brand Charlie", indication:"Indication D", bob:"Commercial", benefit:"Medical", form:"1000111", lives:5000, mmitHpm:"Managed Tier 2", mmit:"Correct", dcr:"NotRequired", dcrCode:"DCR-00001", gne:"Unknown", relAccess:"Disadvantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1044", steward:"Steward C", parentPayer:"Payer Group 3", payer:"Payer 04", brand:"Brand Alpha", indication:"Indication F", bob:"Commercial", benefit:"Medical", form:"1000222", lives:10000, mmitHpm:"Managed Tier 3", mmit:"Correct", dcr:"DCRCreated", dcrCode:"DCR-00002", gne:"Unknown", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1045", steward:"Steward D", parentPayer:"Payer Group 4", payer:"Payer 06", brand:"Brand Delta", indication:"Indication D", bob:"Commercial", benefit:"Medical", form:"1000333", lives:9000, mmitHpm:"Managed Tier 1", mmit:"IncorrectPolicyLag", dcr:"NotRequired", dcrCode:"DCR-00003", gne:"DRUG COVERED WITH NO PA", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1046", steward:"Steward E", parentPayer:"Payer Group 1", payer:"Payer 13", brand:"Brand Alpha", indication:"Indication D", bob:"Commercial", benefit:"Medical", form:"1000444", lives:5500, mmitHpm:"Managed Tier 2", mmit:"BridgingMDM", dcr:"New", dcrCode:"DCR-00004", gne:"NO PA", relAccess:"Disadvantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1047", steward:"Steward F", parentPayer:"Payer Group 2", payer:"Payer 24", brand:"Brand Echo", indication:"Indication F", bob:"Commercial", benefit:"Medical", form:"1000555", lives:9000, mmitHpm:"Managed Tier 3", mmit:"IncorrectPolicyLag", dcr:"BridgingIssues", dcrCode:"DCR-00005", gne:"NARROWER THAN PI", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1048", steward:"Steward G", parentPayer:"Payer Group 3", payer:"Payer 02", brand:"Brand Echo", indication:"Indication F", bob:"Commercial", benefit:"Medical", form:"1000666", lives:10000, mmitHpm:"Managed Tier 1", mmit:"Correct", dcr:"New", dcrCode:"DCR-00006", gne:"DRUG COVERED WITH NO PA", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1049", steward:"", parentPayer:"Payer Group 4", payer:"Payer 19", brand:"Brand Delta", indication:"Indication E", bob:"Commercial", benefit:"Medical", form:"1000777", lives:9500, mmitHpm:"Managed Tier 2", mmit:"IncorrectPolicyLag", dcr:"DCRCreated", dcrCode:"DCR-00007", gne:"NOT COVERED", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1050", steward:"", parentPayer:"Payer Group 1", payer:"Payer 06", brand:"Brand Alpha", indication:"Indication E", bob:"Commercial", benefit:"Medical", form:"1000888", lives:2500, mmitHpm:"Managed Tier 3", mmit:"IncorrectAssessmentError", dcr:"BridgingIssues", dcrCode:"DCR-00008", gne:"NO PA", relAccess:"Advantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
+  { id:"REQ-1051", steward:"", parentPayer:"Payer Group 2", payer:"Payer 19", brand:"Brand Bravo", indication:"Indication E", bob:"Commercial", benefit:"Medical", form:"1000999", lives:2000, mmitHpm:"Managed Tier 1", mmit:"New", dcr:"DCRCreated", dcrCode:"DCR-00009", gne:"NO PA", relAccess:"Disadvantaged", pa:"<Free Text>", comments:"<Free Text>", gate:"" },
 ];
 
 // Stewards available for assignment
-const STEWARDS = ["Syed Riyaz", "Adriana Jazbor", "A. Martinez", "J. Chen", "R. Patel", "S. Okafor", "L. Nguyen"];
-const CURRENT_USER = "A. Martinez";
+const STEWARDS = ["Steward A", "Steward B", "Steward C", "Steward D", "Steward E", "Steward F", "Steward G"];
+const CURRENT_USER = "Steward C";
 
 // Product-coverage attributes used to pre-populate DCRs on the
 // "Multiple Policies update form". Keyed by request id.
 const COVERAGE = {
-  "REQ-1042": { product:"ENBREL", priorAuth:"Yes", stepEdit:"Yes", numSteps:1, stepPlacement:"ST Single Generic", stepProducts:"1 of [methotrexate]" },
-  "REQ-1043": { product:"HUMIRA", priorAuth:"Yes", stepEdit:"Yes", numSteps:2, stepPlacement:"ST Generic and Brand", stepProducts:"2 of [methotrexate, sulfasalazine]" },
-  "REQ-1044": { product:"HYRIMOZ", priorAuth:"Yes", stepEdit:"Yes", numSteps:4, stepPlacement:"ST Generic and Brand", stepProducts:"1 of [methotrexate]" },
-  "REQ-1045": { product:"OCREVUS ZUNOVO", priorAuth:"Yes", stepEdit:"Yes", numSteps:6, stepPlacement:"No Step", stepProducts:"Past to Future February 27th" },
-  "REQ-1046": { product:"COPAXONE", priorAuth:"No", stepEdit:"No", numSteps:0, stepPlacement:"No Step", stepProducts:"N/A" },
-  "REQ-1047": { product:"OTEZLA", priorAuth:"Yes", stepEdit:"Yes", numSteps:1, stepPlacement:"ST Single Generic", stepProducts:"1 of [topical corticosteroid]" },
-  "REQ-1048": { product:"STELARA", priorAuth:"Yes", stepEdit:"No", numSteps:0, stepPlacement:"No Step", stepProducts:"N/A" },
-  "REQ-1049": { product:"CYLTEZO", priorAuth:"Yes", stepEdit:"Yes", numSteps:4, stepPlacement:"ST Generic and Brand", stepProducts:"1 of [methotrexate]" },
-  "REQ-1050": { product:"ENTYVIO", priorAuth:"No", stepEdit:"No", numSteps:0, stepPlacement:"No Step", stepProducts:"N/A" },
-  "REQ-1051": { product:"DUPIXENT", priorAuth:"Yes", stepEdit:"Yes", numSteps:1, stepPlacement:"ST Single Brand", stepProducts:"1 of [topical]" },
+  "REQ-1042": { product:"Product P1", priorAuth:"No", stepEdit:"No", numSteps:1, stepPlacement:"Step Config 1", stepProducts:"Sample list 1" },
+  "REQ-1043": { product:"Product P2", priorAuth:"No", stepEdit:"Yes", numSteps:2, stepPlacement:"Step Config 2", stepProducts:"Sample list 2" },
+  "REQ-1044": { product:"Product P3", priorAuth:"No", stepEdit:"Yes", numSteps:5, stepPlacement:"Step Config 3", stepProducts:"Sample list 3" },
+  "REQ-1045": { product:"Product P4", priorAuth:"No", stepEdit:"No", numSteps:2, stepPlacement:"Step Config 1", stepProducts:"Sample list 4" },
+  "REQ-1046": { product:"Product P5", priorAuth:"Yes", stepEdit:"Yes", numSteps:3, stepPlacement:"Step Config 2", stepProducts:"Sample list 5" },
+  "REQ-1047": { product:"Product P6", priorAuth:"Yes", stepEdit:"Yes", numSteps:4, stepPlacement:"Step Config 3", stepProducts:"Sample list 6" },
+  "REQ-1048": { product:"Product P7", priorAuth:"Yes", stepEdit:"No", numSteps:1, stepPlacement:"Step Config 1", stepProducts:"Sample list 7" },
+  "REQ-1049": { product:"Product P8", priorAuth:"No", stepEdit:"Yes", numSteps:1, stepPlacement:"Step Config 2", stepProducts:"Sample list 8" },
+  "REQ-1050": { product:"Product P9", priorAuth:"No", stepEdit:"No", numSteps:1, stepPlacement:"Step Config 3", stepProducts:"Sample list 9" },
+  "REQ-1051": { product:"Product P10", priorAuth:"No", stepEdit:"No", numSteps:4, stepPlacement:"Step Config 1", stepProducts:"Sample list 10" },
 };
 
 // ---- persistence (survive navigation to the form page) ----------
@@ -302,7 +302,7 @@ function logHistory(id, field, oldV, newV) {
   history[id].push({
     ts: new Date().toLocaleString(),
     field, old: oldV, neu: newV,
-    user: "A. Martinez",
+    user: "Steward C",
   });
 }
 
@@ -628,43 +628,43 @@ const WIN_SUMMARY_MOCK = {
 
 // Detail records: [winId, date, payer, brand, bob, benefit, subIndication]
 const WINS_MOCK = [
-  ["WIN-01AA8B","2026-06-18","SAMARITAN HEALTH","ACTEMRA SC","MEDICARE_ADVANTAGE","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-037384","2026-06-18","PIH HEALTH (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-04EEBE","2026-06-18","WASHOE COUNTY SCHOOL DISTRICT (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-09061E","2026-06-18","WISCONSIN PHYSICIAN'S SERVICE","XOLAIR VIAL","COMMERCIAL","MEDICAL BENEFIT","Asthma"],
-  ["WIN-12698C","2026-06-18","LIBERTY UNIVERSITY (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-28DB34","2026-06-18","CARESOURCE WI (COMMON GROUND HEALTHCARE)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-318A79","2026-06-18","RELX GROUP (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-4409B2","2026-06-18","WASHOE COUNTY SCHOOL DISTRICT (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-4C7F4C","2026-06-18","CITY OF NORFOLK (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-51F062","2026-06-18","SILGAN (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-5AB5FB","2026-06-18","WISCONSIN PHYSICIAN'S SERVICE","XOLAIR PFS","COMMERCIAL","MEDICAL BENEFIT","Asthma"],
-  ["WIN-65DFE5","2026-06-18","IOWA TOTAL CARE","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-67FE19","2026-06-18","CITY OF SAN JOSE (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-68E8F4","2026-07-01","SAMARITAN HEALTH","XOLAIR AUTOINJECTOR","COMMERCIAL","PHARMACY BENEFIT","Food Allergy"],
-  ["WIN-6B35DE","2026-06-18","CITY OF MILWAUKEE (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-6D6B89","2026-06-18","CITY OF NORFOLK (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-6E7863","2026-06-18","CAPITAL BLUECROSS","GAZYVA","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Follicular Lymphoma"],
-  ["WIN-7E63F3","2026-06-18","STRYKER CORPORATION (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-80615C","2026-06-18","CITY OF SAN JOSE (EMPLOYER)","OCREVUS ZUNOVO","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-81472B","2026-06-18","COUNTY OF PALM BEACH (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-92E171","2026-06-18","SOUTH COUNTRY HEALTH ALLIANCE","ACTEMRA SC","MEDICAID_MANAGED","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-959B53","2026-06-18","WELLCARE","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-9D20FD","2026-06-18","PIH HEALTH (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-9EE949","2026-06-23","SUMMACARE","TECENTRIQ","COMMERCIAL","MEDICAL BENEFIT","Small Cell Lung Cancer"],
-  ["WIN-AE1FFB","2026-06-18","ANALOG DEVICES (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-B083C6","2026-06-18","NEW HAMPSHIRE HEALTHY FAMILIES","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-B45D48","2026-06-18","SILGAN (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-BF26C8","2026-06-18","ACUSHNET (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-C251DA","2026-06-18","DELAWARE FIRST HEALTH","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-C851F3","2026-06-18","LIFEWISE HEALTH (WA)","GAZYVA","COMMERCIAL","MEDICAL BENEFIT","Follicular Lymphoma"],
-  ["WIN-D95C0B","2026-06-18","SILVERSUMMIT","ACTEMRA IV","COMMERCIAL","MEDICAL BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-DC0817","2026-06-23","COMMONWEALTH CARE ALLIANCE","TECENTRIQ HYBREZA","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Hepatocellular Carcinoma"],
-  ["WIN-DDE05F","2026-06-18","STATE OF NEBRASKA (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-DE4D74","2026-06-18","GENENTECH (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-EFCDE9","2026-06-18","LIBERTY UNIVERSITY (EMPLOYER)","OCREVUS","COMMERCIAL","PHARMACY BENEFIT","Multiple Sclerosis"],
-  ["WIN-F6E072","2026-06-18","PROCTER & GAMBLE (P&G) (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
-  ["WIN-FD8F06","2026-06-18","AMERICAN GREETINGS (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
+  ["WIN-000001","2026-06-18","Payer 01","Brand Charlie","COMMERCIAL","PHARMACY BENEFIT","Indication B"],
+  ["WIN-000002","2026-06-18","Payer 22","Brand Echo","COMMERCIAL","MEDICAL BENEFIT","Indication A"],
+  ["WIN-000003","2026-06-18","Payer 07","Brand Bravo","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication E"],
+  ["WIN-000004","2026-06-18","Payer 21","Brand Echo","MEDICARE_ADVANTAGE","PHARMACY BENEFIT","Indication D"],
+  ["WIN-000005","2026-06-18","Payer 01","Brand Bravo","MEDICAID_MANAGED","MEDICAL BENEFIT","Indication C"],
+  ["WIN-000006","2026-06-18","Payer 07","Brand Charlie","COMMERCIAL","PHARMACY BENEFIT","Indication D"],
+  ["WIN-000007","2026-06-18","Payer 12","Brand Echo","MEDICARE_ADVANTAGE","PHARMACY BENEFIT","Indication F"],
+  ["WIN-000008","2026-06-18","Payer 04","Brand Delta","COMMERCIAL","MEDICAL BENEFIT","Indication F"],
+  ["WIN-000009","2026-06-18","Payer 12","Brand Echo","COMMERCIAL","PHARMACY BENEFIT","Indication A"],
+  ["WIN-000010","2026-06-18","Payer 25","Brand Charlie","COMMERCIAL","PHARMACY BENEFIT","Indication A"],
+  ["WIN-000011","2026-06-18","Payer 15","Brand Charlie","COMMERCIAL","MEDICAL BENEFIT","Indication C"],
+  ["WIN-000012","2026-06-18","Payer 09","Brand Alpha","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication E"],
+  ["WIN-000013","2026-06-18","Payer 06","Brand Delta","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Indication F"],
+  ["WIN-000014","2026-06-18","Payer 08","Brand Charlie","COMMERCIAL","PHARMACY BENEFIT","Indication A"],
+  ["WIN-000015","2026-07-01","Payer 09","Brand Alpha","COMMERCIAL","MEDICAL BENEFIT","Indication B"],
+  ["WIN-000016","2026-06-18","Payer 13","Brand Delta","COMMERCIAL","MEDICAL BENEFIT","Indication B"],
+  ["WIN-000017","2026-06-18","Payer 18","Brand Echo","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Indication E"],
+  ["WIN-000018","2026-06-18","Payer 08","Brand Bravo","MEDICAID_MANAGED","MEDICAL BENEFIT","Indication A"],
+  ["WIN-000019","2026-06-18","Payer 04","Brand Bravo","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication F"],
+  ["WIN-000020","2026-06-18","Payer 03","Brand Delta","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Indication E"],
+  ["WIN-000021","2026-06-18","Payer 18","Brand Alpha","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication F"],
+  ["WIN-000022","2026-07-01","Payer 25","Brand Charlie","COMMERCIAL","MEDICAL BENEFIT","Indication D"],
+  ["WIN-000023","2026-06-18","Payer 01","Brand Charlie","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication E"],
+  ["WIN-000024","2026-07-01","Payer 21","Brand Echo","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication B"],
+  ["WIN-000025","2026-06-18","Payer 06","Brand Echo","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication E"],
+  ["WIN-000026","2026-06-18","Payer 01","Brand Alpha","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Indication B"],
+  ["WIN-000027","2026-06-18","Payer 19","Brand Alpha","COMMERCIAL","MEDICAL BENEFIT","Indication A"],
+  ["WIN-000028","2026-06-23","Payer 05","Brand Delta","MEDICAID_MANAGED","PHARMACY BENEFIT","Indication C"],
+  ["WIN-000029","2026-06-18","Payer 20","Brand Delta","COMMERCIAL","PHARMACY BENEFIT","Indication F"],
+  ["WIN-000030","2026-06-18","Payer 22","Brand Charlie","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Indication A"],
+  ["WIN-000031","2026-06-18","Payer 03","Brand Charlie","COMMERCIAL","PHARMACY BENEFIT","Indication E"],
+  ["WIN-000032","2026-06-18","Payer 03","Brand Alpha","COMMERCIAL","PHARMACY BENEFIT","Indication A"],
+  ["WIN-000033","2026-06-23","Payer 17","Brand Bravo","MEDICARE_ADVANTAGE","MEDICAL BENEFIT","Indication B"],
+  ["WIN-000034","2026-06-18","Payer 24","Brand Echo","MEDICAID_MANAGED","MEDICAL BENEFIT","Indication B"],
+  ["WIN-000035","2026-06-18","Payer 14","Brand Bravo","COMMERCIAL","PHARMACY BENEFIT","Indication F"],
+  ["WIN-000036","2026-06-18","Payer 14","Brand Delta","MEDICARE_ADVANTAGE","PHARMACY BENEFIT","Indication F"],
+  ["WIN-000037","2026-06-18","Payer 21","Brand Alpha","COMMERCIAL","MEDICAL BENEFIT","Indication F"],
 ].map(a => ({ id:a[0], date:a[1], payer:a[2], brand:a[3], bob:a[4], benefit:a[5], subInd:a[6] }));
 
 // Live state — defaults to the mock, replaced by API data when available.
@@ -844,30 +844,146 @@ function renderWins() {
   renderWinsTable(rows);
 }
 
+// ============ UTILIZATION TABS (2026 YTD) ============
+// Illustrative 2026 figures (rounded, representative). No production
+// identifiers or record-level data.
+const UTIL_2026 = {
+  dcr: {
+    submit: { user: 120, steward: 12900 },
+    auto:   { total: 7500, approved: 6250, rejected: 1230 },
+    manual: { total: 5500, approved: 5480, rejected: 25 },
+    months: ["Jan","Feb","Mar","Apr","May","Jun","Jul"],
+    trendAuto:   [380, 110, 290, 425, 1050, 3050, 2210],
+    trendManual: [255,  25, 455, 730,  580, 2100, 1375],
+    matrix: {
+      user:    { auto: 60,   manual: 45 },
+      steward: { auto: 7450, manual: 5470 },
+    },
+  },
+  wins: {
+    auto:   { total: 870, payers: 380, brands: 13 },
+    manual: { total: 30,  payers: 29,  brands: 12 },
+    months: ["Jan","Feb","Mar","Apr","May","Jun","Jul"],
+    trendAuto:   [470, 5, 11, 31, 353, 0, 2],
+    trendManual: [  8, 1,  1,  2,  20, 0, 0],
+  },
+};
+
+function pct(n, d) { return d ? Math.round((n / d) * 1000) / 10 : 0; }
+
+function renderDcrUtil() {
+  const d = UTIL_2026.dcr;
+  const totalSubmit = d.submit.user + d.submit.steward;
+  const decided = d.auto.total + d.manual.total;
+  const autoShare = Math.round((d.auto.total / decided) * 100);
+  const autoRate = pct(d.auto.approved, d.auto.approved + d.auto.rejected);
+  const manualRate = pct(d.manual.approved, d.manual.approved + d.manual.rejected);
+
+  document.getElementById("duTotal").textContent = totalSubmit.toLocaleString();
+  document.getElementById("duSubmitSplit").textContent =
+    `User ${d.submit.user.toLocaleString()} · Steward ${d.submit.steward.toLocaleString()}`;
+  document.getElementById("duAutoShare").textContent = autoShare + "%";
+  document.getElementById("duAutoCount").textContent =
+    `${d.auto.total.toLocaleString()} of ${decided.toLocaleString()} decided`;
+  document.getElementById("duAutoRate").textContent = autoRate + "%";
+  document.getElementById("duManualRate").textContent = "Manual " + manualRate + "%";
+  document.getElementById("duAvoided").textContent = d.auto.total.toLocaleString();
+
+  renderBarChart(document.getElementById("duChartSource"), [
+    { label: "User Submitted",    value: d.submit.user,    cls: "c-orange" },
+    { label: "Steward Submitted", value: d.submit.steward, cls: "c-teal" },
+  ]);
+  renderBarChart(document.getElementById("duChartApproval"), [
+    { label: "Auto-Approved",    value: d.auto.total,   cls: "c-purple" },
+    { label: "Manual (steward)", value: d.manual.total, cls: "c-orange" },
+  ]);
+  const trend = [];
+  d.months.forEach((m, i) => {
+    trend.push({ label: m + " · Auto",   value: d.trendAuto[i],   cls: "c-purple" });
+    trend.push({ label: m + " · Manual", value: d.trendManual[i], cls: "c-orange" });
+  });
+  renderBarChart(document.getElementById("duChartTrend"), trend);
+  renderBarChart(document.getElementById("duChartRate"), [
+    { label: "Auto",   value: autoRate,   cls: "c-green" },
+    { label: "Manual", value: manualRate, cls: "c-yellow" },
+  ]);
+  renderBarChart(document.getElementById("duChartFunnel"), [
+    { label: "Auto · Decided",    value: d.auto.total,      cls: "c-purple" },
+    { label: "Auto · Approved",   value: d.auto.approved,   cls: "c-green" },
+    { label: "Auto · Rejected",   value: d.auto.rejected,   cls: "c-red" },
+    { label: "Manual · Decided",  value: d.manual.total,    cls: "c-orange" },
+    { label: "Manual · Approved", value: d.manual.approved, cls: "c-green" },
+    { label: "Manual · Rejected", value: d.manual.rejected, cls: "c-red" },
+  ]);
+  renderBarChart(document.getElementById("duChartMatrix"), [
+    { label: "User · Auto",      value: d.matrix.user.auto,      cls: "c-purple" },
+    { label: "User · Manual",    value: d.matrix.user.manual,    cls: "c-orange" },
+    { label: "Steward · Auto",   value: d.matrix.steward.auto,   cls: "c-purple" },
+    { label: "Steward · Manual", value: d.matrix.steward.manual, cls: "c-orange" },
+  ]);
+}
+
+function renderWinsUtil() {
+  const w = UTIL_2026.wins;
+  const total = w.auto.total + w.manual.total;
+  const autoShare = Math.round((w.auto.total / total) * 100);
+
+  document.getElementById("wuTotal").textContent = total.toLocaleString();
+  document.getElementById("wuSplit").textContent =
+    `Auto ${w.auto.total.toLocaleString()} · Manual ${w.manual.total}`;
+  document.getElementById("wuAutoShare").textContent = autoShare + "%";
+  document.getElementById("wuPayers").textContent = w.auto.payers.toLocaleString();
+  document.getElementById("wuBrands").textContent = w.auto.brands + " brands";
+  document.getElementById("wuAvoided").textContent = w.auto.total.toLocaleString();
+
+  renderBarChart(document.getElementById("wuChartChannel"), [
+    { label: "Auto (P360)",      value: w.auto.total,   cls: "c-purple" },
+    { label: "Manual (steward)", value: w.manual.total, cls: "c-orange" },
+  ]);
+  const wtrend = [];
+  w.months.forEach((m, i) => {
+    wtrend.push({ label: m + " · Auto",   value: w.trendAuto[i],   cls: "c-purple" });
+    wtrend.push({ label: m + " · Manual", value: w.trendManual[i], cls: "c-orange" });
+  });
+  renderBarChart(document.getElementById("wuChartTrend"), wtrend);
+  renderBarChart(document.getElementById("wuChartPayers"), [
+    { label: "Auto",   value: w.auto.payers,   cls: "c-purple" },
+    { label: "Manual", value: w.manual.payers, cls: "c-orange" },
+  ]);
+  renderBarChart(document.getElementById("wuChartBrands"), [
+    { label: "Auto",   value: w.auto.brands,   cls: "c-purple" },
+    { label: "Manual", value: w.manual.brands, cls: "c-orange" },
+  ]);
+}
+
 // ============ NAV TABS ============
 const stewardshipView = document.getElementById("stewardshipView");
 const metricView = document.getElementById("metricView");
 const metricDcrs = document.getElementById("metricDcrs");
 const metricWins = document.getElementById("metricWins");
+const metricDcrUtil = document.getElementById("metricDcrUtil");
+const metricWinsUtil = document.getElementById("metricWinsUtil");
 const stewardshipFilters = document.getElementById("stewardshipFilters");
 const winsFilters = document.getElementById("winsFilters");
 let winsBuilt = false;
 
 // Switch the active subtab within the Metric Dashboard.
-// which = "dcrs" | "wins"
+// which = "dcrs" | "wins" | "dcrutil" | "winsutil"
 function showMetricSubtab(which) {
-  const isWins = which === "wins";
   // Panels
-  metricDcrs.hidden = isWins;
-  metricWins.hidden = !isWins;
+  metricDcrs.hidden = which !== "dcrs";
+  metricWins.hidden = which !== "wins";
+  metricDcrUtil.hidden = which !== "dcrutil";
+  metricWinsUtil.hidden = which !== "winsutil";
   // Subtab highlight
   document.querySelectorAll(".metric-subtab").forEach(s =>
     s.classList.toggle("active", s.dataset.metric === which));
-  // Sidebar filters: DCRs uses stewardship filters, Wins uses wins filters
+  // Sidebar filters: only the live Wins subtab uses wins filters.
+  const isWins = which === "wins";
   stewardshipFilters.hidden = isWins;
   winsFilters.hidden = !isWins;
 
-  if (isWins) {
+  if (which === "wins") {
     // Try live data on each open (real-time), then (re)build filters + render.
     loadWinsFromApi().then(() => {
       buildWinFilters();
@@ -877,6 +993,10 @@ function showMetricSubtab(which) {
     // Render immediately with whatever we have so the UI isn't blank while fetching.
     if (!winsBuilt) { buildWinFilters(); winsBuilt = true; }
     renderWins();
+  } else if (which === "dcrutil") {
+    renderDcrUtil();
+  } else if (which === "winsutil") {
+    renderWinsUtil();
   } else {
     renderDashboard();
   }

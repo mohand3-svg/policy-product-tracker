@@ -21,7 +21,7 @@ Dialect notes (Foundry/Spark, NOT Athena/Trino):
 """
 
 # Foundry dataset RID (Spark SQL dialect: backtick-quoted, DATE_FORMAT tokens).
-WINS_TABLE = "`master`.`ri.foundry.main.dataset.8eb140db-0b6e-4f34-8a0d-3e27f9cfba80`"
+WINS_TABLE = "`master`.`<dataset-rid>`"
 
 # Detail rows for the Policy Wins table + pie chart (auto-approved WINs only).
 # NOTE: `creation_date` alias added so the backend can map the column by name.

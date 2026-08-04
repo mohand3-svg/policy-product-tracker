@@ -8,8 +8,8 @@ endpoints on port 8080.
 - `GET /api/metrics` — DCR/stewardship metrics (pending query)
 - `GET /*` — static frontend
 
-Data source: `gene.palantirfoundry.com`, dataset RID
-`ri.foundry.main.dataset.8eb140db-0b6e-4f34-8a0d-3e27f9cfba80`.
+Data source: `<your-foundry-host>`, dataset RID
+`<dataset-rid>`.
 SQL lives in `queries.py` (Spark dialect).
 
 ## Required environment secrets
@@ -19,7 +19,7 @@ They are injected as env vars; nothing is committed to the repo.
 
 | Secret | Required | Example |
 |---|---|---|
-| `FOUNDRY_HOST` | yes | `https://gene.palantirfoundry.com` |
+| `FOUNDRY_HOST` | yes | `https://<your-foundry-host>` |
 | `FOUNDRY_TOKEN` | one of these | a Foundry bearer token |
 | `FOUNDRY_CLIENT_ID` + `FOUNDRY_CLIENT_SECRET` | one of these | OAuth2 service-account credentials |
 | `FOUNDRY_BRANCH` | no (default `master`) | `master` |
@@ -56,6 +56,6 @@ may need a small tweak for this Foundry version — see `foundry.py::run_query`.
 cd backend
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
-FOUNDRY_HOST=https://gene.palantirfoundry.com FOUNDRY_TOKEN=... \
+FOUNDRY_HOST=https://<your-foundry-host> FOUNDRY_TOKEN=... \
   uvicorn main:app --host 0.0.0.0 --port 8080
 ```
