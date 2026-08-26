@@ -1046,6 +1046,235 @@ function applyMultiResult() {
   }
 }
 
+/* ============================================================
+   Saved Filters — a steward saves the current sidebar filter
+   selection (checkboxes + lives slider) so they can resume it on a
+   later day. Persisted in localStorage. Save / apply / rename / delete.
+   Mirrors the DCR Single Policy form's Saved Filters feature.
+   ============================================================ */
+const SF_KEY = "dsaSavedFilters.tracker";
+const SF_USER = "mohand3";  // mockup — a real app resolves the signed-in user
+
+// Small HTML escape for values rendered into the table.
+function sfEsc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// Storage helpers (tolerant of storage being unavailable / sandboxed).
+function sfLoad() {
+  try {
+    const raw = localStorage.getItem(SF_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (_) { return []; }
+}
+function sfPersist(list) {
+  try { localStorage.setItem(SF_KEY, JSON.stringify(list)); } catch (_) {}
+}
+
+// The stewardship checkboxes, in stable document order.
+function sfCheckboxes() {
+  return [...document.querySelectorAll("#stewardshipFilters .filter-cb")];
+}
+// Readable label for a checkbox (the text node before the count/bar spans).
+function sfLabel(cb) {
+  const label = cb.closest("label");
+  if (!label) return cb.value || "";
+  let t = "";
+  label.childNodes.forEach(n => { if (n.nodeType === 3) t += n.textContent; });
+  t = t.trim().replace(/\s+/g, " ");
+  return t || cb.value || "";
+}
+
+// Capture the current sidebar selection into a plain object.
+function sfCapture() {
+  const cbs = sfCheckboxes();
+  const checkedIdx = [];
+  const labels = [];
+  cbs.forEach((cb, i) => { if (cb.checked) { checkedIdx.push(i); labels.push(sfLabel(cb)); } });
+  const slider = document.getElementById("livesSlider");
+  return { checkedIdx, labels, slider: slider ? +slider.value : null };
+}
+
+// Apply a stored selection back onto the sidebar and re-render.
+function sfApply(sel) {
+  const cbs = sfCheckboxes();
+  const set = new Set(sel.checkedIdx || []);
+  cbs.forEach((cb, i) => { cb.checked = set.has(i); });
+  const slider = document.getElementById("livesSlider");
+  if (slider && sel.slider != null) {
+    slider.value = sel.slider;
+    try { slider.dispatchEvent(new Event("input")); } catch (_) {}
+  }
+  // Re-render whichever view is visible (stewardship uses these filters).
+  if (typeof renderRows === "function") renderRows();
+}
+
+// One-line human summary of a saved selection.
+function sfSummary(sel) {
+  const parts = (sel.labels || []).slice();
+  if (sel.slider != null && sel.slider !== 50) parts.push(`Lives≈${sel.slider}`);
+  return parts.length ? parts.join(" · ") : "(no filters)";
+}
+function sfHasSelection() {
+  const c = sfCapture();
+  return c.checkedIdx.length > 0;
+}
+function sfFmtDate(ts) {
+  if (!ts) return "—";
+  const d = new Date(ts);
+  if (isNaN(d)) return "—";
+  return d.toLocaleString("en-GB", {
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
+}
+
+// ---- render the saved-filters popup table -----------------------
+let sfSearchTerm = "";
+function sfRender() {
+  const all = sfLoad();
+  const countEl = document.getElementById("savedCount");
+  if (countEl) countEl.textContent = String(all.length);
+
+  const body = document.getElementById("savedTableBody");
+  const wrap = document.getElementById("savedTableWrap");
+  const empty = document.getElementById("savedTableEmpty");
+  const noMatch = document.getElementById("savedNoMatch");
+  if (!body) return;
+
+  const q = sfSearchTerm.trim().toLowerCase();
+  const rows = all.map((it, i) => ({ it, i })).filter(({ it }) => {
+    if (!q) return true;
+    const hay = `${it.name} ${sfSummary(it.sel)} ${it.createdBy || SF_USER}`.toLowerCase();
+    return hay.includes(q);
+  });
+
+  const hasAny = all.length > 0;
+  const hasMatch = rows.length > 0;
+  if (empty) empty.style.display = hasAny ? "none" : "";
+  if (wrap) wrap.style.display = hasAny && hasMatch ? "" : "none";
+  if (noMatch) noMatch.style.display = hasAny && !hasMatch ? "" : "none";
+
+  body.innerHTML = rows.map(({ it, i }) => `
+    <tr class="sf-row" data-i="${i}" title="Click to load this filter">
+      <td class="sf-name">${sfEsc(it.name)}</td>
+      <td class="sf-criteria">${sfEsc(sfSummary(it.sel))}</td>
+      <td>${sfEsc(it.createdBy || SF_USER)}</td>
+      <td class="sf-date">${sfEsc(sfFmtDate(it.savedAt))}</td>
+      <td class="col-actions">
+        <button class="sf-icon" data-act="edit" data-i="${i}" title="Rename">✎</button>
+        <button class="sf-icon danger" data-act="delete" data-i="${i}" title="Delete">🗑</button>
+      </td>
+    </tr>`).join("");
+}
+
+// ---- save / rename modal ----------------------------------------
+let sfEditIndex = -1;
+const sfModal = document.getElementById("filterModal");
+const sfNameInput = document.getElementById("filterNameInput");
+const sfPreview = document.getElementById("filterPreview");
+const sfModalTitle = document.getElementById("filterModalTitle");
+
+function sfOpenModal(mode, index) {
+  sfEditIndex = mode === "edit" ? index : -1;
+  if (mode === "edit") {
+    const it = sfLoad()[index];
+    sfModalTitle.textContent = "Rename Filter";
+    sfNameInput.value = it ? it.name : "";
+    sfPreview.textContent = it ? sfSummary(it.sel) : "";
+  } else {
+    sfModalTitle.textContent = "Save Filter";
+    sfNameInput.value = "";
+    sfPreview.textContent = sfHasSelection()
+      ? sfSummary(sfCapture())
+      : "No filters ticked yet — select at least one filter to save.";
+  }
+  sfModal.classList.add("show");
+  sfNameInput.focus();
+}
+function sfCloseModal() { sfModal.classList.remove("show"); sfEditIndex = -1; }
+
+function sfCommit() {
+  const name = sfNameInput.value.trim();
+  if (!name) { showToast("Please enter a filter name", true); sfNameInput.focus(); return; }
+  if (sfEditIndex < 0 && !sfHasSelection()) {
+    showToast("Select at least one filter before saving", true);
+    return;
+  }
+  const list = sfLoad();
+  if (sfEditIndex >= 0) {
+    if (list[sfEditIndex]) list[sfEditIndex].name = name;
+    showToast("Filter renamed", false);
+  } else {
+    list.push({ name, sel: sfCapture(), createdBy: SF_USER, savedAt: Date.now() });
+    showToast("Filter saved", false);
+  }
+  sfPersist(list);
+  sfRender();
+  sfCloseModal();
+}
+
+// ---- saved-filters table modal (open/close + row actions) -------
+const sfTableModal = document.getElementById("savedModal");
+const sfSearchInput = document.getElementById("savedSearch");
+function sfOpenTable() {
+  sfSearchTerm = "";
+  if (sfSearchInput) sfSearchInput.value = "";
+  sfRender();
+  sfTableModal.classList.add("show");
+  if (sfSearchInput) sfSearchInput.focus();
+}
+function sfCloseTable() { sfTableModal.classList.remove("show"); }
+
+document.getElementById("saveFilterBtn").addEventListener("click", () => sfOpenModal("new"));
+document.getElementById("openSavedBtn").addEventListener("click", sfOpenTable);
+document.getElementById("savedCloseBtn").addEventListener("click", sfCloseTable);
+sfTableModal.addEventListener("click", (e) => { if (e.target === sfTableModal) sfCloseTable(); });
+if (sfSearchInput) {
+  sfSearchInput.addEventListener("input", () => { sfSearchTerm = sfSearchInput.value; sfRender(); });
+}
+document.getElementById("filterCancelBtn").addEventListener("click", sfCloseModal);
+document.getElementById("filterSaveBtn").addEventListener("click", sfCommit);
+sfModal.addEventListener("click", (e) => { if (e.target === sfModal) sfCloseModal(); });
+sfNameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sfCommit();
+  if (e.key === "Escape") sfCloseModal();
+});
+
+document.getElementById("savedTableBody").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-act]");
+  if (btn) {
+    e.stopPropagation();
+    const i = +btn.dataset.i;
+    const list = sfLoad();
+    if (btn.dataset.act === "edit") {
+      sfOpenModal("edit", i);
+    } else if (btn.dataset.act === "delete") {
+      if (list[i]) {
+        const name = list[i].name;
+        list.splice(i, 1);
+        sfPersist(list);
+        sfRender();
+        showToast(`Deleted "${name}"`, false);
+      }
+    }
+    return;
+  }
+  const row = e.target.closest(".sf-row");
+  if (!row) return;
+  const i = +row.dataset.i;
+  const list = sfLoad();
+  if (list[i]) {
+    sfApply(list[i].sel);
+    showToast(`Loaded "${list[i].name}"`, false);
+    sfCloseTable();
+  }
+});
+
 // ============ INIT ============
 renderRows();
 applyMultiResult();
+sfRender();

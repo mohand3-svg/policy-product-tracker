@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=37" />
+<link rel="stylesheet" href="styles.css?v=48" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -42,6 +42,12 @@
       <div class="sidebar-header">
         <span class="filters-title">⚙ Filters</span>
         <button class="link-btn" id="resetFilters">Reset ↻</button>
+      </div>
+      <div class="sidebar-saved">
+        <button class="link-btn" id="saveFilterBtn" title="Save the current filter selection">☆ Save Filter</button>
+        <button class="saved-open-btn" id="openSavedBtn">
+          ☆ Saved Filters <span class="saved-count" id="savedCount">0</span>
+        </button>
       </div>
 
       <!-- ===== STEWARDSHIP FILTERS ===== -->
@@ -455,8 +461,55 @@
   </div>
 
   <!-- ============ DCR CREATED TOAST ============ -->
+  <!-- ===== SAVE / RENAME FILTER MODAL ===== -->
+  <div class="modal-overlay" id="filterModal">
+    <div class="modal-card">
+      <h3 class="modal-title" id="filterModalTitle">Save Filter</h3>
+      <label class="modal-label" for="filterNameInput">Filter name</label>
+      <input type="text" class="modal-input" id="filterNameInput" placeholder="e.g. Ocrevus MS – Aug review" maxlength="60" />
+      <div class="modal-preview" id="filterPreview"></div>
+      <div class="modal-actions">
+        <button class="mbtn ghost" id="filterCancelBtn">Cancel</button>
+        <button class="mbtn primary" id="filterSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SAVED FILTERS TABLE MODAL ===== -->
+  <div class="modal-overlay" id="savedModal">
+    <div class="modal-card modal-wide">
+      <div class="modal-head-row">
+        <h3 class="modal-title">☆ Saved Filters</h3>
+        <button class="modal-x" id="savedCloseBtn" title="Close">✕</button>
+      </div>
+      <div class="saved-search-row">
+        <input type="text" class="saved-search" id="savedSearch"
+               placeholder="🔍 Search saved filters by name, criteria or creator…" />
+      </div>
+      <p class="saved-hint-line">Click a row to load that filter into the sidebar.</p>
+      <p class="saved-empty-note" id="savedTableEmpty">
+        No saved filters yet. Tick some filters and click <strong>Save Filter</strong>.
+      </p>
+      <div class="saved-table-wrap" id="savedTableWrap">
+        <table class="saved-table">
+          <thead>
+            <tr>
+              <th>Filter Name</th>
+              <th>Filter Criteria</th>
+              <th>Created By</th>
+              <th>Created On</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="savedTableBody"></tbody>
+        </table>
+      </div>
+      <p class="saved-no-match" id="savedNoMatch">No filters match your search.</p>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=37"></script>
+  <script src="app.js?v=48"></script>
 </body>
 </html>
