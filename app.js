@@ -1015,6 +1015,232 @@ document.querySelectorAll(".wtab[data-wview]").forEach(tab => {
   });
 })();
 
+/* ============================================================
+   STEWARDSHIP TOOL — standalone page (Assignment Queue / My
+   Workload / All Requests). Reuses SEED_ROWS: lets a lead see
+   workload distribution and (mock-)assign requests to stewards.
+   ============================================================ */
+const ST_CURRENT_USER = "A. Martinez";   // "My Workload" owner (matches CURRENT_USER)
+const ST_STEWARDS = ["Syed Riyaz", "Adriana Jazbor", "A. Martinez", "J. Chen", "R. Patel", "S. Okafor", "L. Nguyen"];
+
+// Working copy so mock re-assignment doesn't mutate the tracker's ROWS.
+let ST_ROWS = SEED_ROWS.map(r => ({ ...r }));
+
+const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
+let ST_SUBVIEW = "queue";   // queue | mine | all
+let stBuilt = false;
+
+function stStewardLabel(v) { return v && v.trim() ? v : "Unassigned"; }
+
+// Tally distinct values (with counts) across ST_ROWS for a field.
+function stTally(field, transform) {
+  const m = {};
+  ST_ROWS.forEach(r => {
+    const val = transform ? transform(r[field]) : r[field];
+    m[val] = (m[val] || 0) + 1;
+  });
+  return Object.entries(m).sort((a, b) => b[1] - a[1]);
+}
+
+// Build one checkbox filter group. `values` is [ [value, count], ... ].
+function buildStFilter(containerId, values, setKey, labelFn) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = "";
+  values.forEach(([val, cnt]) => {
+    const lab = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.className = "filter-cb"; cb.value = val;
+    cb.addEventListener("change", () => {
+      if (cb.checked) stFilters[setKey].add(val); else stFilters[setKey].delete(val);
+      renderStTool();
+    });
+    lab.appendChild(cb);
+    lab.appendChild(document.createTextNode(" " + (labelFn ? labelFn(val) : val) + " "));
+    const c = document.createElement("span"); c.className = "count"; c.textContent = cnt;
+    lab.appendChild(c);
+    el.appendChild(lab);
+  });
+}
+
+function buildStFilters() {
+  buildStFilter("stFilterStatus", stTally("dcr"), "status", v => DCR_LABELS[v] || v);
+  buildStFilter("stFilterSteward", stTally("steward", stStewardLabel), "steward");
+  buildStFilter("stFilterPayer", stTally("payer"), "payer");
+  buildStFilter("stFilterBrand", stTally("brand"), "brand");
+  buildStFilter("stFilterBob", stTally("bob"), "bob");
+}
+
+// Apply sidebar filters + free-text search + active sub-tab.
+function stFilteredRows() {
+  const q = (document.getElementById("stSearch")?.value || "").trim().toLowerCase();
+  let rows = ST_ROWS.filter(r =>
+    (stFilters.status.size === 0 || stFilters.status.has(r.dcr)) &&
+    (stFilters.steward.size === 0 || stFilters.steward.has(stStewardLabel(r.steward))) &&
+    (stFilters.payer.size === 0 || stFilters.payer.has(r.payer)) &&
+    (stFilters.brand.size === 0 || stFilters.brand.has(r.brand)) &&
+    (stFilters.bob.size === 0 || stFilters.bob.has(r.bob))
+  );
+  if (q) {
+    rows = rows.filter(r =>
+      [r.id, r.payer, r.brand, r.indication, r.steward].join(" ").toLowerCase().includes(q));
+  }
+  switch (ST_SUBVIEW) {
+    case "mine":  return rows.filter(r => r.steward === ST_CURRENT_USER);
+    case "all":   return rows;
+    case "queue":
+    default:      return rows.filter(r => !r.steward || !r.steward.trim());  // unassigned
+  }
+}
+
+function stStatusBadge(dcr) {
+  const label = DCR_LABELS[dcr] || dcr || "-";
+  const cls = dcr === "DCRCreated" ? "st-badge ok"
+    : dcr === "BridgingIssues" ? "st-badge warn"
+    : dcr === "NotRequired" ? "st-badge muted"
+    : "st-badge new";
+  return `<span class="${cls}">${sfEsc(label)}</span>`;
+}
+function stMmitBadge(mmit) {
+  const opt = MMIT_OPTS.find(o => o.v === mmit);
+  const label = opt ? opt.label : (mmit || "-");
+  const cls = mmit === "Correct" ? "st-badge ok"
+    : mmit === "UnderMMITReview" ? "st-badge info"
+    : (mmit === "IncorrectAssessmentError" || mmit === "IncorrectPolicyLag") ? "st-badge warn"
+    : mmit === "BridgingMDM" ? "st-badge purple"
+    : "st-badge new";
+  return `<span class="${cls}">${sfEsc(label)}</span>`;
+}
+
+function renderStKpis() {
+  const el = document.getElementById("stKpis");
+  if (!el) return;
+  const total = ST_ROWS.length;
+  const unassigned = ST_ROWS.filter(r => !r.steward || !r.steward.trim()).length;
+  const mine = ST_ROWS.filter(r => r.steward === ST_CURRENT_USER).length;
+  const bridging = ST_ROWS.filter(r => r.dcr === "BridgingIssues").length;
+  const cards = [
+    { label: "Total Requests", value: total, sub: "in stewardship scope", cls: "" },
+    { label: "Unassigned", value: unassigned, sub: "awaiting a steward", cls: "warn" },
+    { label: "My Workload", value: mine, sub: ST_CURRENT_USER, cls: "info" },
+    { label: "Bridging Issues", value: bridging, sub: "need attention", cls: "danger" },
+  ];
+  el.innerHTML = cards.map(c => `
+    <div class="st-kpi ${c.cls}">
+      <div class="st-kpi-val">${c.value}</div>
+      <div class="st-kpi-label">${c.label}</div>
+      <div class="st-kpi-sub">${sfEsc(c.sub)}</div>
+    </div>`).join("");
+}
+
+function renderStTool() {
+  const body = document.getElementById("stGridBody");
+  if (!body) return;
+  renderStKpis();
+  const rows = stFilteredRows();
+  const cnt = document.getElementById("stRowCount");
+  if (cnt) cnt.textContent = String(rows.length);
+
+  if (rows.length === 0) {
+    body.innerHTML = `<tr><td colspan="12" class="wins-empty">No requests match the current filters</td></tr>`;
+    updateStSelCount();
+    return;
+  }
+
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td class="stcol-check"><input type="checkbox" class="st-row-cb" data-id="${sfEsc(r.id)}" /></td>
+      <td class="st-id">${sfEsc(r.id)}</td>
+      <td class="${(!r.steward || !r.steward.trim()) ? "st-unassigned" : "st-steward"}">${sfEsc(stStewardLabel(r.steward))}</td>
+      <td>${sfEsc(r.payer)}</td>
+      <td>${sfEsc(r.brand)}</td>
+      <td>${sfEsc(r.indication)}</td>
+      <td>${sfEsc(r.bob)}</td>
+      <td>${sfEsc(r.benefit)}</td>
+      <td class="st-lives">${Number(r.lives).toLocaleString()}</td>
+      <td>${stMmitBadge(r.mmit)}</td>
+      <td>${stStatusBadge(r.dcr)}</td>
+      <td><button class="link-btn st-assign-one" data-id="${sfEsc(r.id)}">Assign</button></td>
+    </tr>`).join("");
+
+  wireStRowChecks();
+  updateStSelCount();
+}
+
+function wireStRowChecks() {
+  document.querySelectorAll(".st-row-cb").forEach(cb =>
+    cb.addEventListener("change", updateStSelCount));
+  document.querySelectorAll(".st-assign-one").forEach(btn =>
+    btn.addEventListener("click", () => stAssign([btn.dataset.id])));
+}
+function updateStSelCount() {
+  const n = document.querySelectorAll(".st-row-cb:checked").length;
+  const el = document.getElementById("stSelCount");
+  if (el) el.textContent = String(n);
+  const btn = document.getElementById("stBulkAssignBtn");
+  if (btn) btn.disabled = n === 0;
+}
+
+// Mock-assign the given request ids to the steward chosen in the dropdown.
+function stAssign(ids) {
+  const sel = document.getElementById("stAssignee");
+  const steward = sel ? sel.value : "";
+  if (!steward) { showToast("Pick a steward first", true); return; }
+  let n = 0;
+  ids.forEach(id => {
+    const r = ST_ROWS.find(x => x.id === id);
+    if (r) { r.steward = steward; n++; }
+  });
+  buildStFilters();          // steward counts changed
+  renderStTool();
+  const sa = document.getElementById("stSelectAll");
+  if (sa) sa.checked = false;
+  showToast(`Assigned ${n} request${n === 1 ? "" : "s"} to ${steward}`, false);
+}
+
+function populateStAssignee() {
+  const sel = document.getElementById("stAssignee");
+  if (!sel) return;
+  sel.innerHTML = `<option value="">Assign to…</option>` +
+    ST_STEWARDS.map(s => `<option value="${sfEsc(s)}">${sfEsc(s)}</option>`).join("");
+}
+
+// ---- wire sub-tabs, search, select-all, bulk assign -------------
+document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".sttab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    ST_SUBVIEW = tab.dataset.stview;
+    const sa = document.getElementById("stSelectAll");
+    if (sa) sa.checked = false;
+    renderStTool();
+  });
+});
+
+(function wireStSearch() {
+  const s = document.getElementById("stSearch");
+  if (s) s.addEventListener("input", renderStTool);
+})();
+
+(function wireStSelectAll() {
+  const sa = document.getElementById("stSelectAll");
+  if (!sa) return;
+  sa.addEventListener("change", () => {
+    document.querySelectorAll(".st-row-cb").forEach(cb => { cb.checked = sa.checked; });
+    updateStSelCount();
+  });
+})();
+
+(function wireStBulkAssign() {
+  const btn = document.getElementById("stBulkAssignBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const ids = [...document.querySelectorAll(".st-row-cb:checked")].map(cb => cb.dataset.id);
+    if (ids.length === 0) { showToast("Select at least one request", true); return; }
+    stAssign(ids);
+  });
+})();
+
 // ============ NAV TABS ============
 const stewardshipView = document.getElementById("stewardshipView");
 const metricView = document.getElementById("metricView");
@@ -1023,6 +1249,8 @@ const metricUtil = document.getElementById("metricUtil");
 const metricWins = document.getElementById("metricWins");
 const stewardshipFilters = document.getElementById("stewardshipFilters");
 const winsFilters = document.getElementById("winsFilters");
+const stToolFilters = document.getElementById("stToolFilters");
+const stewardshipToolView = document.getElementById("stewardshipToolView");
 let winsBuilt = false;
 
 // ============ DCR UTILIZATION ============
@@ -1151,24 +1379,38 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
     const showMetrics = tab === "metric";
     const showStewardship = tab === "stewardship";
     const showWins = tab === "wins";
+    const showStTool = tab === "sttool";
 
     stewardshipView.hidden = !showStewardship;
     metricView.hidden = !showMetrics;
     if (winsView) winsView.hidden = !showWins;
+    if (stewardshipToolView) stewardshipToolView.hidden = !showStTool;
 
     if (showMetrics) {
+      stewardshipFilters.hidden = false;
+      winsFilters.hidden = true;
+      if (stToolFilters) stToolFilters.hidden = true;
       showMetricSubtab("dcrs");
     } else if (showWins) {
       // Standalone Policy Wins page uses the wins sidebar filters.
       stewardshipFilters.hidden = true;
       winsFilters.hidden = false;
+      if (stToolFilters) stToolFilters.hidden = true;
       if (!winsBuilt) { buildWinFilters(); winsBuilt = true; }
       loadWinsFromApi().then(() => { buildWinFilters(); renderWinsPage(); });
       renderWinsPage();
+    } else if (showStTool) {
+      // Stewardship Tool page uses its own sidebar filters.
+      stewardshipFilters.hidden = true;
+      winsFilters.hidden = true;
+      if (stToolFilters) stToolFilters.hidden = false;
+      if (!stBuilt) { buildStFilters(); populateStAssignee(); stBuilt = true; }
+      renderStTool();
     } else if (showStewardship) {
       // Restore stewardship sidebar filters
       stewardshipFilters.hidden = false;
       winsFilters.hidden = true;
+      if (stToolFilters) stToolFilters.hidden = true;
     } else {
       showToast(t.textContent.trim() + " — demo placeholder", false);
     }

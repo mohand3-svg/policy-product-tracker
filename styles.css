@@ -615,3 +615,97 @@ body {
 .wins-grid td:nth-child(16) { background: #fffbe9; }
 
 .wins-empty { text-align: center; color: var(--muted); padding: 28px 0; font-style: italic; }
+
+/* ============================================================
+   STEWARDSHIP TOOL page
+   ============================================================ */
+/* KPI summary cards */
+.st-kpis {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin: 4px 0 16px;
+}
+.st-kpi {
+  background: #fff; border: 1px solid var(--border); border-left: 4px solid #94a3b8;
+  border-radius: 10px; padding: 14px 16px;
+}
+.st-kpi.warn   { border-left-color: #eab308; }
+.st-kpi.info   { border-left-color: #2563eb; }
+.st-kpi.danger { border-left-color: #ef4444; }
+.st-kpi-val   { font-size: 26px; font-weight: 800; color: #1f2937; line-height: 1; }
+.st-kpi-label { font-size: 12.5px; font-weight: 700; color: #374151; margin-top: 6px; }
+.st-kpi-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Page card */
+.st-page-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  padding: 0; display: flex; flex-direction: column; overflow: hidden;
+}
+/* Sub-tabs */
+.st-subtabs {
+  display: flex; gap: 26px; padding: 14px 20px 0; border-bottom: 1px solid var(--border);
+}
+.sttab {
+  padding: 6px 2px 12px; font-size: 13px; font-weight: 600; color: var(--muted);
+  cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.sttab:hover { color: #374151; }
+.sttab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+/* Toolbar: search + assignee + bulk assign */
+.st-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 12px 20px;
+}
+.st-search {
+  flex: 0 1 320px; padding: 8px 12px; font-size: 13px;
+  border: 1px solid var(--border); border-radius: 6px; color: #374151;
+}
+.st-search:focus { outline: none; border-color: #93b4f5; box-shadow: 0 0 0 2px #e5eefc; }
+.st-toolbar-right { display: flex; align-items: center; gap: 10px; }
+.st-assignee {
+  padding: 8px 10px; font-size: 13px; border: 1px solid var(--border);
+  border-radius: 6px; color: #374151; background: #fff;
+}
+.st-toolbar .btn-bulk {
+  background: #fff; color: #2563eb; border: 1px solid #b9ccf5;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.st-toolbar .btn-bulk:hover:not(:disabled) { background: #f2f6ff; }
+.st-toolbar .btn-bulk:disabled { color: #9aa1ad; border-color: #e2e6ee; cursor: not-allowed; }
+
+/* Grid */
+.st-grid-wrap { overflow: auto; max-height: calc(100vh - 340px); border-top: 1px solid #eef0f4; }
+.st-grid { border-collapse: collapse; font-size: 12px; width: 100%; min-width: 1100px; }
+.st-grid thead th {
+  position: sticky; top: 0; z-index: 2; background: #f6f8fc; text-align: left;
+  font-weight: 700; color: #374151; padding: 10px 12px; line-height: 1.25;
+  border-bottom: 1px solid var(--border); border-right: 1px solid #eef0f4; white-space: nowrap;
+}
+.st-grid thead th.stcol-check { width: 34px; }
+.st-grid td {
+  padding: 9px 12px; border-bottom: 1px solid #f0f2f6; border-right: 1px solid #f5f6f9;
+  color: #374151; vertical-align: middle; white-space: nowrap;
+}
+.st-grid tbody tr:hover { background: #f8faff; }
+.st-grid .stcol-check { width: 34px; text-align: center; }
+.st-grid td.st-id { font-weight: 600; color: #1f2937; }
+.st-grid td.st-lives { color: #2563eb; }
+.st-grid td.st-steward { color: #1f2937; font-weight: 600; }
+.st-grid td.st-unassigned { color: #b45309; font-style: italic; }
+.st-grid .st-assign-one { color: #2563eb; font-weight: 600; }
+
+/* Status badges */
+.st-badge {
+  display: inline-block; padding: 3px 8px; border-radius: 4px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .2px; white-space: nowrap;
+}
+.st-badge.ok     { background: #d8f3e0; color: #1e7a45; }
+.st-badge.warn   { background: #fdf0c8; color: #9a7a00; }
+.st-badge.info   { background: #dbe7ff; color: #1e40af; }
+.st-badge.purple { background: #ece0fb; color: #6d28d9; }
+.st-badge.muted  { background: #eef0f4; color: #6b7280; }
+.st-badge.new    { background: #f1f3f7; color: #6b7280; }
+
+@media (max-width: 1100px) {
+  .st-kpis { grid-template-columns: repeat(2, 1fr); }
+}

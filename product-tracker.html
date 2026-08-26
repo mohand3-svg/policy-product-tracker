@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=49" />
+<link rel="stylesheet" href="styles.css?v=50" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -16,6 +16,7 @@
     <nav class="nav-tabs">
       <a class="nav-tab active" data-tab="stewardship">Product Tracker</a>
       <a class="nav-tab" data-tab="wins">Policy Wins</a>
+      <a class="nav-tab" data-tab="sttool">Stewardship Tool</a>
       <a class="nav-tab" data-tab="metric">Metric Dashboard</a>
       <div class="nav-dropdown">
         <a class="nav-tab">Helpful Links ▾</a>
@@ -166,6 +167,30 @@
         <div class="filter-group">
           <div class="fg-title" data-toggle>BENEFIT TYPE <span class="chev">▾</span></div>
           <div class="fg-body" id="winFilterBenefit"></div>
+        </div>
+      </div>
+
+      <!-- ===== STEWARDSHIP TOOL FILTERS (populated by JS) ===== -->
+      <div id="stToolFilters" hidden>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>DCR STATUS <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterStatus"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>STEWARD <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterSteward"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterPayer"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterBrand"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterBob"></div>
         </div>
       </div>
     </aside>
@@ -463,6 +488,57 @@
           </div>
         </div>
       </div><!-- /#winsView -->
+
+      <!-- ===== STEWARDSHIP TOOL VIEW ===== -->
+      <div id="stewardshipToolView" hidden>
+        <div class="content-head">
+          <div class="section-tag">🧭 Stewardship Tool</div>
+        </div>
+
+        <!-- KPI summary cards -->
+        <div class="st-kpis" id="stKpis"><!-- cards injected by JS --></div>
+
+        <div class="st-page-card">
+          <div class="st-subtabs">
+            <a class="sttab active" data-stview="queue">Assignment Queue</a>
+            <a class="sttab" data-stview="mine">My Workload</a>
+            <a class="sttab" data-stview="all">All Requests</a>
+          </div>
+          <div class="st-toolbar">
+            <input type="text" class="st-search" id="stSearch" placeholder="⌕ Search Req-ID, payer, brand…" />
+            <div class="st-toolbar-right">
+              <select class="st-assignee" id="stAssignee">
+                <!-- steward options injected by JS -->
+              </select>
+              <button class="btn btn-bulk" id="stBulkAssignBtn" disabled>⇲ Assign Selected</button>
+            </div>
+          </div>
+          <div class="st-grid-wrap">
+            <table class="st-grid" id="stGrid">
+              <thead>
+                <tr>
+                  <th class="stcol-check"><input type="checkbox" id="stSelectAll" /></th>
+                  <th>Req-ID</th>
+                  <th>Steward Assigned</th>
+                  <th>Payer</th>
+                  <th>Brand</th>
+                  <th>Indication</th>
+                  <th>Book of Business</th>
+                  <th>Benefit Type</th>
+                  <th>Lives Covered</th>
+                  <th>MMIT Verification</th>
+                  <th>DCR Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="stGridBody"><!-- rows injected by JS --></tbody>
+            </table>
+          </div>
+          <div class="footer-bar">
+            <span id="stRowCount">0</span> requests shown · <span id="stSelCount">0</span> selected
+          </div>
+        </div>
+      </div><!-- /#stewardshipToolView -->
     </main>
   </div>
 
@@ -563,6 +639,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=49"></script>
+  <script src="app.js?v=50"></script>
 </body>
 </html>
