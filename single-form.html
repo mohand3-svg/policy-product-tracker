@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UAT Policy Intelligence Update Form — Single Policy</title>
+<link rel="stylesheet" href="styles.css?v=47" />
+<link rel="stylesheet" href="form.css?v=47" />
+</head>
+<body class="form-page">
+  <!-- ===== TOP BAR ===== -->
+  <header class="form-topbar">
+    <div class="form-brand">
+      <span class="form-logo">▤</span>
+      <span class="form-title">UAT Policy Intelligence Update Form</span>
+    </div>
+    <nav class="form-nav">
+      <a class="form-tab active">Single Policy update form</a>
+      <a class="form-tab" href="multi-form.html">Multiple Policies update form</a>
+      <a class="form-tab">Bulk Upload</a>
+      <a class="form-tab">My Submissions</a>
+    </nav>
+    <div class="form-actions-top">
+      <button class="form-btn ghost">✦ Suggest Improvement</button>
+      <button class="form-btn ghost">？ Help ▾</button>
+    </div>
+  </header>
+
+  <div class="form-layout">
+    <!-- ===== LEFT SEARCH PANEL ===== -->
+    <aside class="form-sidebar">
+      <div class="search-head">
+        <span class="search-title">Search Policy</span>
+        <div class="search-actions">
+          <button class="link-btn" id="resetBtn">↻ Reset</button>
+          <button class="link-btn" id="saveFilterBtn" title="Save the current filter selection">☆ Save Filter</button>
+          <button class="search-btn" id="searchBtn" disabled>🔍 Search</button>
+        </div>
+      </div>
+      <p class="req-note">Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
+
+      <label class="fld-label">PAYER <span class="req">*</span></label>
+      <div class="fld-select" data-field="payer"><span>Select…</span><i>▾</i></div>
+
+      <label class="fld-label">BOOK OF BUSINESS <span class="req">*</span></label>
+      <div class="fld-select" data-field="bob"><span>Select…</span><i>▾</i></div>
+
+      <label class="fld-label">PRODUCT <span class="req">*</span></label>
+      <div class="fld-select" data-field="product"><span>Select…</span><i>▾</i></div>
+
+      <label class="fld-label">INDICATION <span class="req">*</span></label>
+      <div class="fld-select" data-field="indication"><span>Select…</span><i>▾</i></div>
+
+      <label class="fld-label">BENEFIT TYPE <span class="req">*</span></label>
+      <div class="fld-select" data-field="benefit"><span>Select…</span><i>▾</i></div>
+
+      <label class="fld-label">PAYER MDM ID</label>
+      <div class="fld-value muted" id="mdmId">—</div>
+
+      <label class="fld-label" style="border:0;">STATE</label>
+      <div class="fld-value" id="stateVal">NATIONAL</div>
+
+      <!-- ===== SAVED FILTERS ===== -->
+      <div class="saved-filters">
+        <button class="saved-open-btn" id="openSavedBtn">
+          ☆ Saved Filters <span class="saved-count" id="savedCount">0</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="form-main">
+      <div class="form-main-head">
+        <div>
+          <h2 class="payer-details">Payer Details</h2>
+        </div>
+        <div class="form-main-actions">
+          <button class="form-btn ghost" id="cancelBtn">Cancel</button>
+          <button class="form-btn primary disabled" id="submitBtn" disabled>✔ Submit For Review</button>
+        </div>
+      </div>
+
+      <div class="form-empty" id="formEmpty">
+        Search for a payer in the left sidebar to populate the request form.
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== SAVE / EDIT FILTER MODAL ===== -->
+  <div class="modal-overlay" id="filterModal">
+    <div class="modal-card">
+      <h3 class="modal-title" id="filterModalTitle">Save Filter</h3>
+      <label class="modal-label" for="filterNameInput">Filter name</label>
+      <input type="text" class="modal-input" id="filterNameInput" placeholder="e.g. Cigna MS – Aug batch" maxlength="60" />
+      <div class="modal-preview" id="filterPreview"></div>
+      <div class="modal-actions">
+        <button class="form-btn ghost" id="filterCancelBtn">Cancel</button>
+        <button class="form-btn primary" id="filterSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SAVED FILTERS TABLE MODAL ===== -->
+  <div class="modal-overlay" id="savedModal">
+    <div class="modal-card modal-wide">
+      <div class="modal-head-row">
+        <h3 class="modal-title">☆ Saved Filters</h3>
+        <button class="modal-x" id="savedCloseBtn" title="Close">✕</button>
+      </div>
+      <div class="saved-search-row">
+        <input type="text" class="saved-search" id="savedSearch"
+               placeholder="🔍 Search saved filters by name, criteria or creator…" />
+      </div>
+      <p class="saved-hint-line">Click a row to load that filter into the search panel.</p>
+      <p class="saved-empty-note" id="savedTableEmpty">
+        No saved filters yet. Set your fields and click <strong>Save Filter</strong>.
+      </p>
+      <div class="saved-table-wrap" id="savedTableWrap">
+        <table class="saved-table">
+          <thead>
+            <tr>
+              <th>Filter Name</th>
+              <th>Filter Criteria</th>
+              <th>Created By</th>
+              <th>Created On</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="savedTableBody"></tbody>
+        </table>
+      </div>
+      <p class="saved-no-match" id="savedNoMatch">No filters match your search.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="single-form.js?v=47"></script>
+</body>
+</html>

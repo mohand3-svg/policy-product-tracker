@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UAT Policy Intelligence Update Form — Review Policy</title>
+<link rel="stylesheet" href="styles.css?v=42" />
+<link rel="stylesheet" href="form.css?v=42" />
+</head>
+<body class="form-page review-page">
+  <!-- ===== TOP BAR ===== -->
+  <header class="form-topbar">
+    <div class="form-brand">
+      <span class="form-logo">▤</span>
+      <span class="form-title">UAT Policy Intelligence Update Form</span>
+    </div>
+    <nav class="form-nav">
+      <a class="form-tab" href="single-form.html">Single Policy update form</a>
+      <a class="form-tab" href="multi-form.html">Multiple Policies update form</a>
+      <a class="form-tab">Bulk Upload</a>
+      <a class="form-tab">My Submissions</a>
+    </nav>
+    <div class="form-actions-top">
+      <button class="form-btn ghost">✦ Suggest Improvement</button>
+      <button class="form-btn ghost">？ Help ▾</button>
+    </div>
+  </header>
+
+  <!-- ===== FULL-WIDTH URL ERROR BANNER (AC2/AC3) ===== -->
+  <div class="page-banner" id="urlBanner">
+    <span class="page-banner-icon">⚠</span>
+    <span class="page-banner-text">
+      <strong>Invalid URL format. Must start with http:// or https://.</strong>
+      Changes to valid URL fields are required before changes to these rows can be submitted.
+    </span>
+  </div>
+
+  <div class="form-layout">
+    <main class="review-main">
+      <div class="review-toolbar">
+        <button class="tool-btn" id="setPropBtn" disabled>⚙ Set property value</button>
+        <button class="tool-btn submit" id="submitChangeBtn" disabled>Submit Change</button>
+      </div>
+
+      <div class="mp-table-wrap">
+        <table class="mp-table" id="reviewTable">
+          <thead>
+            <tr>
+              <th class="mp-check"><input type="checkbox" id="rvSelectAll" /></th>
+              <th>DCR is Valid</th>
+              <th>Auto Approve</th>
+              <th>Payer</th>
+              <th>Book of Business</th>
+              <th>Product</th>
+              <th>Indication</th>
+              <th>Benefit Type</th>
+              <th>PA Required</th>
+              <th>Step Edit</th>
+              <th>Number of Steps</th>
+              <th>Step Therapy Placement</th>
+              <th>Step Products</th>
+              <th>Policy Status</th>
+              <th>Simplified Policy Status</th>
+              <th>Policy Link</th>
+              <th>Site Of Care Link</th>
+              <th>PA Form Link</th>
+              <th>Effective Policy Date</th>
+              <th>State</th>
+              <th>Additional Information</th>
+            </tr>
+          </thead>
+          <tbody id="reviewBody"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <button class="edit-table-btn" id="editTableBtn">✎ Edit table</button>
+  <div class="toast" id="toast"></div>
+  <script src="review-policy.js?v=42"></script>
+</body>
+</html>
