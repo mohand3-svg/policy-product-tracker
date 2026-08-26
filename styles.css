@@ -552,3 +552,66 @@ body {
 
 /* Save/rename modal sits above the table modal when renaming from it */
 #filterModal { z-index: 320; }
+
+/* ============================================================
+   POLICY WINS — standalone page (sub-tabs + wide grid)
+   ============================================================ */
+.wins-page-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  padding: 0; display: flex; flex-direction: column; overflow: hidden;
+}
+/* Sub-tabs row */
+.wins-subtabs {
+  display: flex; gap: 26px; padding: 14px 20px 0; border-bottom: 1px solid var(--border);
+}
+.wtab {
+  padding: 6px 2px 12px; font-size: 13px; font-weight: 600; color: var(--muted);
+  cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.wtab:hover { color: #374151; }
+.wtab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+/* Toolbar (Bulk Assign) */
+.wins-toolbar { display: flex; justify-content: flex-end; padding: 12px 20px; }
+.wins-toolbar .btn-bulk {
+  background: #fff; color: #2563eb; border: 1px solid #b9ccf5;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.wins-toolbar .btn-bulk:hover { background: #f2f6ff; }
+
+/* Wide scrollable grid */
+.wins-grid-wrap { overflow: auto; max-height: calc(100vh - 260px); border-top: 1px solid #eef0f4; }
+.wins-grid { border-collapse: collapse; font-size: 11.5px; min-width: 2200px; }
+.wins-grid thead th {
+  position: sticky; top: 0; z-index: 2; background: #f6f8fc; text-align: left;
+  font-weight: 700; color: #374151; padding: 10px 12px; line-height: 1.25;
+  border-bottom: 1px solid var(--border); border-right: 1px solid #eef0f4;
+  vertical-align: bottom; white-space: normal; min-width: 92px;
+}
+.wins-grid thead th.wcol-check { min-width: 34px; }
+.wins-grid td {
+  padding: 9px 12px; border-bottom: 1px solid #f0f2f6; border-right: 1px solid #f5f6f9;
+  color: #374151; vertical-align: top; white-space: nowrap;
+}
+.wins-grid tbody tr:hover { background: #f8faff; }
+.wins-grid .wcol-check { width: 34px; text-align: center; }
+.wins-grid .win-id, .wins-grid td.win-id { font-weight: 600; color: #1f2937; }
+.wc-lives { color: #2563eb; }
+.wc-steward { color: #2563eb; }
+.wc-link { color: #2563eb; }
+.wc-na { color: #9aa1ad; font-style: italic; }
+.wc-empty { background: #fafbfd; }
+
+/* Status column: yellow "INVALID" chip like the mockup */
+.wstatus {
+  display: inline-block; padding: 3px 8px; border-radius: 4px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .3px;
+}
+.wstatus.invalid  { background: #fdf0c8; color: #9a7a00; }
+.wstatus.valid    { background: #d8f3e0; color: #1e7a45; }
+.wstatus.review   { background: #dbe7ff; color: #1e40af; }
+.wstatus.approved { background: #cdeccf; color: #1b6b2f; }
+/* Highlight the whole Status cell faint-yellow as in the screenshot */
+.wins-grid td:nth-child(16) { background: #fffbe9; }
+
+.wins-empty { text-align: center; color: var(--muted); padding: 28px 0; font-style: italic; }

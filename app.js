@@ -844,6 +844,177 @@ function renderWins() {
   renderWinsTable(rows);
 }
 
+/* ============================================================
+   POLICY WINS — standalone page (Open / My / All / Active tabs)
+   Derives the extra columns the detailed grid needs from the base
+   win record, deterministically so the demo looks stable.
+   ============================================================ */
+const WINS_CURRENT_USER = "Dhivyaa Moh"; // "My Policy Wins" owner (mockup)
+const WIN_STEWARDS = ["Dhivyaa Moh", "Pradeep Ling", "Uday akumar", "Syed Riyaz", "Adriana Jazbor"];
+const POLICY_STATUS_BEFORE = ["COVERED WITH RESTRICTIONS", "NOT COVERED", "COVERED (MEDICAL)", "COVERED (NON-PREFERRED)"];
+const POLICY_STATUS_AFTER  = ["COVERED WITH RESTRICTIONS", "COVERED", "COVERED (NON-PREFERRED)", "COVERED (MEDICAL)"];
+const SIMPLE_BEFORE = ["NAR ROW ER…", "NOT COVERED", "PA REQ UI…", "NO PA", "BIO MAN AG…"];
+const SIMPLE_AFTER  = ["TO PI OR BE…", "COVE RED", "1 ST (BRA ND…", "DRU G CO…", "2+ ST (BRA ND…", "TO PI WITH CR…"];
+const WIN_STATUSES = ["INVALID", "VALID", "IN REVIEW", "APPROVED"];
+
+// Simple deterministic hash so derived fields are stable per win id.
+function winHash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; }
+  return h;
+}
+function pick(arr, n) { return arr[n % arr.length]; }
+
+// Enrich a base win record with the full column set used by the page.
+function enrichWin(w, idx) {
+  const h = winHash(w.id);
+  const lives = 500 + (h % 5200);
+  const dcrTriggered = (h % 5 === 0);
+  const startY = 2025 + (h % 2);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const sM = months[h % 12], eM = months[(h + 5) % 12];
+  const link = "https://dctm…";
+  const paLink = (h % 3 === 0) ? "FOC-12387 …" : "https://w w…";
+  return {
+    ...w,
+    winId: w.id,
+    lives: (h % 11 === 0) ? "N/A" : lives.toLocaleString(),
+    simpleBefore: pick(SIMPLE_BEFORE, h),
+    simpleAfter: pick(SIMPLE_AFTER, h >>> 2),
+    statusBefore: pick(POLICY_STATUS_BEFORE, h >>> 3),
+    statusAfter: pick(POLICY_STATUS_AFTER, h >>> 4),
+    winStart: `${sM} ${1 + (h % 27)}, ${startY}`,
+    winEnd: `${eM} ${1 + ((h >>> 1) % 27)}, ${startY + 1}`,
+    steward: pick(WIN_STEWARDS, h >>> 5),
+    // Weighted toward INVALID to match the screenshot, with a realistic mix.
+    status: WIN_STATUSES[[0,0,0,1,0,2,0,3,0,1][h % 10]],
+    existsInAg: (h % 4 === 0) ? "YES" : "NO",
+    lastUpdate: `Aug ${1 + (h % 27)}, 20…`,
+    medLink: (w.benefit === "MEDICAL BENEFIT") ? link : "",
+    pharmLink: (w.benefit === "PHARMACY BENEFIT") ? link : "",
+    medPharmLink: "",
+    paLink: paLink,
+    dcrTriggered: dcrTriggered ? "YES" : "N/A",
+  };
+}
+
+let WINS_PAGE_SUBVIEW = "open";  // open | mine | all | active
+
+// Apply the sidebar wins filters + the active sub-tab.
+function winsPageRows() {
+  const base = filteredWins().map((w, i) => enrichWin(w, i));
+  switch (WINS_PAGE_SUBVIEW) {
+    case "mine":   return base.filter(w => w.steward === WINS_CURRENT_USER);
+    case "active": return base.filter(w => w.status === "VALID" || w.status === "APPROVED");
+    case "all":    return base;
+    case "open":
+    default:       return base.filter(w => w.status === "INVALID" || w.status === "IN REVIEW");
+  }
+}
+
+function statusBadgeClass(s) {
+  if (s === "VALID") return "wstatus valid";
+  if (s === "APPROVED") return "wstatus approved";
+  if (s === "IN REVIEW") return "wstatus review";
+  return "wstatus invalid";
+}
+
+function winCell(v, cls) {
+  const s = (v === undefined || v === null || v === "") ? "" : String(v);
+  if (s === "" ) return `<td class="wc-empty"></td>`;
+  if (s === "N/A") return `<td class="wc-na">N/A</td>`;
+  return `<td${cls ? ` class="${cls}"` : ""}>${sfEsc(s)}</td>`;
+}
+function winLinkCell(v) {
+  if (!v) return `<td class="wc-empty"></td>`;
+  if (v === "N/A") return `<td class="wc-na">N/A</td>`;
+  return `<td class="wc-link">${sfEsc(v)}</td>`;
+}
+
+function renderWinsPage() {
+  const body = document.getElementById("winsGridBody");
+  if (!body) return;
+  const rows = winsPageRows();
+  document.getElementById("winsRowCount").textContent = String(rows.length);
+
+  if (rows.length === 0) {
+    body.innerHTML = `<tr><td colspan="23" class="wins-empty">No policy wins match the current filters</td></tr>`;
+    updateWinsSelCount();
+    return;
+  }
+
+  body.innerHTML = rows.map(w => `
+    <tr>
+      <td class="wcol-check"><input type="checkbox" class="win-row-cb" data-id="${sfEsc(w.winId)}" /></td>
+      ${winCell(w.winId, "win-id")}
+      ${winCell(w.payer)}
+      ${winCell(w.bob)}
+      ${winCell(w.brand)}
+      ${winCell(w.subInd)}
+      ${winCell(w.benefit)}
+      ${winCell(w.lives, "wc-lives")}
+      ${winCell(w.simpleBefore)}
+      ${winCell(w.simpleAfter)}
+      ${winCell(w.statusBefore)}
+      ${winCell(w.statusAfter)}
+      ${winCell(w.winStart)}
+      ${winCell(w.winEnd)}
+      ${winCell(w.steward, "wc-steward")}
+      <td><span class="${statusBadgeClass(w.status)}">${sfEsc(w.status)}</span></td>
+      ${winCell(w.existsInAg)}
+      ${winCell(w.lastUpdate)}
+      ${winLinkCell(w.medLink)}
+      ${winLinkCell(w.pharmLink)}
+      ${winLinkCell(w.medPharmLink)}
+      ${winLinkCell(w.paLink)}
+      ${winCell(w.dcrTriggered)}
+    </tr>`).join("");
+
+  wireWinRowChecks();
+  updateWinsSelCount();
+}
+
+function wireWinRowChecks() {
+  document.querySelectorAll(".win-row-cb").forEach(cb =>
+    cb.addEventListener("change", updateWinsSelCount));
+}
+function updateWinsSelCount() {
+  const n = document.querySelectorAll(".win-row-cb:checked").length;
+  const el = document.getElementById("winsSelCount");
+  if (el) el.textContent = String(n);
+}
+
+// ---- wire sub-tabs, select-all, bulk assign ---------------------
+document.querySelectorAll(".wtab[data-wview]").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".wtab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    WINS_PAGE_SUBVIEW = tab.dataset.wview;
+    const sa = document.getElementById("winsSelectAll");
+    if (sa) sa.checked = false;
+    renderWinsPage();
+  });
+});
+
+(function wireWinsSelectAll() {
+  const sa = document.getElementById("winsSelectAll");
+  if (!sa) return;
+  sa.addEventListener("change", () => {
+    document.querySelectorAll(".win-row-cb").forEach(cb => { cb.checked = sa.checked; });
+    updateWinsSelCount();
+  });
+})();
+
+(function wireWinsBulkAssign() {
+  const btn = document.getElementById("winsBulkAssignBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const n = document.querySelectorAll(".win-row-cb:checked").length;
+    if (n === 0) { showToast("Select one or more wins to bulk assign", true); return; }
+    showToast(`Bulk assign — ${n} win(s) selected (demo)`, false);
+  });
+})();
+
 // ============ NAV TABS ============
 const stewardshipView = document.getElementById("stewardshipView");
 const metricView = document.getElementById("metricView");
@@ -971,20 +1142,29 @@ function showMetricSubtab(which) {
   }
 }
 
+const winsView = document.getElementById("winsView");
 document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
   t.addEventListener("click", () => {
     document.querySelectorAll(".nav-tab").forEach(x => x.classList.remove("active"));
     t.classList.add("active");
     const tab = t.dataset.tab;
-    // "metric" and "wins" both open the Metric Dashboard, on different subtabs
-    const showMetrics = tab === "metric" || tab === "wins";
+    const showMetrics = tab === "metric";
     const showStewardship = tab === "stewardship";
+    const showWins = tab === "wins";
 
     stewardshipView.hidden = !showStewardship;
     metricView.hidden = !showMetrics;
+    if (winsView) winsView.hidden = !showWins;
 
     if (showMetrics) {
-      showMetricSubtab(tab === "wins" ? "wins" : "dcrs");
+      showMetricSubtab("dcrs");
+    } else if (showWins) {
+      // Standalone Policy Wins page uses the wins sidebar filters.
+      stewardshipFilters.hidden = true;
+      winsFilters.hidden = false;
+      if (!winsBuilt) { buildWinFilters(); winsBuilt = true; }
+      loadWinsFromApi().then(() => { buildWinFilters(); renderWinsPage(); });
+      renderWinsPage();
     } else if (showStewardship) {
       // Restore stewardship sidebar filters
       stewardshipFilters.hidden = false;

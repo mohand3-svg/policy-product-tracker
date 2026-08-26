@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=48" />
+<link rel="stylesheet" href="styles.css?v=49" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -15,8 +15,8 @@
     </div>
     <nav class="nav-tabs">
       <a class="nav-tab active" data-tab="stewardship">Product Tracker</a>
+      <a class="nav-tab" data-tab="wins">Policy Wins</a>
       <a class="nav-tab" data-tab="metric">Metric Dashboard</a>
-      <a class="nav-tab" data-tab="wins" hidden>Policy Wins</a>
       <div class="nav-dropdown">
         <a class="nav-tab">Helpful Links ▾</a>
         <div class="dropdown-menu">
@@ -410,6 +410,59 @@
         </div>
         </div><!-- /#metricWins -->
       </div><!-- /#metricView -->
+
+      <!-- ===== POLICY WINS VIEW (standalone page) ===== -->
+      <div id="winsView" hidden>
+        <div class="content-head">
+          <div class="section-tag">🗂 Policy Wins</div>
+        </div>
+        <div class="wins-page-card">
+          <div class="wins-subtabs">
+            <a class="wtab active" data-wview="open">Open Policy Wins</a>
+            <a class="wtab" data-wview="mine">My Policy Wins</a>
+            <a class="wtab" data-wview="all">All Policy Wins</a>
+            <a class="wtab" data-wview="active">Active Policy Wins</a>
+          </div>
+          <div class="wins-toolbar">
+            <button class="btn btn-bulk" id="winsBulkAssignBtn">⇲ Bulk Assign</button>
+          </div>
+          <div class="wins-grid-wrap">
+            <table class="wins-grid" id="winsGrid">
+              <thead>
+                <tr>
+                  <th class="wcol-check"><input type="checkbox" id="winsSelectAll" /></th>
+                  <th>Win Id</th>
+                  <th>Payer</th>
+                  <th>Book Of Business</th>
+                  <th>Brand</th>
+                  <th>Indication</th>
+                  <th>Benefit Type</th>
+                  <th>Number of Lives</th>
+                  <th>Simplified Policy status before</th>
+                  <th>Simplified Policy status after win</th>
+                  <th>Policy Status before Win</th>
+                  <th>Policy Status after Win</th>
+                  <th>Win Start Date</th>
+                  <th>Win End Date</th>
+                  <th>Steward Assigned</th>
+                  <th>Status</th>
+                  <th>Win already exists in AG</th>
+                  <th>Last Update</th>
+                  <th>Medical Policy Link</th>
+                  <th>Pharmacy Policy Link</th>
+                  <th>Medical and Pharmacy Policy Link</th>
+                  <th>PA Policy Link</th>
+                  <th>Wins Triggered by DCR?</th>
+                </tr>
+              </thead>
+              <tbody id="winsGridBody"><!-- rows injected by JS --></tbody>
+            </table>
+          </div>
+          <div class="footer-bar">
+            <span id="winsRowCount">0</span> wins shown · <span id="winsSelCount">0</span> selected
+          </div>
+        </div>
+      </div><!-- /#winsView -->
     </main>
   </div>
 
@@ -510,6 +563,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=48"></script>
+  <script src="app.js?v=49"></script>
 </body>
 </html>
