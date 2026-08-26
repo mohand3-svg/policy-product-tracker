@@ -3,25 +3,30 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>UAT Policy Intelligence Update Form — DCR Tool Mockups</title>
+<title>Policy Intelligence — Tool Selector</title>
 <link rel="stylesheet" href="styles.css" />
 <link rel="stylesheet" href="form.css" />
 <style>
-  .lp-wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px; }
-  .lp-title { font-size: 26px; font-weight: 700; color: #111827; margin: 0 0 6px; }
-  .lp-sub { font-size: 14px; color: #6b7280; margin: 0 0 28px; }
-  .lp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .lp-wrap { max-width: 900px; margin: 0 auto; padding: 56px 24px; }
+  .lp-title { font-size: 28px; font-weight: 700; color: #111827; margin: 0 0 6px; }
+  .lp-sub { font-size: 14px; color: #6b7280; margin: 0 0 36px; }
+  .lp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
   .lp-card {
     display: block; text-decoration: none; color: inherit;
-    border: 1px solid #e2e6ee; border-radius: 10px; padding: 20px 22px; background: #fff;
-    transition: border-color .15s, box-shadow .15s;
+    border: 1px solid #e2e6ee; border-radius: 14px; padding: 30px 28px; background: #fff;
+    transition: border-color .15s, box-shadow .15s, transform .15s;
   }
-  .lp-card:hover { border-color: #2563eb; box-shadow: 0 4px 14px rgba(37,99,235,.12); }
-  .lp-card-icon { font-size: 22px; }
-  .lp-card-name { font-size: 16px; font-weight: 700; color: #1e3a8a; margin: 10px 0 4px; }
-  .lp-card-desc { font-size: 12.5px; color: #6b7280; line-height: 1.5; }
+  .lp-card:hover { border-color: #2563eb; box-shadow: 0 8px 24px rgba(37,99,235,.14); transform: translateY(-2px); }
+  .lp-card-icon { font-size: 40px; line-height: 1; }
+  .lp-card-name { font-size: 20px; font-weight: 700; color: #1e3a8a; margin: 16px 0 6px; }
+  .lp-card-desc { font-size: 13px; color: #6b7280; line-height: 1.55; }
+  .lp-card-tabs { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .lp-card-tabs li {
+    font-size: 11px; color: #374151; background: #f1f4fb;
+    border: 1px solid #e2e6ee; border-radius: 999px; padding: 3px 10px;
+  }
   .lp-note {
-    margin-top: 28px; font-size: 12px; color: #9a3412;
+    margin-top: 34px; font-size: 12px; color: #9a3412;
     background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 10px 14px;
   }
 </style>
@@ -29,40 +34,44 @@
 <body class="form-page">
   <header class="form-topbar">
     <div class="form-brand">
-      <span class="form-logo">▤</span>
-      <span class="form-title">UAT Policy Intelligence Update Form</span>
+      <span class="form-logo">&#9636;</span>
+      <span class="form-title">Policy Intelligence</span>
     </div>
   </header>
 
   <div class="lp-wrap">
-    <h1 class="lp-title">Policy Intelligence — Interactive Mockups</h1>
-    <p class="lp-sub">Front-end prototypes for the Stewardship dashboard and the Data Change Request (DCR) update workflow. Demo data only.</p>
+    <h1 class="lp-title">Choose a tool</h1>
+    <p class="lp-sub">Interactive front-end mockups. Demo data only &mdash; not connected to any live system.</p>
 
     <div class="lp-grid">
-      <a class="lp-card" href="product-tracker.html">
-        <div class="lp-card-icon">📊</div>
-        <div class="lp-card-name">Product Tracker (Stewardship Dashboard)</div>
-        <div class="lp-card-desc">Policy Wins and DCR utilization metrics with hand-built charts. Shows demo data on this static site.</div>
-      </a>
+      <!-- DCR TOOL -->
       <a class="lp-card" href="single-form.html">
-        <div class="lp-card-icon">📄</div>
-        <div class="lp-card-name">Single Policy update form</div>
-        <div class="lp-card-desc">Search a payer, review Current vs Proposed values, edit with URL validation, and save reusable filters.</div>
+        <div class="lp-card-icon">&#128221;</div>
+        <div class="lp-card-name">DCR</div>
+        <div class="lp-card-desc">Data Change Request update workflow &mdash; search, edit and submit policy changes.</div>
+        <ul class="lp-card-tabs">
+          <li>Single Policy update form</li>
+          <li>Multiple Policies update form</li>
+          <li>Bulk Upload</li>
+          <li>My Submissions</li>
+        </ul>
       </a>
-      <a class="lp-card" href="multi-form.html">
-        <div class="lp-card-icon">📑</div>
-        <div class="lp-card-name">Multiple Policies update form</div>
-        <div class="lp-card-desc">Filter the payer-policy table, select rows, and move them into the Review Policy step.</div>
-      </a>
-      <a class="lp-card" href="review-policy.html">
-        <div class="lp-card-icon">✔</div>
-        <div class="lp-card-name">Review Policy</div>
-        <div class="lp-card-desc">Validate DCR rows, edit policy/site/PA links with a top error banner, and submit changes.</div>
+
+      <!-- DSA TOOL -->
+      <a class="lp-card" href="product-tracker.html">
+        <div class="lp-card-icon">&#128202;</div>
+        <div class="lp-card-name">DSA</div>
+        <div class="lp-card-desc">Policy Intelligence Stewardship Tool &mdash; Policy Wins and DCR utilization metrics with charts.</div>
+        <ul class="lp-card-tabs">
+          <li>Product Tracker</li>
+          <li>Metric Dashboard</li>
+          <li>Helpful Links</li>
+        </ul>
       </a>
     </div>
 
     <p class="lp-note">
-      ⚠ This is a static mockup for review. Data is illustrative and not connected to any live system.
+      &#9888; This is a static mockup for review. Data is illustrative and not connected to any live system.
     </p>
   </div>
 </body>
