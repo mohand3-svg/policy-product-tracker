@@ -813,3 +813,42 @@ body {
   .wd-layout { grid-template-columns: 1fr; }
   .wd-summary { position: static; }
 }
+
+/* ============================================================
+   DUPLICATE DETECTION — list badges + detail siblings panel
+   ============================================================ */
+/* Inline badges next to a Win Id in the list */
+.dup-badge {
+  display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: .2px; white-space: nowrap;
+  vertical-align: middle;
+}
+.dup-badge.review { background: #fdecc8; color: #92620a; border: 1px solid #f2d08a; }
+.dup-badge.merged { background: #eef0f4; color: #5b6472; border: 1px solid #dfe3ea; }
+/* Faint amber tint on rows flagged as potential duplicates */
+.win-row-dup { background: #fffdf5; }
+.win-row-dup:hover { background: #fff8e8 !important; }
+
+/* Duplicate siblings panel on the detail page */
+.wd-dup-card.review { border-color: #f2d08a; background: #fffdf5; }
+.wd-dup-desc { font-size: 11.5px; color: #5b6472; line-height: 1.5; margin-bottom: 10px; }
+.wd-dup-desc b { color: #92620a; }
+.wd-dup-siblings { display: flex; flex-direction: column; gap: 8px; }
+.wd-sib {
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; background: #fff;
+}
+.wd-sib.self { border-color: #b9ccf5; background: #f7faff; }
+.wd-sib-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.wd-sib-id { font-size: 12px; font-weight: 700; color: #374151; }
+.wd-sib-id.link { color: #2563eb; cursor: pointer; text-decoration: none; }
+.wd-sib-id.link:hover { text-decoration: underline; }
+.wd-sib-master {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px;
+  background: #e6ecfb; color: #2f4fa0; padding: 1px 5px; border-radius: 3px;
+}
+.wd-sib-you {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px;
+  background: #dcecff; color: #1e40af; padding: 1px 5px; border-radius: 3px;
+}
+.wd-sib-top .wstatus { margin-left: auto; }
+.wd-sib-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }

@@ -667,8 +667,39 @@ const WINS_MOCK = [
   ["WIN-FD8F06","2026-06-18","AMERICAN GREETINGS (EMPLOYER)","ACTEMRA SC","COMMERCIAL","PHARMACY BENEFIT","Rheumatoid Arthritis"],
 ].map(a => ({ id:a[0], date:a[1], payer:a[2], brand:a[3], bob:a[4], benefit:a[5], subInd:a[6] }));
 
+/* ------------------------------------------------------------------
+   Duplicate scenario records (demo). Each carries an explicit
+   policyId (the 6-field key: benefit, bob, brand, subInd, payer, geo),
+   a material signature (matSig) controlling exact-vs-potential, an
+   optional forced status/steward, and a sourceId for idempotency.
+   Statuses use the list vocabulary: APPROVED | IN REVIEW | INVALID | VALID
+   ------------------------------------------------------------------ */
+const WINS_DUP_SCENARIOS = [
+  // G1 — EXACT duplicates (same policyId + same material) -> collapse to ONE
+  { id:"WIN-DUP1A", date:"2026-07-04", payer:"MONTEFIORE HEALTH", brand:"VABYSMO", bob:"COMMERCIAL", benefit:"MEDICAL BENEFIT", subInd:"Diabetic Macular Edema", geo:"NATIONAL", policyId:"PG-DME-MONT", matSig:"MS1", sourceId:"SRC-1A", forceStatus:"APPROVED", forceSteward:"Dhivyaa Moh" },
+  { id:"WIN-DUP1B", date:"2026-07-05", payer:"MONTEFIORE HEALTH", brand:"VABYSMO", bob:"COMMERCIAL", benefit:"MEDICAL BENEFIT", subInd:"Diabetic Macular Edema", geo:"NATIONAL", policyId:"PG-DME-MONT", matSig:"MS1", sourceId:"SRC-1B", forceStatus:"APPROVED", forceSteward:"Dhivyaa Moh" },
+  { id:"WIN-DUP1C", date:"2026-07-06", payer:"MONTEFIORE HEALTH", brand:"VABYSMO", bob:"COMMERCIAL", benefit:"MEDICAL BENEFIT", subInd:"Diabetic Macular Edema", geo:"NATIONAL", policyId:"PG-DME-MONT", matSig:"MS1", sourceId:"SRC-1C", forceStatus:"IN REVIEW", forceSteward:"Dhivyaa Moh" },
+
+  // G2 — POTENTIAL duplicate pair, both open (material differs) -> flag both, unify steward
+  { id:"WIN-DUP2A", date:"2026-07-02", payer:"AETNA", brand:"ACTEMRA SC", bob:"COMMERCIAL", benefit:"PHARMACY BENEFIT", subInd:"Rheumatoid Arthritis", geo:"NATIONAL", policyId:"PG-RA-AETNA", matSig:"MS-2A", sourceId:"SRC-2A", forceStatus:"IN REVIEW", forceSteward:"Syed Riyaz" },
+  { id:"WIN-DUP2B", date:"2026-07-03", payer:"AETNA", brand:"ACTEMRA SC", bob:"COMMERCIAL", benefit:"PHARMACY BENEFIT", subInd:"Rheumatoid Arthritis", geo:"NATIONAL", policyId:"PG-RA-AETNA", matSig:"MS-2B", sourceId:"SRC-2B", forceStatus:"IN REVIEW", forceSteward:"Adriana Jazbor" },
+
+  // G3 — POTENTIAL where one is actioned (APPROVED) + one still open -> both flagged
+  { id:"WIN-DUP3A", date:"2026-07-01", payer:"UNITEDHEALTHCARE", brand:"OCREVUS ZUNOVO", bob:"COMMERCIAL", benefit:"PHARMACY BENEFIT", subInd:"Multiple Sclerosis", geo:"NATIONAL", policyId:"PG-MS-UHC", matSig:"MS-3A", sourceId:"SRC-3A", forceStatus:"APPROVED", forceSteward:"Pradeep Ling" },
+  { id:"WIN-DUP3B", date:"2026-07-07", payer:"UNITEDHEALTHCARE", brand:"OCREVUS ZUNOVO", bob:"COMMERCIAL", benefit:"PHARMACY BENEFIT", subInd:"Multiple Sclerosis", geo:"NATIONAL", policyId:"PG-MS-UHC", matSig:"MS-3B", sourceId:"SRC-3B", forceStatus:"IN REVIEW", forceSteward:"Pradeep Ling" },
+
+  // G4 — cluster of 3 distinct (APPROVED, INVALIDATED, open) -> siblings panel shows all
+  { id:"WIN-DUP4A", date:"2026-06-28", payer:"CIGNA", brand:"GAZYVA", bob:"MEDICARE_ADVANTAGE", benefit:"MEDICAL BENEFIT", subInd:"Follicular Lymphoma", geo:"NATIONAL", policyId:"PG-FL-CIGNA", matSig:"MS-4A", sourceId:"SRC-4A", forceStatus:"APPROVED", forceSteward:"Uday akumar" },
+  { id:"WIN-DUP4B", date:"2026-06-29", payer:"CIGNA", brand:"GAZYVA", bob:"MEDICARE_ADVANTAGE", benefit:"MEDICAL BENEFIT", subInd:"Follicular Lymphoma", geo:"NATIONAL", policyId:"PG-FL-CIGNA", matSig:"MS-4B", sourceId:"SRC-4B", forceStatus:"INVALID", forceSteward:"Uday akumar" },
+  { id:"WIN-DUP4C", date:"2026-07-08", payer:"CIGNA", brand:"GAZYVA", bob:"MEDICARE_ADVANTAGE", benefit:"MEDICAL BENEFIT", subInd:"Follicular Lymphoma", geo:"NATIONAL", policyId:"PG-FL-CIGNA", matSig:"MS-4C", sourceId:"SRC-4C", forceStatus:"IN REVIEW", forceSteward:"Uday akumar" },
+
+  // G5 — idempotent redelivery: identical sourceId as 5A -> dropped before dedup runs
+  { id:"WIN-DUP5A", date:"2026-07-09", payer:"HUMANA", brand:"XOLAIR VIAL", bob:"COMMERCIAL", benefit:"MEDICAL BENEFIT", subInd:"Asthma", geo:"NATIONAL", policyId:"PG-ASTHMA-HUM", matSig:"MS-5", sourceId:"SRC-5", forceStatus:"IN REVIEW", forceSteward:"Syed Riyaz" },
+  { id:"WIN-DUP5B", date:"2026-07-09", payer:"HUMANA", brand:"XOLAIR VIAL", bob:"COMMERCIAL", benefit:"MEDICAL BENEFIT", subInd:"Asthma", geo:"NATIONAL", policyId:"PG-ASTHMA-HUM", matSig:"MS-5", sourceId:"SRC-5", forceStatus:"IN REVIEW", forceSteward:"Syed Riyaz" },
+];
+
 // Live state — defaults to the mock, replaced by API data when available.
-let WINS = WINS_MOCK;
+let WINS = WINS_MOCK.concat(WINS_DUP_SCENARIOS);
 let WIN_SUMMARY = WIN_SUMMARY_MOCK;
 let winsSource = "mock"; // "mock" | "live"
 
@@ -865,6 +896,23 @@ function winHash(s) {
 }
 function pick(arr, n) { return arr[n % arr.length]; }
 
+// Normalize a value for identity/material comparison.
+function normVal(v) {
+  if (v === undefined || v === null) return "";
+  const s = String(v).trim().toUpperCase();
+  return (s === "—" || s === "N/A") ? "" : s;
+}
+// policy_id = the 6 key fields (benefit, bob, brand, subInd, payer, geo).
+function winPolicyId(w) {
+  return [w.benefit, w.bob, w.brand, w.subInd, w.payer, w.geo || "NATIONAL"]
+    .map(normVal).join("|");
+}
+// Material signature: for legacy rows, derive from stable hash so each has a
+// distinct outcome (they won't be exact-equal unless they share policyId+sig).
+function winMatSig(w, h) {
+  return "MSH-" + (h >>> 4).toString(36);
+}
+
 // Enrich a base win record with the full column set used by the page.
 function enrichWin(w, idx) {
   const h = winHash(w.id);
@@ -885,9 +933,14 @@ function enrichWin(w, idx) {
     statusAfter: pick(POLICY_STATUS_AFTER, h >>> 4),
     winStart: `${sM} ${1 + (h % 27)}, ${startY}`,
     winEnd: `${eM} ${1 + ((h >>> 1) % 27)}, ${startY + 1}`,
-    steward: pick(WIN_STEWARDS, h >>> 5),
+    steward: w.forceSteward || pick(WIN_STEWARDS, h >>> 5),
     // Weighted toward INVALID to match the screenshot, with a realistic mix.
-    status: WIN_STATUSES[[0,0,0,1,0,2,0,3,0,1][h % 10]],
+    status: w.forceStatus || WIN_STATUSES[[0,0,0,1,0,2,0,3,0,1][h % 10]],
+    // Dedup identity: explicit policyId when provided, else derived from the
+    // 6 key fields; material signature controls exact-vs-potential.
+    policyId: w.policyId || winPolicyId(w),
+    matSig: w.matSig || winMatSig(w, h),
+    sourceId: w.sourceId || ("SRC-" + w.id),
     existsInAg: (h % 4 === 0) ? "YES" : "NO",
     lastUpdate: `Aug ${1 + (h % 27)}, 20…`,
     medLink: (w.benefit === "MEDICAL BENEFIT") ? link : "",
@@ -898,11 +951,147 @@ function enrichWin(w, idx) {
   };
 }
 
+/* ============================================================
+   DUPLICATE DETECTION ENGINE
+   Rules (per stakeholder decisions):
+   - Idempotency: drop redelivered rows sharing a sourceId first.
+   - Identity: policy_id (6 key fields) clusters candidates.
+   - Exactness FIRST: same policy_id + same material signature =
+     EXACT duplicate -> collapse to one survivor, hide the rest,
+     count once.
+   - Remaining distinct survivors in a cluster (>1) = POTENTIAL
+     duplicates -> flag ALL (symmetric, persistent even after one is
+     actioned), auto-assign to the group's master steward.
+   - Duplicates are never auto-approved.
+   ============================================================ */
+// Positive-terminal states whose decision could be inherited.
+function isPositiveTerminal(s) { return s === "APPROVED" || s === "VALID"; }
+
+// Sort: positive-terminal first, then earliest date, then id.
+function survivorSort(a, b) {
+  const pa = isPositiveTerminal(a.status) ? 0 : 1;
+  const pb = isPositiveTerminal(b.status) ? 0 : 1;
+  if (pa !== pb) return pa - pb;
+  if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+  return a.winId < b.winId ? -1 : 1;
+}
+// Master (for steward unification) = earliest by date, then id.
+function masterSort(a, b) {
+  if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+  return a.winId < b.winId ? -1 : 1;
+}
+
+let _dedupCache = null;
+function invalidateDedup() { _dedupCache = null; }
+
+// Build the dedup model over ALL wins. Returns { info, hiddenIds }.
+function computeDedup() {
+  if (_dedupCache) return _dedupCache;
+  const enriched = WINS.map((w, i) => applyWinOverrides(enrichWin(w, i)));
+
+  // 1) Idempotency — drop later rows that repeat a sourceId.
+  const seenSource = new Set();
+  const kept = [];
+  const info = {};        // winId -> dedup info
+  const hiddenIds = new Set();
+  enriched.forEach(w => {
+    if (seenSource.has(w.sourceId)) {
+      // Redelivery of the same source row -> hide it from the list entirely.
+      hiddenIds.add(w.winId);
+      info[w.winId] = { dupType: "redelivery", sourceId: w.sourceId };
+      return;
+    }
+    seenSource.add(w.sourceId);
+    kept.push(w);
+  });
+
+  // 2) Cluster by policy_id.
+  const byPolicy = {};
+  kept.forEach(w => { (byPolicy[w.policyId] = byPolicy[w.policyId] || []).push(w); });
+
+  let groupSeq = 0;
+
+  Object.keys(byPolicy).forEach(pid => {
+    const members = byPolicy[pid];
+    if (members.length === 1) {
+      info[members[0].winId] = { dupType: "none", policyId: pid };
+      return;
+    }
+
+    // 3) Exactness first — subgroup by material signature.
+    const bySig = {};
+    members.forEach(w => { (bySig[w.matSig] = bySig[w.matSig] || []).push(w); });
+
+    const survivors = [];
+    Object.keys(bySig).forEach(sig => {
+      const grp = bySig[sig].slice().sort(survivorSort);
+      const survivor = grp[0];
+      const merged = grp.slice(1);
+      survivor._mergedCount = merged.length;   // exact duplicates folded in
+      survivor._mergedIds = merged.map(m => m.winId);
+      merged.forEach(m => {
+        hiddenIds.add(m.winId);
+        // A merged copy, if opened directly, points back to its survivor.
+        info[m.winId] = { dupType: "exact-merged", policyId: pid, mergedInto: survivor.winId };
+      });
+      survivors.push(survivor);
+    });
+
+    const groupId = "DG-" + (++groupSeq);
+    const isPotential = survivors.length > 1;
+
+    if (!isPotential) {
+      // Only exact duplicates existed -> one visible record, counted once.
+      const s = survivors[0];
+      info[s.winId] = {
+        dupType: "exact", policyId: pid, groupId,
+        mergedCount: s._mergedCount, mergedIds: s._mergedIds,
+      };
+      return;
+    }
+
+    // 4) Potential duplicates -> flag all, unify steward to master.
+    const master = survivors.slice().sort(masterSort)[0];
+    const unifiedSteward = master.steward;
+    const siblings = survivors.slice().sort(masterSort).map(s => ({
+      id: s.winId, status: s.status, steward: unifiedSteward,
+      date: s.date, matSig: s.matSig, isMaster: s.winId === master.winId,
+    }));
+    survivors.forEach(s => {
+      info[s.winId] = {
+        dupType: "potential", policyId: pid, groupId,
+        unifiedSteward,
+        mergedCount: s._mergedCount, mergedIds: s._mergedIds,
+        siblings: siblings.map(x => ({ ...x, isSelf: x.id === s.winId })),
+      };
+    });
+  });
+
+  _dedupCache = { info, hiddenIds };
+  return _dedupCache;
+}
+
+// Dedup info for a single win (safe default).
+function winDedup(id) {
+  const d = computeDedup();
+  return d.info[id] || { dupType: "none" };
+}
+
 let WINS_PAGE_SUBVIEW = "open";  // open | mine | all | active
 
 // Apply the sidebar wins filters + the active sub-tab.
 function winsPageRows() {
-  const base = filteredWins().map((w, i) => applyWinOverrides(enrichWin(w, i)));
+  const dedup = computeDedup();
+  const base = filteredWins()
+    .map((w, i) => applyWinOverrides(enrichWin(w, i)))
+    .filter(w => !dedup.hiddenIds.has(w.winId))   // hide collapsed exact duplicates
+    .map(w => {
+      const di = dedup.info[w.winId] || { dupType: "none" };
+      // Potential duplicates auto-assign to the unified steward.
+      const steward = (di.dupType === "potential" && !WIN_STEWARD_OVERRIDE[w.winId])
+        ? di.unifiedSteward : w.steward;
+      return { ...w, steward, _dup: di };
+    });
   switch (WINS_PAGE_SUBVIEW) {
     case "mine":   return base.filter(w => w.steward === WINS_CURRENT_USER);
     case "active": return base.filter(w => w.status === "VALID" || w.status === "APPROVED");
@@ -917,6 +1106,21 @@ function statusBadgeClass(s) {
   if (s === "APPROVED") return "wstatus approved";
   if (s === "IN REVIEW") return "wstatus review";
   return "wstatus invalid";
+}
+
+// Small badge shown next to a Win Id in the list.
+// - potential duplicate  -> "Duplicate — review" (amber)
+// - exact duplicate that folded copies -> "+N merged" (grey)
+function dupBadge(di) {
+  if (!di) return "";
+  if (di.dupType === "potential") {
+    const n = (di.siblings ? di.siblings.length : 0);
+    return ` <span class="dup-badge review" title="Potential duplicate — ${n} related wins share this policy">⚑ Duplicate — review</span>`;
+  }
+  if (di.dupType === "exact" && di.mergedCount > 0) {
+    return ` <span class="dup-badge merged" title="Exact duplicates collapsed into this record">+${di.mergedCount} merged</span>`;
+  }
+  return "";
 }
 
 function winCell(v, cls) {
@@ -937,6 +1141,18 @@ function renderWinsPage() {
   const rows = winsPageRows();
   document.getElementById("winsRowCount").textContent = String(rows.length);
 
+  // Footer dedup summary: exact-collapsed count + potential-flagged count.
+  const dd = computeDedup();
+  const collapsed = dd.hiddenIds.size;
+  const flagged = rows.filter(w => w._dup && w._dup.dupType === "potential").length;
+  const note = document.getElementById("winsDedupNote");
+  if (note) {
+    const parts = [];
+    if (collapsed > 0) parts.push(`${collapsed} exact duplicate${collapsed === 1 ? "" : "s"} collapsed`);
+    if (flagged > 0) parts.push(`${flagged} flagged for review`);
+    note.textContent = parts.length ? " · " + parts.join(" · ") : "";
+  }
+
   if (rows.length === 0) {
     body.innerHTML = `<tr><td colspan="23" class="wins-empty">No policy wins match the current filters</td></tr>`;
     updateWinsSelCount();
@@ -944,9 +1160,9 @@ function renderWinsPage() {
   }
 
   body.innerHTML = rows.map(w => `
-    <tr>
+    <tr class="${w._dup && w._dup.dupType === "potential" ? "win-row-dup" : ""}">
       <td class="wcol-check"><input type="checkbox" class="win-row-cb" data-id="${sfEsc(w.winId)}" /></td>
-      <td class="win-id"><a class="win-id-link" data-id="${sfEsc(w.winId)}">${sfEsc(w.winId)}</a></td>
+      <td class="win-id"><a class="win-id-link" data-id="${sfEsc(w.winId)}">${sfEsc(w.winId)}</a>${dupBadge(w._dup)}</td>
       ${winCell(w.payer)}
       ${winCell(w.bob)}
       ${winCell(w.brand)}
@@ -1173,6 +1389,56 @@ function renderWinDetail(id) {
   set("wdSumRationale", d.stewardRationale);
   set("wdSumExistsAg", d.existsInAg);
   set("wdSumDcr", d.dcrTriggered);
+
+  // Duplicate siblings panel
+  renderDupPanel(id);
+}
+
+// Show the duplicate panel for potential duplicates (persistent flag +
+// each sibling's current status/steward/date). Exact-collapsed records
+// show a lightweight "merged" note instead.
+function renderDupPanel(id) {
+  const card = document.getElementById("wdDupCard");
+  if (!card) return;
+  const di = winDedup(id);
+
+  if (di.dupType === "potential") {
+    card.hidden = false;
+    card.classList.add("review");
+    document.getElementById("wdDupHeading").textContent = "⚑ Duplicate — review";
+    const others = (di.siblings || []).filter(s => !s.isSelf).length;
+    document.getElementById("wdDupDesc").innerHTML =
+      `This win shares its policy id with <b>${others}</b> other win${others === 1 ? "" : "s"}. ` +
+      `The flag persists even after a related win is actioned. Duplicates are not auto-approved.`;
+    const box = document.getElementById("wdDupSiblings");
+    box.innerHTML = (di.siblings || []).map(s => `
+      <div class="wd-sib ${s.isSelf ? "self" : ""}">
+        <div class="wd-sib-top">
+          <a class="wd-sib-id ${s.isSelf ? "" : "link"}" data-id="${sfEsc(s.id)}">${sfEsc(s.id)}</a>
+          ${s.isMaster ? `<span class="wd-sib-master">master</span>` : ""}
+          ${s.isSelf ? `<span class="wd-sib-you">this win</span>` : ""}
+          <span class="${statusBadgeClass(s.status)}">${sfEsc(s.status)}</span>
+        </div>
+        <div class="wd-sib-meta">${sfEsc(s.steward)} · ${sfEsc(s.date)}</div>
+      </div>`).join("");
+    // Clicking a sibling id navigates to that win's detail page.
+    box.querySelectorAll(".wd-sib-id.link").forEach(a =>
+      a.addEventListener("click", () => openWinDetail(a.dataset.id)));
+    return;
+  }
+
+  if (di.dupType === "exact" && di.mergedCount > 0) {
+    card.hidden = false;
+    card.classList.remove("review");
+    document.getElementById("wdDupHeading").textContent = "Exact duplicates merged";
+    document.getElementById("wdDupDesc").innerHTML =
+      `<b>${di.mergedCount}</b> exact duplicate record${di.mergedCount === 1 ? "" : "s"} ` +
+      `were collapsed into this win and counted once: ${sfEsc((di.mergedIds || []).join(", "))}.`;
+    document.getElementById("wdDupSiblings").innerHTML = "";
+    return;
+  }
+
+  card.hidden = true;
 }
 
 function openWinDetail(id) {
@@ -1196,6 +1462,7 @@ function closeWinDetail() {
 function setWinDetailStatus(newStatus) {
   if (!CURRENT_WIN_DETAIL) return;
   WIN_STATUS_OVERRIDE[CURRENT_WIN_DETAIL] = newStatus;
+  invalidateDedup();   // status change can shift survivor/master ordering
   renderWinDetail(CURRENT_WIN_DETAIL);
   showToast(`Win ${CURRENT_WIN_DETAIL} → ${DETAIL_STATUS_LABEL[newStatus] || newStatus}`, false);
 }
@@ -1216,6 +1483,7 @@ function setWinDetailStatus(newStatus) {
   if (sel) sel.addEventListener("change", () => {
     if (!CURRENT_WIN_DETAIL) return;
     WIN_STEWARD_OVERRIDE[CURRENT_WIN_DETAIL] = sel.value;
+    invalidateDedup();
     renderWinDetail(CURRENT_WIN_DETAIL);
     showToast(`Steward reassigned to ${sel.value}`, false);
   });

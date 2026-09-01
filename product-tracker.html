@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=51" />
+<link rel="stylesheet" href="styles.css?v=52" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -484,7 +484,7 @@
             </table>
           </div>
           <div class="footer-bar">
-            <span id="winsRowCount">0</span> wins shown · <span id="winsSelCount">0</span> selected
+            <span id="winsRowCount">0</span> wins shown · <span id="winsSelCount">0</span> selected<span id="winsDedupNote"></span>
           </div>
         </div>
       </div><!-- /#winsView -->
@@ -555,6 +555,12 @@
               <div class="wd-kv"><span>Steward Rationale</span><b id="wdSumRationale">—</b></div>
               <div class="wd-kv"><span>Win already exists in AG</span><b id="wdSumExistsAg">—</b></div>
               <div class="wd-kv"><span>Wins Triggered by DCR?</span><b id="wdSumDcr">—</b></div>
+            </div>
+            <!-- Duplicate siblings panel (shown only when this win is a duplicate) -->
+            <div class="wd-summary-card wd-dup-card" id="wdDupCard" hidden>
+              <div class="wd-summary-h" id="wdDupHeading">⚑ Duplicate</div>
+              <div class="wd-dup-desc" id="wdDupDesc"></div>
+              <div class="wd-dup-siblings" id="wdDupSiblings"><!-- injected by JS --></div>
             </div>
           </aside>
         </div>
@@ -710,6 +716,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=51"></script>
+  <script src="app.js?v=52"></script>
 </body>
 </html>
