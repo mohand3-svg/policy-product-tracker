@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=50" />
+<link rel="stylesheet" href="styles.css?v=51" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -489,6 +489,77 @@
         </div>
       </div><!-- /#winsView -->
 
+      <!-- ===== POLICY WIN DETAIL VIEW ===== -->
+      <div id="winDetailView" hidden>
+        <!-- action bar -->
+        <div class="wd-actionbar">
+          <button class="link-btn wd-back" id="wdBack">↩ Return to Policy Wins</button>
+          <div class="wd-actions">
+            <button class="wd-abtn danger" id="wdInvalidate">⊘ Invalidate</button>
+            <button class="wd-abtn danger" id="wdReject">⊘ Reject</button>
+            <button class="wd-abtn" id="wdEdit" disabled>✎ Edit</button>
+            <button class="wd-abtn primary" id="wdApprove">✔ Approve</button>
+          </div>
+        </div>
+
+        <div class="wd-layout">
+          <!-- main card -->
+          <div class="wd-main">
+            <div class="wd-head">
+              <div class="wd-head-left">
+                <span class="wd-payer-ico">ℹ</span>
+                <span class="wd-payer" id="wdPayer">—</span>
+                <span class="wd-chip-label">Status</span> <span id="wdStatusChip"></span>
+                <span class="wd-chip-label">WIN ID</span> <span class="wd-winid" id="wdWinId">—</span>
+                <span class="wd-chip-label">SPOC Assigned</span> <span class="wd-spoc" id="wdSpoc">—</span>
+              </div>
+              <div class="wd-head-right">
+                <div class="wd-steward-label">STEWARD ASSIGNED</div>
+                <select class="wd-steward-select" id="wdSteward"></select>
+              </div>
+            </div>
+
+            <table class="wd-values">
+              <thead>
+                <tr>
+                  <th class="wd-vlabel">Values</th>
+                  <th>Before Win</th>
+                  <th>After Win</th>
+                </tr>
+              </thead>
+              <tbody id="wdValuesBody"><!-- rows injected by JS --></tbody>
+            </table>
+
+            <div class="wd-activity" id="wdActivity"><!-- log injected by JS --></div>
+          </div>
+
+          <!-- summary sidebar -->
+          <aside class="wd-summary">
+            <div class="wd-summary-title">📄 Summary</div>
+            <div class="wd-summary-card">
+              <div class="wd-summary-h">Policy Information</div>
+              <div class="wd-kv"><span>Win ID</span><b id="wdSumWinId">—</b></div>
+              <div class="wd-kv"><span>Payer</span><b id="wdSumPayer">—</b></div>
+              <div class="wd-kv"><span>BoB</span><b id="wdSumBob">—</b></div>
+              <div class="wd-kv"><span>Product</span><b id="wdSumProduct">—</b></div>
+              <div class="wd-kv"><span>Indication</span><b id="wdSumIndication">—</b></div>
+              <div class="wd-kv"><span>Benefit Type</span><b id="wdSumBenefit">—</b></div>
+            </div>
+            <div class="wd-summary-card">
+              <div class="wd-summary-h">Wins Information</div>
+              <div class="wd-kv"><span>Date Submitted</span><b id="wdSumSubmitted">—</b></div>
+              <div class="wd-kv"><span>SPOC Assigned</span><b id="wdSumSpoc">—</b></div>
+              <div class="wd-kv"><span>Steward Assigned</span><b id="wdSumSteward">—</b></div>
+              <div class="wd-kv"><span>Policy Win Status</span><b id="wdSumStatus">—</b></div>
+              <div class="wd-kv"><span>P360 Status</span><b id="wdSumP360">—</b></div>
+              <div class="wd-kv"><span>Steward Rationale</span><b id="wdSumRationale">—</b></div>
+              <div class="wd-kv"><span>Win already exists in AG</span><b id="wdSumExistsAg">—</b></div>
+              <div class="wd-kv"><span>Wins Triggered by DCR?</span><b id="wdSumDcr">—</b></div>
+            </div>
+          </aside>
+        </div>
+      </div><!-- /#winDetailView -->
+
       <!-- ===== STEWARDSHIP TOOL VIEW ===== -->
       <div id="stewardshipToolView" hidden>
         <div class="content-head">
@@ -639,6 +710,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=50"></script>
+  <script src="app.js?v=51"></script>
 </body>
 </html>

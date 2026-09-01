@@ -902,7 +902,7 @@ let WINS_PAGE_SUBVIEW = "open";  // open | mine | all | active
 
 // Apply the sidebar wins filters + the active sub-tab.
 function winsPageRows() {
-  const base = filteredWins().map((w, i) => enrichWin(w, i));
+  const base = filteredWins().map((w, i) => applyWinOverrides(enrichWin(w, i)));
   switch (WINS_PAGE_SUBVIEW) {
     case "mine":   return base.filter(w => w.steward === WINS_CURRENT_USER);
     case "active": return base.filter(w => w.status === "VALID" || w.status === "APPROVED");
@@ -946,7 +946,7 @@ function renderWinsPage() {
   body.innerHTML = rows.map(w => `
     <tr>
       <td class="wcol-check"><input type="checkbox" class="win-row-cb" data-id="${sfEsc(w.winId)}" /></td>
-      ${winCell(w.winId, "win-id")}
+      <td class="win-id"><a class="win-id-link" data-id="${sfEsc(w.winId)}">${sfEsc(w.winId)}</a></td>
       ${winCell(w.payer)}
       ${winCell(w.bob)}
       ${winCell(w.brand)}
@@ -977,6 +977,8 @@ function renderWinsPage() {
 function wireWinRowChecks() {
   document.querySelectorAll(".win-row-cb").forEach(cb =>
     cb.addEventListener("change", updateWinsSelCount));
+  document.querySelectorAll(".win-id-link").forEach(a =>
+    a.addEventListener("click", () => openWinDetail(a.dataset.id)));
 }
 function updateWinsSelCount() {
   const n = document.querySelectorAll(".win-row-cb:checked").length;
@@ -1012,6 +1014,210 @@ document.querySelectorAll(".wtab[data-wview]").forEach(tab => {
     const n = document.querySelectorAll(".win-row-cb:checked").length;
     if (n === 0) { showToast("Select one or more wins to bulk assign", true); return; }
     showToast(`Bulk assign — ${n} win(s) selected (demo)`, false);
+  });
+})();
+
+/* ============================================================
+   POLICY WIN — detail page (click a Win Id to open)
+   Reuses the enriched win record and derives the extra
+   before/after and summary fields the detail view shows,
+   deterministically so the demo is stable.
+   ============================================================ */
+// Overrides let Approve / Invalidate / Reject and steward reassignment
+// persist so the list reflects changes made on the detail page.
+const WIN_STATUS_OVERRIDE = {};   // winId -> status
+const WIN_STEWARD_OVERRIDE = {};  // winId -> steward
+
+const ST_PLACEMENT_AFTER = ["ST Single Generic", "ST Generic and Brand", "No Step", "ST Single Brand"];
+const P360_STATUSES = ["IDENTIFIED", "IN PROGRESS", "SUBMITTED", "VALIDATED"];
+const WIN_PRODUCTS = ["XOLAIR VIAL", "OCREVUS ZUNOVO", "ACTEMRA SC", "VABYSMO", "OCREVUS", "GAZYVA", "TECENTRIQ"];
+const AFTER_SIMPLE = ["COVERED – FIRST LINE BIOLOGIC", "COVERED", "COVERED (NON-PREFERRED)", "TO PI OR BETTER"];
+const DETAIL_STATUS_LABEL = { "INVALID": "INVALIDATED", "VALID": "VALIDATED", "IN REVIEW": "IN VALIDATION", "APPROVED": "APPROVED" };
+
+// Apply any stored override to an enriched win record.
+function applyWinOverrides(w) {
+  if (WIN_STATUS_OVERRIDE[w.winId]) w.status = WIN_STATUS_OVERRIDE[w.winId];
+  if (WIN_STEWARD_OVERRIDE[w.winId]) w.steward = WIN_STEWARD_OVERRIDE[w.winId];
+  return w;
+}
+
+// Build the full detail record for a given win id (or null if not found).
+function buildWinDetail(id) {
+  const base = WINS.find(w => w.id === id);
+  if (!base) return null;
+  const w = applyWinOverrides(enrichWin(base, 0));
+  const h = winHash(id);
+  const isMed = base.benefit === "MEDICAL BENEFIT";
+  const medPharmLink = "https://www.superiorhealthplan.com/content/dam/centene/Superior/Provider/pharmacy-policies/CP.PCH.49.pdf";
+  return {
+    ...w,
+    detailStatus: DETAIL_STATUS_LABEL[w.status] || w.status,
+    spoc: (h % 3 === 0) ? "—" : pick(WIN_STEWARDS, h >>> 7),
+    product: pick(WIN_PRODUCTS, h >>> 6),
+    // Before / After value pairs
+    vSimpleBefore: "NOT COVERED",
+    vSimpleAfter: pick(AFTER_SIMPLE, h >>> 2),
+    vPolicyBefore: "NOT COVERED",
+    vPolicyAfter: pick(POLICY_STATUS_AFTER, h >>> 4),
+    vStepBefore: "Not Covered",
+    vStepAfter: pick(ST_PLACEMENT_AFTER, h >>> 3),
+    vExpBefore: "—",
+    vExpAfter: w.winEnd,
+    vEffBefore: "—",
+    vEffAfter: w.winStart,
+    vMedBefore: "—",
+    vMedAfter: isMed ? `FOC-${13000 + (h % 900)} QA scenario ${1 + (h % 40)}` : "—",
+    vPharmBefore: "—",
+    vPharmAfter: "—",
+    vMedPharmBefore: isMed ? "—" : medPharmLink,
+    vMedPharmAfter: "—",
+    vPaBefore: "—",
+    vPaAfter: "—",
+    // Summary panel
+    dateSubmitted: `${w.winStart}, ${(9 + (h % 3))}:${(h % 6) * 10 || "00"} a.m.`,
+    p360Status: pick(P360_STATUSES, h >>> 8),
+    stewardRationale: "—",
+  };
+}
+
+let CURRENT_WIN_DETAIL = null;   // the win id currently open in the detail page
+
+// Row for the Before/After values table.
+function detailRow(label, before, after) {
+  const cell = v => {
+    const s = (v === undefined || v === null || v === "") ? "—" : String(v);
+    return `<div class="wd-field">${sfEsc(s)}</div>`;
+  };
+  return `<tr>
+    <td class="wd-vlabel">${sfEsc(label)}</td>
+    <td>${cell(before)}</td>
+    <td>${cell(after)}</td>
+  </tr>`;
+}
+
+function detailStatusChip(detailStatus) {
+  const s = detailStatus || "";
+  const cls = s === "APPROVED" ? "wd-status ok"
+    : s === "VALIDATED" ? "wd-status ok"
+    : s === "INVALIDATED" ? "wd-status bad"
+    : "wd-status pending";
+  return `<span class="${cls}">${sfEsc(s)}</span>`;
+}
+
+// Populate the Steward reassignment dropdown on the detail page.
+function populateWinStewardSelect(current) {
+  const sel = document.getElementById("wdSteward");
+  if (!sel) return;
+  const opts = WIN_STEWARDS.slice();
+  if (current && !opts.includes(current)) opts.unshift(current);
+  sel.innerHTML = opts.map(s =>
+    `<option value="${sfEsc(s)}"${s === current ? " selected" : ""}>${sfEsc(s)}</option>`).join("");
+}
+
+function renderWinDetail(id) {
+  const d = buildWinDetail(id);
+  if (!d) { showToast("Win not found", true); return; }
+  CURRENT_WIN_DETAIL = id;
+  const set = (elId, val) => { const e = document.getElementById(elId); if (e) e.textContent = val; };
+
+  // Header
+  set("wdPayer", d.payer);
+  document.getElementById("wdStatusChip").innerHTML = detailStatusChip(d.detailStatus);
+  set("wdWinId", d.winId);
+  set("wdSpoc", d.spoc && d.spoc !== "—" ? d.spoc : "—");
+  populateWinStewardSelect(d.steward);
+
+  // Before / After values table
+  const tbody = document.getElementById("wdValuesBody");
+  if (tbody) {
+    tbody.innerHTML =
+      detailRow("Simplified Policy Status", d.vSimpleBefore, d.vSimpleAfter) +
+      detailRow("Policy Status", d.vPolicyBefore, d.vPolicyAfter) +
+      detailRow("Step Therapy Placement", d.vStepBefore, d.vStepAfter) +
+      detailRow("Policy Win Expiration Date", d.vExpBefore, d.vExpAfter) +
+      detailRow("Effective Policy Date", d.vEffBefore, d.vEffAfter) +
+      detailRow("Medical Policy Link", d.vMedBefore, d.vMedAfter) +
+      detailRow("Pharma Policy Link", d.vPharmBefore, d.vPharmAfter) +
+      detailRow("Medical and Pharmacy Policy Link", d.vMedPharmBefore, d.vMedPharmAfter) +
+      detailRow("PA Policy link", d.vPaBefore, d.vPaAfter);
+  }
+
+  // Activity log (single mock entry, matching the screenshot style)
+  const log = document.getElementById("wdActivity");
+  if (log) {
+    log.innerHTML = `
+      <div class="wd-log-entry">
+        <span class="wd-log-avatar">${sfEsc((d.steward || "?").slice(0,2).toUpperCase())}</span>
+        <div class="wd-log-body">
+          <div class="wd-log-head"><b>${sfEsc(d.steward)}</b> changed 32 properties using <b>[Qa] BulkAssignSingleStewardToMultipleWin</b></div>
+          <div class="wd-log-meta">${sfEsc(d.lastUpdate)}</div>
+          <div class="wd-log-meta">Owning Resource: ri.workshop.main.module.b1da0b0d-8614-4496-8216-eac616b75f64</div>
+          <div class="wd-log-detail">Current for Review Effective Policy Date … ${sfEsc(d.vEffAfter)}</div>
+        </div>
+      </div>`;
+  }
+
+  // Summary panel — Policy Information
+  set("wdSumWinId", d.winId);
+  set("wdSumPayer", d.payer);
+  set("wdSumBob", d.bob);
+  set("wdSumProduct", d.product);
+  set("wdSumIndication", d.subInd);
+  set("wdSumBenefit", d.benefit);
+  // Summary panel — Wins Information
+  set("wdSumSubmitted", d.dateSubmitted);
+  set("wdSumSpoc", d.spoc);
+  set("wdSumSteward", d.steward);
+  set("wdSumStatus", d.detailStatus);
+  set("wdSumP360", d.p360Status);
+  set("wdSumRationale", d.stewardRationale);
+  set("wdSumExistsAg", d.existsInAg);
+  set("wdSumDcr", d.dcrTriggered);
+}
+
+function openWinDetail(id) {
+  renderWinDetail(id);
+  // Swap views: hide the wins list, show the detail page.
+  if (winsView) winsView.hidden = true;
+  const dv = document.getElementById("winDetailView");
+  if (dv) dv.hidden = false;
+  // Keep wins sidebar filters visible/consistent.
+  window.scrollTo && window.scrollTo(0, 0);
+}
+
+function closeWinDetail() {
+  const dv = document.getElementById("winDetailView");
+  if (dv) dv.hidden = true;
+  if (winsView) winsView.hidden = false;
+  renderWinsPage();   // reflect any status/steward changes
+}
+
+// Set a new status on the current win, persist it, and refresh the header.
+function setWinDetailStatus(newStatus) {
+  if (!CURRENT_WIN_DETAIL) return;
+  WIN_STATUS_OVERRIDE[CURRENT_WIN_DETAIL] = newStatus;
+  renderWinDetail(CURRENT_WIN_DETAIL);
+  showToast(`Win ${CURRENT_WIN_DETAIL} → ${DETAIL_STATUS_LABEL[newStatus] || newStatus}`, false);
+}
+
+// ---- wire detail page actions -----------------------------------
+(function wireWinDetailActions() {
+  const back = document.getElementById("wdBack");
+  if (back) back.addEventListener("click", closeWinDetail);
+
+  const approve = document.getElementById("wdApprove");
+  if (approve) approve.addEventListener("click", () => setWinDetailStatus("APPROVED"));
+  const invalidate = document.getElementById("wdInvalidate");
+  if (invalidate) invalidate.addEventListener("click", () => setWinDetailStatus("INVALID"));
+  const reject = document.getElementById("wdReject");
+  if (reject) reject.addEventListener("click", () => setWinDetailStatus("INVALID"));
+
+  const sel = document.getElementById("wdSteward");
+  if (sel) sel.addEventListener("change", () => {
+    if (!CURRENT_WIN_DETAIL) return;
+    WIN_STEWARD_OVERRIDE[CURRENT_WIN_DETAIL] = sel.value;
+    renderWinDetail(CURRENT_WIN_DETAIL);
+    showToast(`Steward reassigned to ${sel.value}`, false);
   });
 })();
 
@@ -1385,6 +1591,9 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
     metricView.hidden = !showMetrics;
     if (winsView) winsView.hidden = !showWins;
     if (stewardshipToolView) stewardshipToolView.hidden = !showStTool;
+    // Leaving any tab closes the win detail page.
+    const dv = document.getElementById("winDetailView");
+    if (dv) dv.hidden = true;
 
     if (showMetrics) {
       stewardshipFilters.hidden = false;
