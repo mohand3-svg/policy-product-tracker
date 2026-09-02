@@ -852,3 +852,60 @@ body {
 }
 .wd-sib-top .wstatus { margin-left: auto; }
 .wd-sib-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ============================================================
+   CREATE DCR form modal
+   ============================================================ */
+.dcr-modal {
+  width: min(1180px, 96vw); max-height: 92vh; display: flex; flex-direction: column;
+  border-radius: 8px; overflow: hidden; padding: 0; background: #fff;
+  box-shadow: 0 24px 70px rgba(0,0,0,.35); animation: pop .15s ease;
+}
+.dcr-modal-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 12px 18px; border-bottom: 1px solid var(--border); background: #fff;
+}
+.dcr-modal-title { display: flex; flex-direction: column; gap: 2px; }
+.dcr-modal-title > span:first-child { font-size: 15px; font-weight: 800; color: #1f2937; }
+.dcr-modal-sub { font-size: 11.5px; color: var(--muted); }
+.dcr-modal-body { padding: 0; overflow: auto; background: #fff; }
+
+/* Two-column grid; matches the mockup's left context / right fields split */
+.dcr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 16px; }
+.dcr-col { display: flex; flex-direction: column; gap: 14px; }
+
+/* A cell = grey label sub-panel on the left, value/input area on the right */
+.dcr-cell {
+  display: grid; grid-template-columns: 220px 1fr; align-items: stretch;
+  border: 1px solid #e6e8ee; border-radius: 4px; overflow: hidden; background: #fff;
+}
+.dcr-cell-tall { min-height: 200px; }
+.dcr-cell-label {
+  background: #edeff3; color: #1f2937; font-size: 12.5px; font-weight: 700;
+  padding: 12px 14px; border-right: 1px solid #e6e8ee;
+}
+.dcr-cell-value {
+  padding: 12px 14px; font-size: 12.5px; color: #374151; white-space: pre-wrap;
+  word-break: break-word; overflow: auto;
+}
+/* Right-column editable inputs sit in the value area with a small margin */
+.dcr-col-right .dcr-cell { align-items: start; }
+.dcr-input {
+  margin: 10px 14px; padding: 8px 10px; font-size: 12.5px; color: #374151;
+  border: 1px solid #c9ccd6; border-radius: 4px; background: #fff; width: calc(100% - 28px);
+}
+.dcr-input:focus { outline: none; border-color: #93b4f5; box-shadow: 0 0 0 2px #e5eefc; }
+select.dcr-input { cursor: pointer; }
+
+.dcr-modal-foot {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 12px 18px; border-top: 1px solid var(--border); background: #fafbfc;
+}
+.dcr-create-confirm { background: #2f6df6; color: #fff; }
+.dcr-create-confirm:hover { background: #245fe0; }
+
+@media (max-width: 860px) {
+  .dcr-grid { grid-template-columns: 1fr; }
+  .dcr-cell { grid-template-columns: 140px 1fr; }
+  .dcr-cell-tall { min-height: 120px; }
+}

@@ -442,14 +442,72 @@ document.getElementById("createMultiBtn").addEventListener("click", () => {
   window.location.href = "multi-form.html";
 });
 
+// Opening the Create DCR form modal, prefilled from the request row.
+let DCR_MODAL_ROW = null;
+
 function createDcrForRow(r) {
-  r.dcrCode = "DCR-" + Math.floor(1000 + Math.random()*9000);
+  openDcrModal(r);
+}
+
+// Map a request's coverage fields into the DCR form defaults.
+function openDcrModal(r) {
+  DCR_MODAL_ROW = r;
+  const modal = document.getElementById("dcrModal");
+  if (!modal) return;
+
+  const sub = document.getElementById("dcrModalSub");
+  if (sub) sub.textContent = `${r.id} · ${r.payer} · ${r.brand}`;
+
+  // Left panel — read-only coverage context derived from the row.
+  const setTxt = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = (v && String(v).trim()) ? v : "—"; };
+  setTxt("dcrGneHpm", r.mmitHpm || r.gne);
+  setTxt("dcrPaPiSummary", r.comments && r.comments !== "<Free Text>" ? r.comments : (r.gne || "—"));
+
+  // Right panel — editable fields, defaulted from the row where sensible.
+  const setVal = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
+  const paDefault = /NO PA|NO\s*PA|WITH NO PA/i.test(r.gne || "") ? "No" : "Yes";
+  setVal("dcrPaRequired", document.querySelector(`#dcrPaRequired option[value="${paDefault}"]`) ? paDefault : "No");
+  setVal("dcrStepEdit", "Yes");
+  setVal("dcrStepPlacement", "N/A");
+  setVal("dcrStepProducts", "");
+  setVal("dcrNumSteps", "1");
+
+  modal.classList.add("open");
+}
+
+function closeDcrModal() {
+  const modal = document.getElementById("dcrModal");
+  if (modal) modal.classList.remove("open");
+  DCR_MODAL_ROW = null;
+}
+
+// Confirm — generate the DCR code and apply it to the row (the real save).
+function confirmCreateDcr() {
+  const r = DCR_MODAL_ROW;
+  if (!r) { closeDcrModal(); return; }
+  r.dcrCode = "DCR-" + Math.floor(1000 + Math.random() * 9000);
   r.dcr = "DCRCreated";
+  const steps = document.getElementById("dcrNumSteps");
+  const placement = document.getElementById("dcrStepPlacement");
   logHistory(r.id, "DCR Status", "—", "DCR Created (" + r.dcrCode + ")");
+  if (placement && placement.value) logHistory(r.id, "Step Therapy Placement", "—", placement.value);
   renderRows();
   markDirty();
+  closeDcrModal();
   showToast(`Created ${r.dcrCode} for ${r.id}`, false);
 }
+
+// Wire modal controls (close, cancel, confirm, backdrop click).
+(function wireDcrModal() {
+  const close = document.getElementById("dcrClose");
+  const cancel = document.getElementById("dcrCancel");
+  const confirm = document.getElementById("dcrCreateConfirm");
+  const modal = document.getElementById("dcrModal");
+  if (close) close.addEventListener("click", closeDcrModal);
+  if (cancel) cancel.addEventListener("click", closeDcrModal);
+  if (confirm) confirm.addEventListener("click", confirmCreateDcr);
+  if (modal) modal.addEventListener("click", e => { if (e.target === modal) closeDcrModal(); });
+})();
 
 function getSelectedRows() {
   const ids = [...gridBody.querySelectorAll(".row-cb:checked")]

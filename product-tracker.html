@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=52" />
+<link rel="stylesheet" href="styles.css?v=53" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -714,8 +714,78 @@
     </div>
   </div>
 
+  <!-- ===== CREATE DCR FORM MODAL ===== -->
+  <div class="modal-overlay" id="dcrModal">
+    <div class="modal-card dcr-modal">
+      <div class="dcr-modal-head">
+        <div class="dcr-modal-title">
+          <span>Create DCR</span>
+          <span class="dcr-modal-sub" id="dcrModalSub">—</span>
+        </div>
+        <button class="modal-x" id="dcrClose" title="Close">✕</button>
+      </div>
+
+      <div class="dcr-modal-body">
+        <div class="dcr-grid">
+          <!-- LEFT: read-only coverage context -->
+          <div class="dcr-col dcr-col-left">
+            <div class="dcr-cell dcr-cell-tall">
+              <div class="dcr-cell-label">GNE HPM Status</div>
+              <div class="dcr-cell-value" id="dcrGneHpm">—</div>
+            </div>
+            <div class="dcr-cell dcr-cell-tall">
+              <div class="dcr-cell-label">PA and PI Summary</div>
+              <div class="dcr-cell-value" id="dcrPaPiSummary">—</div>
+            </div>
+          </div>
+
+          <!-- RIGHT: editable DCR fields -->
+          <div class="dcr-col dcr-col-right">
+            <div class="dcr-cell">
+              <div class="dcr-cell-label">PA Required</div>
+              <select class="dcr-input" id="dcrPaRequired">
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+            </div>
+            <div class="dcr-cell">
+              <div class="dcr-cell-label">Step Edit</div>
+              <select class="dcr-input" id="dcrStepEdit">
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+            <div class="dcr-cell">
+              <div class="dcr-cell-label">Step Therapy Placement</div>
+              <select class="dcr-input" id="dcrStepPlacement">
+                <option>N/A</option>
+                <option>ST Single Generic</option>
+                <option>ST Generic and Brand</option>
+                <option>ST Single Brand</option>
+                <option>No Step</option>
+              </select>
+            </div>
+            <div class="dcr-cell">
+              <div class="dcr-cell-label">Step Products</div>
+              <input type="text" class="dcr-input" id="dcrStepProducts" placeholder="" />
+            </div>
+            <div class="dcr-cell">
+              <div class="dcr-cell-label">Number of Steps</div>
+              <input type="number" class="dcr-input" id="dcrNumSteps" min="0" value="1" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dcr-modal-foot">
+        <button class="btn btn-ghost" id="dcrCancel">Cancel</button>
+        <button class="btn dcr-create-confirm" id="dcrCreateConfirm">Create DCR</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=52"></script>
+  <script src="app.js?v=53"></script>
 </body>
 </html>
