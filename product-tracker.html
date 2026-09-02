@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=53" />
+<link rel="stylesheet" href="styles.css?v=54" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -714,71 +714,131 @@
     </div>
   </div>
 
-  <!-- ===== CREATE DCR FORM MODAL ===== -->
+  <!-- ===== CREATE DCR / PAYER DETAILS MODAL ===== -->
   <div class="modal-overlay" id="dcrModal">
-    <div class="modal-card dcr-modal">
-      <div class="dcr-modal-head">
-        <div class="dcr-modal-title">
-          <span>Create DCR</span>
-          <span class="dcr-modal-sub" id="dcrModalSub">—</span>
+    <div class="modal-card pd-modal">
+      <div class="pd-head">
+        <span class="pd-title">Payer Details</span>
+        <div class="pd-head-right">
+          <button class="btn btn-ghost pd-head-cancel" id="dcrCancel">Cancel</button>
+          <button class="modal-x" id="dcrClose" title="Close">✕</button>
         </div>
-        <button class="modal-x" id="dcrClose" title="Close">✕</button>
       </div>
 
-      <div class="dcr-modal-body">
-        <div class="dcr-grid">
+      <div class="pd-body">
+        <!-- Top summary strip: 6 payer/context fields in two columns -->
+        <div class="pd-summary">
+          <div class="pd-sum-col">
+            <div class="pd-sum-item"><span class="pd-sum-ico">ℹ</span><div><div class="pd-sum-label">Payer</div><div class="pd-sum-value" id="pdPayer">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">℞</span><div><div class="pd-sum-label">Product</div><div class="pd-sum-value" id="pdProduct">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">$</span><div><div class="pd-sum-label">Benefit Type</div><div class="pd-sum-value" id="pdBenefit">—</div></div></div>
+          </div>
+          <div class="pd-sum-col">
+            <div class="pd-sum-item"><span class="pd-sum-ico">▤</span><div><div class="pd-sum-label">Book of Business</div><div class="pd-sum-value" id="pdBob">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">✚</span><div><div class="pd-sum-label">Indication</div><div class="pd-sum-value" id="pdIndication">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">◔</span><div><div class="pd-sum-label">State</div><div class="pd-sum-value" id="pdState">—</div></div></div>
+          </div>
+        </div>
+
+        <p class="pd-instruction">Please provide as much information as possible in the 'Proposed' column to help the stewardship team conduct their assessment.</p>
+
+        <div class="pd-content">
           <!-- LEFT: read-only coverage context -->
-          <div class="dcr-col dcr-col-left">
-            <div class="dcr-cell dcr-cell-tall">
-              <div class="dcr-cell-label">GNE HPM Status</div>
-              <div class="dcr-cell-value" id="dcrGneHpm">—</div>
+          <div class="pd-left">
+            <div class="pd-ctx-cell">
+              <div class="pd-ctx-label">GNE HPM Status</div>
+              <div class="pd-ctx-value" id="dcrGneHpm">—</div>
             </div>
-            <div class="dcr-cell dcr-cell-tall">
-              <div class="dcr-cell-label">PA and PI Summary</div>
-              <div class="dcr-cell-value" id="dcrPaPiSummary">—</div>
+            <div class="pd-ctx-cell">
+              <div class="pd-ctx-label">PA and PI Summary</div>
+              <div class="pd-ctx-value" id="dcrPaPiSummary">—</div>
             </div>
           </div>
 
-          <!-- RIGHT: editable DCR fields -->
-          <div class="dcr-col dcr-col-right">
-            <div class="dcr-cell">
-              <div class="dcr-cell-label">PA Required</div>
-              <select class="dcr-input" id="dcrPaRequired">
-                <option>No</option>
-                <option>Yes</option>
-              </select>
-            </div>
-            <div class="dcr-cell">
-              <div class="dcr-cell-label">Step Edit</div>
-              <select class="dcr-input" id="dcrStepEdit">
-                <option>Yes</option>
-                <option>No</option>
-              </select>
-            </div>
-            <div class="dcr-cell">
-              <div class="dcr-cell-label">Step Therapy Placement</div>
-              <select class="dcr-input" id="dcrStepPlacement">
-                <option>N/A</option>
-                <option>ST Single Generic</option>
-                <option>ST Generic and Brand</option>
-                <option>ST Single Brand</option>
-                <option>No Step</option>
-              </select>
-            </div>
-            <div class="dcr-cell">
-              <div class="dcr-cell-label">Step Products</div>
-              <input type="text" class="dcr-input" id="dcrStepProducts" placeholder="" />
-            </div>
-            <div class="dcr-cell">
-              <div class="dcr-cell-label">Number of Steps</div>
-              <input type="number" class="dcr-input" id="dcrNumSteps" min="0" value="1" />
-            </div>
+          <!-- RIGHT: Values / Current / Proposed comparison table -->
+          <div class="pd-right">
+            <table class="pd-table">
+              <thead>
+                <tr><th class="pd-th-val">Values</th><th>Current</th><th>Proposed</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="pd-val">Prior Authorization Required</td>
+                  <td><input class="pd-input pd-current" id="pdCurPa" readonly value="No" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="dcrPaRequired"><option>No</option><option>Yes</option></select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Step Edit</td>
+                  <td><input class="pd-input pd-current" id="pdCurStepEdit" readonly value="No" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="dcrStepEdit"><option>Yes</option><option>No</option></select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Number of Steps</td>
+                  <td><input class="pd-input pd-current" id="pdCurNumSteps" readonly value="1" /></td>
+                  <td><input type="number" class="pd-input pd-proposed" id="dcrNumSteps" min="0" value="1" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Step Therapy Placement</td>
+                  <td><input class="pd-input pd-current" id="pdCurPlacement" readonly value="Not Covered" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="dcrStepPlacement">
+                      <option>N/A</option><option>Not Covered</option><option>ST Single Generic</option>
+                      <option>ST Generic and Brand</option><option>ST Single Brand</option><option>No Step</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Step Products</td>
+                  <td><input class="pd-input pd-current" id="pdCurStepProducts" readonly value="" /></td>
+                  <td><input type="text" class="pd-input pd-proposed" id="dcrStepProducts" /></td>
+                </tr>
+
+                <tr class="pd-spacer"><td colspan="3"></td></tr>
+
+                <tr>
+                  <td class="pd-val">Derived Simplified Policy Status</td>
+                  <td><input class="pd-input pd-current" id="pdCurSimplified" readonly value="NOT COVERED" /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropSimplified" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Policy Link</td>
+                  <td><input class="pd-input pd-current" id="pdCurPolicyLink" readonly /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropPolicyLink" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Site of Care Link</td>
+                  <td><input class="pd-input pd-current" id="pdCurSocLink" readonly /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropSocLink" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">PA Form Link</td>
+                  <td><input class="pd-input pd-current" id="pdCurPaFormLink" readonly /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropPaFormLink" /></td>
+                </tr>
+
+                <tr class="pd-spacer"><td colspan="3"></td></tr>
+
+                <tr>
+                  <td class="pd-val">Effective Policy Date</td>
+                  <td><input class="pd-input pd-current" id="pdCurEffDate" readonly value="—" /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropEffDate" placeholder="tbd" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">State</td>
+                  <td><input class="pd-input pd-current" id="pdCurStateRow" readonly value="all" /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropStateRow" value="all" /></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <div class="dcr-modal-foot">
-        <button class="btn btn-ghost" id="dcrCancel">Cancel</button>
+      <div class="pd-foot">
         <button class="btn dcr-create-confirm" id="dcrCreateConfirm">Create DCR</button>
       </div>
     </div>
@@ -786,6 +846,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=53"></script>
+  <script src="app.js?v=54"></script>
 </body>
 </html>

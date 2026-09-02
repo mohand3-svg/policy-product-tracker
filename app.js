@@ -449,28 +449,55 @@ function createDcrForRow(r) {
   openDcrModal(r);
 }
 
-// Map a request's coverage fields into the DCR form defaults.
+// Map a request's coverage fields into the Payer Details form.
 function openDcrModal(r) {
   DCR_MODAL_ROW = r;
   const modal = document.getElementById("dcrModal");
   if (!modal) return;
 
-  const sub = document.getElementById("dcrModalSub");
-  if (sub) sub.textContent = `${r.id} · ${r.payer} · ${r.brand}`;
-
-  // Left panel — read-only coverage context derived from the row.
   const setTxt = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = (v && String(v).trim()) ? v : "—"; };
+  const setVal = (id, v) => { const e = document.getElementById(id); if (e) e.value = (v === undefined || v === null) ? "" : v; };
+
+  // Top summary strip — payer/product context.
+  setTxt("pdPayer", r.parentPayer ? `${r.payer} (${r.parentPayer})` : r.payer);
+  setTxt("pdProduct", r.brand);
+  setTxt("pdBenefit", (r.benefit || "").toUpperCase() + (r.benefit ? " BENEFIT" : ""));
+  setTxt("pdBob", (r.bob || "").toUpperCase());
+  setTxt("pdIndication", r.indication);
+  setTxt("pdState", r.geo || "ALL");
+
+  // Left read-only coverage context.
   setTxt("dcrGneHpm", r.mmitHpm || r.gne);
   setTxt("dcrPaPiSummary", r.comments && r.comments !== "<Free Text>" ? r.comments : (r.gne || "—"));
 
-  // Right panel — editable fields, defaulted from the row where sensible.
-  const setVal = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
-  const paDefault = /NO PA|NO\s*PA|WITH NO PA/i.test(r.gne || "") ? "No" : "Yes";
-  setVal("dcrPaRequired", document.querySelector(`#dcrPaRequired option[value="${paDefault}"]`) ? paDefault : "No");
-  setVal("dcrStepEdit", "Yes");
-  setVal("dcrStepPlacement", "N/A");
+  // Current column — derived from the row (read-only "as-is" values).
+  const paCurrent = /NO PA|WITH NO PA/i.test(r.gne || "") ? "No" : "Yes";
+  const simplifiedCurrent = /NOT COVERED/i.test(r.gne || "") ? "NOT COVERED"
+    : /TO PI/i.test(r.gne || "") ? "COVERED" : (r.gne || "—");
+  setVal("pdCurPa", paCurrent);
+  setVal("pdCurStepEdit", "No");
+  setVal("pdCurNumSteps", "1");
+  setVal("pdCurPlacement", "Not Covered");
+  setVal("pdCurStepProducts", "");
+  setVal("pdCurSimplified", simplifiedCurrent);
+  setVal("pdCurPolicyLink", "");
+  setVal("pdCurSocLink", "");
+  setVal("pdCurPaFormLink", "");
+  setVal("pdCurEffDate", "—");
+  setVal("pdCurStateRow", "all");
+
+  // Proposed column — editable, defaulted to the current values as a starting point.
+  setVal("dcrPaRequired", paCurrent);
+  setVal("dcrStepEdit", "No");
+  setVal("dcrStepPlacement", "Not Covered");
   setVal("dcrStepProducts", "");
   setVal("dcrNumSteps", "1");
+  setVal("pdPropSimplified", "");
+  setVal("pdPropPolicyLink", "");
+  setVal("pdPropSocLink", "");
+  setVal("pdPropPaFormLink", "");
+  setVal("pdPropEffDate", "");
+  setVal("pdPropStateRow", "all");
 
   modal.classList.add("open");
 }
