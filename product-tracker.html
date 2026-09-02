@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=54" />
+<link rel="stylesheet" href="styles.css?v=55" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -740,8 +740,6 @@
           </div>
         </div>
 
-        <p class="pd-instruction">Please provide as much information as possible in the 'Proposed' column to help the stewardship team conduct their assessment.</p>
-
         <div class="pd-content">
           <!-- LEFT: read-only coverage context -->
           <div class="pd-left">
@@ -829,8 +827,16 @@
                 </tr>
                 <tr>
                   <td class="pd-val">State</td>
-                  <td><input class="pd-input pd-current" id="pdCurStateRow" readonly value="all" /></td>
-                  <td><input class="pd-input pd-proposed" id="pdPropStateRow" value="all" /></td>
+                  <td>
+                    <select class="pd-input pd-current" id="pdCurStateRow" disabled>
+                      <option>National</option><option>AK</option><option>AL</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="pdPropStateRow">
+                      <option>National</option><option>AK</option><option>AL</option>
+                    </select>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -846,6 +852,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=54"></script>
+  <script src="app.js?v=55"></script>
 </body>
 </html>

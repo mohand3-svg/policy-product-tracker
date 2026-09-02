@@ -484,7 +484,7 @@ function openDcrModal(r) {
   setVal("pdCurSocLink", "");
   setVal("pdCurPaFormLink", "");
   setVal("pdCurEffDate", "—");
-  setVal("pdCurStateRow", "all");
+  setVal("pdCurStateRow", "National");
 
   // Proposed column — editable, defaulted to the current values as a starting point.
   setVal("dcrPaRequired", paCurrent);
@@ -497,7 +497,7 @@ function openDcrModal(r) {
   setVal("pdPropSocLink", "");
   setVal("pdPropPaFormLink", "");
   setVal("pdPropEffDate", "");
-  setVal("pdPropStateRow", "all");
+  setVal("pdPropStateRow", "National");
 
   modal.classList.add("open");
 }
