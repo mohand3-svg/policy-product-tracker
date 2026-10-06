@@ -74,6 +74,12 @@ const ROWS = loadRows();
 
 // ---- helper to format lives -------------------------------------
 const fmtLives = n => n.toLocaleString();
+function pbmCoverageForPolicy(policy, index) {
+  const benefit = String(policy.benefit || "").toUpperCase();
+  return benefit.includes("PHARMACY") && index % 3 === 1
+    ? "Custom Formulary"
+    : "National Formulary";
+}
 
 // ---- state -------------------------------------------------------
 let editMode = false;
@@ -480,6 +486,7 @@ function openDcrModal(r) {
   setVal("pdCurPlacement", "Not Covered");
   setVal("pdCurStepProducts", "");
   setVal("pdCurSimplified", simplifiedCurrent);
+  setVal("pdCurPbmCoverage", "National Formulary");
   setVal("pdCurPolicyLink", "");
   setVal("pdCurSocLink", "");
   setVal("pdCurPaFormLink", "");
@@ -493,6 +500,7 @@ function openDcrModal(r) {
   setVal("dcrStepProducts", "");
   setVal("dcrNumSteps", "1");
   setVal("pdPropSimplified", "");
+  setVal("pdPropPbmCoverage", "National Formulary");
   setVal("pdPropPolicyLink", "");
   setVal("pdPropSocLink", "");
   setVal("pdPropPaFormLink", "");
@@ -611,9 +619,15 @@ document.getElementById("resetFilters").addEventListener("click", () => {
   // Clear wins filter state too, so switching tabs stays consistent
   winFilters.brand.clear(); winFilters.subInd.clear();
   winFilters.bob.clear(); winFilters.benefit.clear();
+  if (typeof DRAFT_FILTERS_STATE !== "undefined") {
+    Object.values(DRAFT_FILTERS_STATE).forEach(s => s.clear());
+  }
   document.querySelectorAll("#winsFilters .filter-cb").forEach(c => c.checked = false);
+  document.querySelectorAll("#draftFilters .filter-cb").forEach(c => c.checked = false);
   // Re-render whichever view is currently visible
-  if (!winsFilters.hidden) renderWins(); else renderRows();
+  if (!draftFilters.hidden) renderDrafts();
+  else if (!winsFilters.hidden) renderWins();
+  else renderRows();
   showToast("Filters reset", false);
 });
 document.querySelectorAll("[data-toggle]").forEach(t => {
@@ -918,10 +932,10 @@ function renderWinsTable(rows) {
   const body = document.getElementById("winsBody");
   body.innerHTML = "";
   if (rows.length === 0) {
-    body.innerHTML = `<tr><td colspan="7" class="wins-empty">No WINs match the current filters</td></tr>`;
+    body.innerHTML = `<tr><td colspan="8" class="wins-empty">No WINs match the current filters</td></tr>`;
     return;
   }
-  rows.forEach(w => {
+  rows.forEach((w, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML =
       `<td class="win-id">${w.id}</td>` +
@@ -930,6 +944,7 @@ function renderWinsTable(rows) {
       `<td>${w.brand}</td>` +
       `<td>${w.bob}</td>` +
       `<td>${w.benefit}</td>` +
+      `<td>${pbmCoverageForPolicy(w, i)}</td>` +
       `<td>${w.subInd}</td>`;
     body.appendChild(tr);
   });
@@ -1239,12 +1254,12 @@ function renderWinsPage() {
   }
 
   if (rows.length === 0) {
-    body.innerHTML = `<tr><td colspan="23" class="wins-empty">No policy wins match the current filters</td></tr>`;
+    body.innerHTML = `<tr><td colspan="24" class="wins-empty">No policy wins match the current filters</td></tr>`;
     updateWinsSelCount();
     return;
   }
 
-  body.innerHTML = rows.map(w => `
+  body.innerHTML = rows.map((w, i) => `
     <tr class="${w._dup && w._dup.dupType === "potential" ? "win-row-dup" : ""}">
       <td class="wcol-check"><input type="checkbox" class="win-row-cb" data-id="${sfEsc(w.winId)}" /></td>
       <td class="win-id"><a class="win-id-link" data-id="${sfEsc(w.winId)}">${sfEsc(w.winId)}</a>${dupBadge(w._dup)}</td>
@@ -1253,6 +1268,7 @@ function renderWinsPage() {
       ${winCell(w.brand)}
       ${winCell(w.subInd)}
       ${winCell(w.benefit)}
+      ${winCell(pbmCoverageForPolicy(w, i))}
       ${winCell(w.lives, "wc-lives")}
       ${winCell(w.simpleBefore)}
       ${winCell(w.simpleAfter)}
@@ -1358,6 +1374,8 @@ function buildWinDetail(id) {
     // Before / After value pairs
     vSimpleBefore: "NOT COVERED",
     vSimpleAfter: pick(AFTER_SIMPLE, h >>> 2),
+    vPbmBefore: "National Formulary",
+    vPbmAfter: pbmCoverageForPolicy(base, h),
     vPolicyBefore: "NOT COVERED",
     vPolicyAfter: pick(POLICY_STATUS_AFTER, h >>> 4),
     vStepBefore: "Not Covered",
@@ -1433,6 +1451,7 @@ function renderWinDetail(id) {
   if (tbody) {
     tbody.innerHTML =
       detailRow("Simplified Policy Status", d.vSimpleBefore, d.vSimpleAfter) +
+      detailRow("PBM Coverage", d.vPbmBefore, d.vPbmAfter) +
       detailRow("Policy Status", d.vPolicyBefore, d.vPolicyAfter) +
       detailRow("Step Therapy Placement", d.vStepBefore, d.vStepAfter) +
       detailRow("Policy Win Expiration Date", d.vExpBefore, d.vExpAfter) +
@@ -1465,6 +1484,7 @@ function renderWinDetail(id) {
   set("wdSumProduct", d.product);
   set("wdSumIndication", d.subInd);
   set("wdSumBenefit", d.benefit);
+  set("wdSumPbmCoverage", d.vPbmAfter);
   // Summary panel — Wins Information
   set("wdSumSubmitted", d.dateSubmitted);
   set("wdSumSpoc", d.spoc);
@@ -1701,12 +1721,12 @@ function renderStTool() {
   if (cnt) cnt.textContent = String(rows.length);
 
   if (rows.length === 0) {
-    body.innerHTML = `<tr><td colspan="12" class="wins-empty">No requests match the current filters</td></tr>`;
+    body.innerHTML = `<tr><td colspan="13" class="wins-empty">No requests match the current filters</td></tr>`;
     updateStSelCount();
     return;
   }
 
-  body.innerHTML = rows.map(r => `
+  body.innerHTML = rows.map((r, i) => `
     <tr>
       <td class="stcol-check"><input type="checkbox" class="st-row-cb" data-id="${sfEsc(r.id)}" /></td>
       <td class="st-id">${sfEsc(r.id)}</td>
@@ -1716,6 +1736,7 @@ function renderStTool() {
       <td>${sfEsc(r.indication)}</td>
       <td>${sfEsc(r.bob)}</td>
       <td>${sfEsc(r.benefit)}</td>
+      <td>${sfEsc(pbmCoverageForPolicy(r, i))}</td>
       <td class="st-lives">${Number(r.lives).toLocaleString()}</td>
       <td>${stMmitBadge(r.mmit)}</td>
       <td>${stStatusBadge(r.dcr)}</td>
@@ -1800,6 +1821,201 @@ document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
   });
 })();
 
+/* ============================================================
+   DRAFT DCR STORE — compact request workbench mockup
+   ============================================================ */
+const DRAFT_ROWS = [
+  { id:"DCR-30021", payer:"3M (EMPLOYER)", bob:"COMMERCIAL", product:"ACTEMRA SC", indication:"Rheumatoid Arthritis", benefit:"PHARMACY", lives:40512, submitted:"Sep 16, 2026", steward:"Udayakumar", stewardAssigned:"NATIONAL", status:"NEW", last:"Sep 21, 2026", duplicate:"", url:"Open", state:"NATIONAL" },
+  { id:"DCR-30022", payer:"84 LUMBER COMPANY", bob:"COMMERCIAL", product:"ACTEMRA SC", indication:"Rheumatoid Arthritis", benefit:"PHARMACY", lives:6633, submitted:"Sep 21, 2026", steward:"Pradeep", stewardAssigned:"No value", status:"APPROVED", last:"Sep 21, 2026", duplicate:"✓", url:"Open", state:"NATIONAL" },
+  { id:"DCR-30023", payer:"84 LUMBER COMPANY", bob:"COMMERCIAL", product:"ACTEMRA SC", indication:"Rheumatoid Arthritis", benefit:"PHARMACY", lives:6633, submitted:"Sep 21, 2026", steward:"Syed", stewardAssigned:"CA", status:"APPROVED", last:"Sep 21, 2026", duplicate:"", url:"Open", state:"NATIONAL" },
+  { id:"DCR-30024", payer:"CIGNA", bob:"COMMERCIAL", product:"VABYSMO", indication:"Neovascular Age Related Macular Degeneration", benefit:"MEDICAL", lives:50821, submitted:"Sep 17, 2026", steward:"Amit", stewardAssigned:"AK", status:"IN PROGRESS", last:"Sep 22, 2026", duplicate:"", url:"Open", state:"AL" },
+  { id:"DCR-30025", payer:"CIGNA", bob:"COMMERCIAL", product:"ALECENSA", indication:"ALK-positive NSCLC", benefit:"PHARMACY", lives:28749, submitted:"Sep 18, 2026", steward:"Koushik", stewardAssigned:"AR", status:"REJECTED", last:"Sep 23, 2026", duplicate:"✓", url:"Open", state:"CA" },
+  { id:"DCR-30026", payer:"3M (EMPLOYER)", bob:"COMMERCIAL", product:"VABYSMO", indication:"Neovascular Age Related Macular Degeneration", benefit:"MEDICAL", lives:64012, submitted:"Sep 19, 2026", steward:"Syed", stewardAssigned:"NATIONAL", status:"REVERTED", last:"Sep 23, 2026", duplicate:"", url:"Open", state:"NY" },
+];
+
+const DRAFT_MY_ROWS = [
+  { id:"DCR-F6DE4", payer:"3M (EMPLOYER)", bob:"COMMERCIAL", product:"ACTEMRA SC", indication:"Rheumatoid Arthritis", benefit:"PHARMACY BENEFIT", lives:"40,512.98", submitted:"Sep 17, 2026", state:"NATIONAL", submitter:"Auto-Created", steward:"Dhivyaa Mohan", status:"IN PROGRESS", last:"Oct 6, 2026, 11:00 AM", duplicate:true, url:"Open DCRs" },
+  { id:"DCR-4232D", payer:"84 LUMBER COMPANY", bob:"COMMERCIAL", product:"ACTEMRA SC", indication:"Rheumatoid Arthritis", benefit:"PHARMACY BENEFIT", lives:"6,623.88", submitted:"Sep 16, 2026", state:"NATIONAL", submitter:"Auto-Created", steward:"Dhivyaa Mohan", status:"IN PROGRESS", last:"Oct 6, 2026, 11:00 AM", duplicate:true, url:"Open DCRs" },
+  { id:"DCR-6BEF9", payer:"3M (EMPLOYER)", bob:"COMMERCIAL", product:"ACTEMRA SC", indication:"Rheumatoid Arthritis", benefit:"PHARMACY BENEFIT", lives:"40,512.98", submitted:"Sep 17, 2026", state:"NATIONAL", submitter:"Auto-Created", steward:"Dhivyaa Mohan", status:"IN PROGRESS", last:"Oct 6, 2026, 11:00 AM", duplicate:true, url:"Open DCRs" },
+];
+
+const DRAFT_FILTERS_STATE = { status: new Set(), payer: new Set(), product: new Set(), bob: new Set(), indication: new Set(), steward: new Set() };
+let draftSubview = "mine";
+let draftsBuilt = false;
+
+function buildDraftFilter(containerId, values, key, checkedAll) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = "";
+  values.forEach(([val, cnt]) => {
+    const lab = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.className = "filter-cb";
+    cb.value = val;
+    cb.checked = !!checkedAll;
+    if (checkedAll) DRAFT_FILTERS_STATE[key].add(val);
+    cb.addEventListener("change", () => {
+      if (cb.checked) DRAFT_FILTERS_STATE[key].add(val); else DRAFT_FILTERS_STATE[key].delete(val);
+      renderDrafts();
+    });
+    lab.appendChild(cb);
+    lab.appendChild(document.createTextNode(" " + val + " "));
+    const c = document.createElement("span");
+    c.className = "count";
+    c.textContent = cnt;
+    lab.appendChild(c);
+    el.appendChild(lab);
+  });
+}
+
+function draftTally(fn) {
+  const m = {};
+  DRAFT_ROWS.forEach(d => {
+    const key = fn(d);
+    if (!key) return;
+    m[key] = (m[key] || 0) + 1;
+  });
+  return Object.entries(m).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+
+function buildDraftFilters() {
+  Object.values(DRAFT_FILTERS_STATE).forEach(s => s.clear());
+  buildDraftFilter("draftFilterStatus", [["NEW",77],["APPROVED",48],["IN PROGRESS",11],["REJECTED",8],["REVERTED",2]], "status", false);
+  buildDraftFilter("draftFilterPayer", [["3M (EMPLOYER)",81],["CIGNA",51],["84 LUMBER COMPANY",14]], "payer", true);
+  buildDraftFilter("draftFilterProduct", [["ACTEMRA SC",51],["VABYSMO",50],["ALECENSA",42]], "product", true);
+  buildDraftFilter("draftFilterBob", [["COMMERCIAL",146]], "bob", true);
+  buildDraftFilter("draftFilterIndication", [
+    ["Rheumatoid Arthritis",54],
+    ["Neovascular Age Rela...",50],
+    ["ALK-positive NSCLC",42],
+  ], "indication", true);
+  buildDraftFilter("draftFilterSteward", [["NATIONAL",688],["No value",50],["CA",16],["AK",11],["AR",8]], "steward", false);
+}
+
+function draftMatchesSubview(d) {
+  if (draftSubview === "open") return d.status === "NEW" || d.status === "IN PROGRESS";
+  if (draftSubview === "completed") return d.status === "APPROVED" || d.status === "REJECTED" || d.status === "REVERTED";
+  return true;
+}
+
+function draftIndicationOk(d) {
+  const selected = DRAFT_FILTERS_STATE.indication;
+  if (selected.size === 0) return true;
+  return [...selected].some(v => d.indication.startsWith(v.replace("...", "")));
+}
+
+function filteredDrafts() {
+  if (draftSubview === "mine") return DRAFT_MY_ROWS;
+  return DRAFT_ROWS.filter(d =>
+    draftMatchesSubview(d) &&
+    (DRAFT_FILTERS_STATE.status.size === 0 || DRAFT_FILTERS_STATE.status.has(d.status)) &&
+    (DRAFT_FILTERS_STATE.payer.size === 0 || DRAFT_FILTERS_STATE.payer.has(d.payer)) &&
+    (DRAFT_FILTERS_STATE.product.size === 0 || DRAFT_FILTERS_STATE.product.has(d.product)) &&
+    (DRAFT_FILTERS_STATE.bob.size === 0 || DRAFT_FILTERS_STATE.bob.has(d.bob)) &&
+    (DRAFT_FILTERS_STATE.steward.size === 0 || DRAFT_FILTERS_STATE.steward.has(d.stewardAssigned)) &&
+    draftIndicationOk(d)
+  );
+}
+
+function draftStatusClass(status) {
+  return "draft-status-" + String(status).toLowerCase().replace(/\s+/g, "-");
+}
+
+function renderDraftHeader() {
+  const head = document.getElementById("draftHeadRow");
+  if (!head) return;
+  const cols = draftSubview === "mine"
+    ? ["Dcr Identifier","Payer","Book of Business","Product","Indication","Benefit Type","Number of Lives","Date Submitted","State","Submitter","Steward Assigned","Status","Last Activity Date","Duplicate","Dcr's URL"]
+    : ["Dcr Identifier","Payer","Book of Business","Product","Indication","Benefit Type","Number of Lives","Submitted","Steward Assigned","Status","Last Activity Date","isDuplicate","Dcr URL","State"];
+  head.innerHTML = cols.map((c, i) => {
+    const sort = draftSubview === "mine" && (c === "Date Submitted" || c === "Last Activity Date") ? "<span class=\"draft-sort-icon\">⌄≡</span>" : "";
+    const cls = draftSubview === "mine" && (i === 7 || i === 12) ? " class=\"draft-sort-head\"" : "";
+    return `<th${cls}>${sfEsc(c)}${sort}</th>`;
+  }).join("");
+}
+
+function renderMyDraftRows(rows) {
+  return rows.map((d, i) => `
+    <tr data-id="${sfEsc(d.id)}" class="${i === 1 ? "draft-my-selected" : ""}">
+      <td class="draft-id">${sfEsc(d.id)}</td>
+      <td>${sfEsc(d.payer)}</td>
+      <td>${sfEsc(d.bob)}</td>
+      <td>${sfEsc(d.product)}</td>
+      <td>${sfEsc(d.indication)}</td>
+      <td>${sfEsc(d.benefit)}</td>
+      <td>${sfEsc(d.lives)}</td>
+      <td>${sfEsc(d.submitted)}</td>
+      <td>${sfEsc(d.state)}</td>
+      <td><a class="draft-link">${sfEsc(d.submitter)}</a></td>
+      <td><a class="draft-link">${sfEsc(d.steward)}</a></td>
+      <td><span class="${draftStatusClass(d.status)}">${sfEsc("IN PRO...")}</span></td>
+      <td>${sfEsc(d.last)}</td>
+      <td class="draft-duplicate">${d.duplicate ? "⚑" : ""}</td>
+      <td><a class="draft-link">${sfEsc(d.url)}</a></td>
+    </tr>
+  `).join("");
+}
+
+function renderDrafts() {
+  const body = document.getElementById("draftBody");
+  if (!body) return;
+  const card = document.querySelector(".draft-request-card");
+  if (card) card.classList.toggle("draft-mine-mode", draftSubview === "mine");
+  renderDraftHeader();
+  const rows = filteredDrafts();
+  document.getElementById("draftRowCount").textContent = String(rows.length);
+  if (rows.length === 0) {
+    const colCount = draftSubview === "mine" ? 15 : 14;
+    body.innerHTML = `<tr><td colspan="${colCount}" class="draft-empty">No requests match the current filters</td></tr>`;
+  } else if (draftSubview === "mine") {
+    body.innerHTML = renderMyDraftRows(rows);
+  } else {
+    body.innerHTML = rows.map(d => `
+      <tr data-id="${sfEsc(d.id)}">
+        <td class="draft-id">${sfEsc(d.id)}</td>
+        <td>${sfEsc(d.payer)}</td>
+        <td>${sfEsc(d.bob)}</td>
+        <td>${sfEsc(d.product)}</td>
+        <td>${sfEsc(d.indication)}</td>
+        <td>${sfEsc(d.benefit)}</td>
+        <td>${fmtLives(d.lives)}</td>
+        <td>${sfEsc(d.submitted)}</td>
+        <td><a class="draft-link">${sfEsc(d.steward)}</a></td>
+        <td><span class="${draftStatusClass(d.status)}">${sfEsc(d.status.charAt(0))}</span></td>
+        <td>${sfEsc(d.last)}</td>
+        <td class="draft-duplicate">${d.duplicate ? "▶" : ""}</td>
+        <td><a class="draft-link">${sfEsc(d.url)}</a></td>
+        <td>${sfEsc(d.state)}</td>
+      </tr>
+    `).join("");
+  }
+
+  updateDraftSelection();
+}
+
+function updateDraftSelection() {
+  const n = document.querySelectorAll("#draftBody tr.draft-selected").length;
+  const count = document.getElementById("draftSelCount");
+  if (count) count.textContent = String(n);
+}
+
+document.querySelectorAll(".draft-tab[data-draftview]").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".draft-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    draftSubview = tab.dataset.draftview;
+    renderDrafts();
+  });
+});
+
+(function wireDraftControls() {
+  const bulkTop = document.getElementById("draftBulkAssignTop");
+  const assign = document.getElementById("draftAssignBtn");
+  if (bulkTop) bulkTop.addEventListener("click", () => showToast("Bulk assign selected draft DCR requests", false));
+  if (assign) assign.addEventListener("click", () => showToast("Assign DCR to Steward opened", false));
+})();
+
 // ============ NAV TABS ============
 const stewardshipView = document.getElementById("stewardshipView");
 const metricView = document.getElementById("metricView");
@@ -1809,7 +2025,9 @@ const metricWins = document.getElementById("metricWins");
 const stewardshipFilters = document.getElementById("stewardshipFilters");
 const winsFilters = document.getElementById("winsFilters");
 const stToolFilters = document.getElementById("stToolFilters");
+const draftFilters = document.getElementById("draftFilters");
 const stewardshipToolView = document.getElementById("stewardshipToolView");
+const draftDcrView = document.getElementById("draftDcrView");
 let winsBuilt = false;
 
 // ============ DCR UTILIZATION ============
@@ -1939,11 +2157,13 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
     const showStewardship = tab === "stewardship";
     const showWins = tab === "wins";
     const showStTool = tab === "sttool";
+    const showDrafts = tab === "drafts";
 
     stewardshipView.hidden = !showStewardship;
     metricView.hidden = !showMetrics;
     if (winsView) winsView.hidden = !showWins;
     if (stewardshipToolView) stewardshipToolView.hidden = !showStTool;
+    if (draftDcrView) draftDcrView.hidden = !showDrafts;
     // Leaving any tab closes the win detail page.
     const dv = document.getElementById("winDetailView");
     if (dv) dv.hidden = true;
@@ -1952,12 +2172,14 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
       stewardshipFilters.hidden = false;
       winsFilters.hidden = true;
       if (stToolFilters) stToolFilters.hidden = true;
+      if (draftFilters) draftFilters.hidden = true;
       showMetricSubtab("dcrs");
     } else if (showWins) {
       // Standalone Policy Wins page uses the wins sidebar filters.
       stewardshipFilters.hidden = true;
       winsFilters.hidden = false;
       if (stToolFilters) stToolFilters.hidden = true;
+      if (draftFilters) draftFilters.hidden = true;
       if (!winsBuilt) { buildWinFilters(); winsBuilt = true; }
       loadWinsFromApi().then(() => { buildWinFilters(); renderWinsPage(); });
       renderWinsPage();
@@ -1966,13 +2188,22 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
       stewardshipFilters.hidden = true;
       winsFilters.hidden = true;
       if (stToolFilters) stToolFilters.hidden = false;
+      if (draftFilters) draftFilters.hidden = true;
       if (!stBuilt) { buildStFilters(); populateStAssignee(); stBuilt = true; }
       renderStTool();
+    } else if (showDrafts) {
+      stewardshipFilters.hidden = true;
+      winsFilters.hidden = true;
+      if (stToolFilters) stToolFilters.hidden = true;
+      if (draftFilters) draftFilters.hidden = false;
+      if (!draftsBuilt) { buildDraftFilters(); draftsBuilt = true; }
+      renderDrafts();
     } else if (showStewardship) {
       // Restore stewardship sidebar filters
       stewardshipFilters.hidden = false;
       winsFilters.hidden = true;
       if (stToolFilters) stToolFilters.hidden = true;
+      if (draftFilters) draftFilters.hidden = true;
     } else {
       showToast(t.textContent.trim() + " — demo placeholder", false);
     }

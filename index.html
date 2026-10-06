@@ -3,76 +3,959 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Policy Intelligence — Tool Selector</title>
-<link rel="stylesheet" href="styles.css" />
-<link rel="stylesheet" href="form.css" />
-<style>
-  .lp-wrap { max-width: 900px; margin: 0 auto; padding: 56px 24px; }
-  .lp-title { font-size: 28px; font-weight: 700; color: #111827; margin: 0 0 6px; }
-  .lp-sub { font-size: 14px; color: #6b7280; margin: 0 0 36px; }
-  .lp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
-  .lp-card {
-    display: block; text-decoration: none; color: inherit;
-    border: 1px solid #e2e6ee; border-radius: 14px; padding: 30px 28px; background: #fff;
-    transition: border-color .15s, box-shadow .15s, transform .15s;
-  }
-  .lp-card:hover { border-color: #2563eb; box-shadow: 0 8px 24px rgba(37,99,235,.14); transform: translateY(-2px); }
-  .lp-card-icon { font-size: 40px; line-height: 1; }
-  .lp-card-name { font-size: 20px; font-weight: 700; color: #1e3a8a; margin: 16px 0 6px; }
-  .lp-card-desc { font-size: 13px; color: #6b7280; line-height: 1.55; }
-  .lp-card-tabs { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
-  .lp-card-tabs li {
-    font-size: 11px; color: #374151; background: #f1f4fb;
-    border: 1px solid #e2e6ee; border-radius: 999px; padding: 3px 10px;
-  }
-  .lp-note {
-    margin-top: 34px; font-size: 12px; color: #9a3412;
-    background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 10px 14px;
-  }
-</style>
+<title>Policy Intelligence Stewardship Tool</title>
+<link rel="stylesheet" href="styles.css?v=60" />
 </head>
-<body class="form-page">
-  <header class="form-topbar">
-    <div class="form-brand">
-      <span class="form-logo">&#9636;</span>
-      <span class="form-title">Policy Intelligence</span>
+<body>
+  <!-- ============ TOP NAV ============ -->
+  <header class="topnav">
+    <div class="brand">
+      <span class="logo">PI</span>
+      <span class="brand-title">Policy Intelligence Stewardship Tool</span>
+    </div>
+    <nav class="nav-tabs">
+      <a class="nav-tab active" data-tab="stewardship">Payer Coverage Tracker</a>
+      <a class="nav-tab" data-tab="wins">Policy Wins</a>
+      <a class="nav-tab" data-tab="sttool">Stewardship Tool</a>
+      <a class="nav-tab" data-tab="drafts">Draft DCR Store</a>
+      <a class="nav-tab" data-tab="metric">Metric Dashboard</a>
+      <div class="nav-dropdown">
+        <a class="nav-tab">Helpful Links ▾</a>
+        <div class="dropdown-menu">
+          <a>MMIT Portal</a>
+          <a>Policy Reporter</a>
+          <a>GATE Reference</a>
+          <a>Training Docs</a>
+        </div>
+      </div>
+      <a class="nav-tab" href="multi-form.html">Policy Intelligence Update Form</a>
+      <a class="nav-tab" data-tab="reporter">Policy Reporter</a>
+      <a class="nav-tab help">⌕ Help</a>
+    </nav>
+    <div class="autosave" id="autosave">
+      <span class="dot"></span><span id="autosaveText">Auto save</span>
     </div>
   </header>
 
-  <div class="lp-wrap">
-    <h1 class="lp-title">Choose a tool</h1>
-    <p class="lp-sub">Interactive front-end mockups. Demo data only &mdash; not connected to any live system.</p>
+  <!-- ============ BODY ============ -->
+  <div class="layout">
+    <!-- ===== LEFT SIDEBAR (FILTERS) ===== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="filters-title">⚙ Filters</span>
+        <button class="link-btn" id="resetFilters">Reset ↻</button>
+      </div>
+      <div class="sidebar-saved">
+        <button class="link-btn" id="saveFilterBtn" title="Save the current filter selection">☆ Save Filter</button>
+        <button class="saved-open-btn" id="openSavedBtn">
+          ☆ Saved Filters <span class="saved-count" id="savedCount">0</span>
+        </button>
+      </div>
 
-    <div class="lp-grid">
-      <!-- DCR TOOL -->
-      <a class="lp-card" href="single-form.html">
-        <div class="lp-card-icon">&#128221;</div>
-        <div class="lp-card-name">DCR</div>
-        <div class="lp-card-desc">Data Change Request update workflow &mdash; search, edit and submit policy changes.</div>
-        <ul class="lp-card-tabs">
-          <li>Single Policy update form</li>
-          <li>Multiple Policies update form</li>
-          <li>Bulk Upload</li>
-          <li>My Submissions</li>
-        </ul>
-      </a>
+      <!-- ===== STEWARDSHIP FILTERS ===== -->
+      <div id="stewardshipFilters">
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb brand-cb" value="OCREVUS ZUNOVO" /> OCREVUS ZUNOVO <span class="cbar"><i style="width:100%"></i></span><span class="count">293</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="VABYSMO" /> VABYSMO <span class="cbar"><i style="width:45%"></i></span><span class="count">132</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="ACTEMRA SC" /> ACTEMRA SC <span class="cbar"><i style="width:8%"></i></span><span class="count">22</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="OCREVUS" /> OCREVUS <span class="cbar"><i style="width:3%"></i></span><span class="count">8</span></label>
+          <label><input type="checkbox" class="filter-cb brand-cb" value="XOLAIR AUTOINJECTOR" /> XOLAIR AUTOINJECTOR <span class="cbar"><i style="width:2%"></i></span><span class="count">5</span></label>
+          <button class="show-more">Show more</button>
+        </div>
+      </div>
 
-      <!-- DSA TOOL -->
-      <a class="lp-card" href="product-tracker.html">
-        <div class="lp-card-icon">&#128202;</div>
-        <div class="lp-card-name">DSA</div>
-        <div class="lp-card-desc">Policy Intelligence Stewardship Tool &mdash; Policy Wins and DCR utilization metrics with charts.</div>
-        <ul class="lp-card-tabs">
-          <li>Payer Coverage Tracker</li>
-          <li>Metric Dashboard</li>
-          <li>Helpful Links</li>
-        </ul>
-      </a>
-    </div>
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>INDICATION <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" /> Primary Progressive Multiple… <span class="count">18</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Multiple Sclerosis <span class="count">17</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Rheumatoid Arthritis <span class="count">15</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Neovascular Age Related Macul… <span class="count">9</span></label>
+          <label><input type="checkbox" class="filter-cb" /> Food Allergy <span class="count">8</span></label>
+          <button class="show-more">Show more</button>
+        </div>
+      </div>
 
-    <p class="lp-note">
-      &#9888; This is a static mockup for review. Data is illustrative and not connected to any live system.
-    </p>
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>LIVES COVERED <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" checked /> &lt; 1,000,000 (100) <span class="count">100</span></label>
+          <label><input type="checkbox" class="filter-cb" /> 1M - 5M (180) <span class="count">180</span></label>
+          <label><input type="checkbox" class="filter-cb" /> 5M - 10M (250) <span class="count">250</span></label>
+          <label><input type="checkbox" class="filter-cb" /> 10M - 20M (310) <span class="count">310</span></label>
+          <label><input type="checkbox" class="filter-cb" /> &gt; 20,000,000 (405) <span class="count">405</span></label>
+          <div class="range-note" id="rangeNote">Range: 0M – 50M+</div>
+          <input type="range" min="0" max="100" value="50" class="slider" id="livesSlider" />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Aetna" /> Aetna <span class="count">120</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Cigna" /> Blue Cross Blue Shield <span class="count">47</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="CVS Health" /> CVS Health <span class="count">15</span></label>
+          <label><input type="checkbox" class="filter-cb payer-cb" value="Humana" /> Humana <span class="count">14</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>POLICY STATUS <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" /> PA REQUIRED NO C… <span class="cbar"><i style="width:100%"></i></span><span class="count">273</span></label>
+          <label><input type="checkbox" class="filter-cb" /> TO PI OR BETTER <span class="cbar"><i style="width:46%"></i></span><span class="count">125</span></label>
+          <label><input type="checkbox" class="filter-cb" /> TO PI WITH CRITERIA <span class="cbar"><i style="width:35%"></i></span><span class="count">97</span></label>
+          <label><input type="checkbox" class="filter-cb" /> BIO MANAGED 1 <span class="cbar"><i style="width:33%"></i></span><span class="count">92</span></label>
+          <label><input type="checkbox" class="filter-cb" /> NO ST <span class="cbar"><i style="width:33%"></i></span><span class="count">92</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>BENEFIT TYPE <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb" /> PHARMACY BENEFIT <span class="count">494</span></label>
+          <label><input type="checkbox" class="filter-cb" /> MEDICAL BENEFIT <span class="count">408</span></label>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+        <div class="fg-body">
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Commercial" /> COMMERCIAL <span class="count">350</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Medicaid Managed" /> MEDICAID_MANAGED <span class="count">299</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Medicare Advantage" /> MEDICARE_ADVANTAGE <span class="count">141</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Medicaid FFS" /> MEDICAID_FFS <span class="count">66</span></label>
+          <label><input type="checkbox" class="filter-cb bob-cb" value="Government" /> GOVERNMENT <span class="count">41</span></label>
+        </div>
+      </div>
+
+      <!-- LEGENDS -->
+      <div class="legend">
+        <div class="legend-title">DCR STATUS</div>
+        <div class="legend-row"><span class="swatch s-new"></span> NEW <span class="cbar"><i style="width:100%"></i></span><span class="count">834</span></div>
+        <div class="legend-row"><span class="swatch s-created"></span> DCR Created <span class="cbar"><i style="width:6%"></i></span><span class="count">33</span></div>
+        <div class="legend-row"><span class="swatch s-bridging"></span> Bridging Issues <span class="count">9</span></div>
+        <div class="legend-row"><span class="swatch s-notreq"></span> Not Required <span class="count">9</span></div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-title">MMIT Verification STATUS</div>
+        <div class="legend-row"><span class="swatch v-new"></span> NEW <span class="cbar"><i style="width:100%"></i></span><span class="count">834</span></div>
+        <div class="legend-row"><span class="swatch v-correct"></span> Correct <span class="cbar"><i style="width:6%"></i></span><span class="count">33</span></div>
+        <div class="legend-row"><span class="swatch v-review"></span> Under MMIT Review</div>
+        <div class="legend-row"><span class="swatch v-assess"></span> Incorrect : Assessment Error</div>
+        <div class="legend-row"><span class="swatch v-lag"></span> Incorrect : Policy Lag</div>
+        <div class="legend-row"><span class="swatch v-mdm"></span> Bridging Issue : Under MDM Review</div>
+      </div>
+      </div><!-- /#stewardshipFilters -->
+
+      <!-- ===== WINS FILTERS (populated by JS) ===== -->
+      <div id="winsFilters" hidden>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterBrand"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>INDICATION <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterIndication"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterBob"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BENEFIT TYPE <span class="chev">▾</span></div>
+          <div class="fg-body" id="winFilterBenefit"></div>
+        </div>
+      </div>
+
+      <!-- ===== STEWARDSHIP TOOL FILTERS (populated by JS) ===== -->
+      <div id="stToolFilters" hidden>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>DCR STATUS <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterStatus"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>STEWARD <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterSteward"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterPayer"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterBrand"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+          <div class="fg-body" id="stFilterBob"></div>
+        </div>
+      </div>
+
+      <!-- ===== AI DRAFT DCR FILTERS ===== -->
+      <div id="draftFilters" hidden>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>STATUS <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterStatus"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterPayer"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>PRODUCT <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterProduct"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterBob"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>INDICATION <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterIndication"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>STEWARD ASSIGNED <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterSteward"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>FILTER ON IMPACT/TREATED LIFE <span class="chev">▾</span></div>
+          <div class="fg-body">
+            <label><input type="checkbox" class="filter-cb draft-impact-cb" checked /> Use [IMPACT] Lives <span class="count">4</span></label>
+            <div class="range-note">LIVES</div>
+            <input type="range" min="0" max="100" value="86" class="slider" id="draftLivesSlider" />
+            <div class="draft-range-inputs">
+              <span>Min value</span>
+              <span>—</span>
+              <span>Max value</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="content">
+      <!-- ===== STEWARDSHIP (Product Tracker) VIEW ===== -->
+      <div id="stewardshipView">
+      <!-- Section header + toolbar -->
+      <div class="content-head">
+        <div class="section-tag">Policies</div>
+        <div class="subtabs">
+          <a class="subtab active" data-view="all">All Requests <span class="subtab-count" id="count-all">0</span></a>
+          <a class="subtab" data-view="open">Open Requests <span class="subtab-count" id="count-open">0</span></a>
+          <a class="subtab" data-view="mine">My Requests <span class="subtab-count" id="count-mine">0</span></a>
+          <a class="subtab" data-view="completed">Completed Requests <span class="subtab-count" id="count-completed">0</span></a>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-edit" id="editToggleBtn">Edit</button>
+          <button class="btn btn-multi" id="createMultiBtn" disabled>Create Multiple DCR</button>
+          <button class="btn btn-bulk" id="bulkAssignBtn" disabled>⇲ Bulk Assign</button>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap">
+        <table class="grid" id="grid">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="selectAll" /></th>
+              <th>Req-ID</th>
+              <th>Steward Assigned</th>
+              <th>Parent Payer</th>
+              <th>Payer</th>
+              <th>Brand</th>
+              <th>Indication</th>
+              <th>Book of Business</th>
+              <th>Benefit Type</th>
+              <th>Lives Covered</th>
+              <th>MMIT Policy Link1</th>
+              <th>MMIT Policy Link2</th>
+              <th>MMIT Policy Link3</th>
+              <th>MMIT Policy Link4</th>
+              <th>Policy Reporter Link 1</th>
+              <th>Policy Reporter Link 2</th>
+              <th>Policy Reporter Link 3</th>
+              <th>Relative Access Position (Only for brand = Actemra)</th>
+              <th>MMIT HPM (May-26)</th>
+              <th>MMIT Verification Status</th>
+              <th>DCR Status</th>
+              <th>Create DCR</th>
+              <th>GNE HPM Status</th>
+              <th class="col-wide">PA and PI Summary</th>
+              <th class="col-wide">Comments / Links or Queries</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="gridBody"><!-- rows injected by JS --></tbody>
+        </table>
+      </div>
+      <div class="footer-bar">
+        <span id="rowCount">0</span> requests shown · <span id="selCount">0</span> selected
+      </div>
+      </div><!-- /#stewardshipView -->
+
+      <!-- ===== METRICS DASHBOARD VIEW ===== -->
+      <div id="metricView" class="dash" hidden>
+        <!-- Metric subtabs -->
+        <div class="metric-subtabs">
+          <a class="metric-subtab active" data-metric="dcrs">DCRs</a>
+          <a class="metric-subtab" data-metric="util">DCR Utilization</a>
+          <a class="metric-subtab" data-metric="wins">Policy Wins</a>
+        </div>
+
+        <!-- ===== DCRs SUBVIEW ===== -->
+        <div id="metricDcrs" class="metric-panel">
+        <div class="dash-head">
+          <div class="section-tag">Metrics Dashboard</div>
+          <div class="dash-sub">Overview of policy stewardship activity across all requests</div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Requests</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-foot" id="kpiLives">0 lives covered</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">DCRs Created</div>
+            <div class="kpi-value" id="kpiDcr">0</div>
+            <div class="kpi-foot" id="kpiDcrPct">0% of total</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Bridging Issues</div>
+            <div class="kpi-value" id="kpiBridging">0</div>
+            <div class="kpi-foot">requiring MDM review</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Unassigned</div>
+            <div class="kpi-value" id="kpiUnassigned">0</div>
+            <div class="kpi-foot">awaiting steward</div>
+          </div>
+        </div>
+
+        <!-- Chart panels -->
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">DCR Status Breakdown</div>
+            <div class="bar-chart" id="chartDcr"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">MMIT Verification Status</div>
+            <div class="bar-chart" id="chartMmit"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Requests by Brand</div>
+            <div class="bar-chart" id="chartBrand"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Requests by Steward</div>
+            <div class="bar-chart" id="chartSteward"></div>
+          </div>
+        </div>
+        </div><!-- /#metricDcrs -->
+
+        <!-- ===== DCR UTILIZATION SUBVIEW ===== -->
+        <div id="metricUtil" class="metric-panel" hidden>
+        <div class="dash-head">
+          <div class="section-tag">DCR Utilization</div>
+          <div class="dash-sub" id="utilSub">How much DCR decisioning is automated vs. manual</div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Automation Rate</div>
+            <div class="kpi-value" id="utilRate">0%</div>
+            <div class="kpi-foot">of decided DCRs</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Automated Decisions</div>
+            <div class="kpi-value" id="utilAuto">0</div>
+            <div class="kpi-foot">auto &amp; bulk</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Manual Decisions</div>
+            <div class="kpi-value" id="utilManual">0</div>
+            <div class="kpi-foot">steward approved</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Pending</div>
+            <div class="kpi-value" id="utilPending">0</div>
+            <div class="kpi-foot" id="utilTotalFoot">0 created</div>
+          </div>
+        </div>
+
+        <!-- Chart panels -->
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-title">Decision Mix</div>
+            <div class="pie-wrap">
+              <svg class="pie" id="utilPie" viewBox="0 0 200 200"></svg>
+              <div class="pie-legend" id="utilPieLegend"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Automated vs Manual by Month</div>
+            <div class="bar-chart" id="utilMonthly"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Assignment Type</div>
+            <div class="bar-chart" id="utilAssign"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Top Brands by Automated Decisions</div>
+            <div class="bar-chart" id="utilBrand"></div>
+          </div>
+        </div>
+        </div><!-- /#metricUtil -->
+
+        <!-- ===== POLICY WINS SUBVIEW ===== -->
+        <div id="metricWins" class="metric-panel" hidden>
+        <div class="dash-head">
+          <div class="section-tag">Policy Wins</div>
+          <div class="dash-sub">Data from 2026-06-18 (first auto-approved WIN)</div>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total WINs Created</div>
+            <div class="kpi-value" id="winTotal">0</div>
+            <div class="kpi-foot" id="winShown">0 shown</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total WINs Approved</div>
+            <div class="kpi-value" id="winApproved">0</div>
+            <div class="kpi-foot" id="winApprovedPct">0% of created</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Auto-Approved WINs</div>
+            <div class="kpi-value" id="winAuto">0</div>
+            <div class="kpi-foot">no manual review needed</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">First Auto-Approved</div>
+            <div class="kpi-value kpi-value-sm" id="winFirstDate">—</div>
+            <div class="kpi-foot">earliest WIN date</div>
+          </div>
+        </div>
+
+        <!-- Pie chart + table -->
+        <div class="wins-layout">
+          <div class="chart-card">
+            <div class="chart-title">WINs by Brand</div>
+            <div class="pie-wrap">
+              <svg class="pie" id="winPie" viewBox="0 0 200 200"></svg>
+              <div class="pie-legend" id="winPieLegend"></div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">WINs Detail <span class="chart-count" id="winTableCount">0</span></div>
+            <div class="wins-table-wrap">
+              <table class="wins-table" id="winsTable">
+                <thead>
+                  <tr>
+                    <th>Win ID</th>
+                    <th>Created</th>
+                    <th>Payer</th>
+                    <th>Brand</th>
+                    <th>Book of Business</th>
+                    <th>Benefit Type</th>
+                    <th>PBM Coverage</th>
+                    <th>Sub-Indication</th>
+                  </tr>
+                </thead>
+                <tbody id="winsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        </div><!-- /#metricWins -->
+      </div><!-- /#metricView -->
+
+      <!-- ===== POLICY WINS VIEW (standalone page) ===== -->
+      <div id="winsView" hidden>
+        <div class="content-head">
+          <div class="section-tag">🗂 Policy Wins</div>
+        </div>
+        <div class="wins-page-card">
+          <div class="wins-subtabs">
+            <a class="wtab active" data-wview="open">Open Policy Wins</a>
+            <a class="wtab" data-wview="mine">My Policy Wins</a>
+            <a class="wtab" data-wview="all">All Policy Wins</a>
+            <a class="wtab" data-wview="active">Active Policy Wins</a>
+          </div>
+          <div class="wins-toolbar">
+            <button class="btn btn-bulk" id="winsBulkAssignBtn">⇲ Bulk Assign</button>
+          </div>
+          <div class="wins-grid-wrap">
+            <table class="wins-grid" id="winsGrid">
+              <thead>
+                <tr>
+                  <th class="wcol-check"><input type="checkbox" id="winsSelectAll" /></th>
+                  <th>Win Id</th>
+                  <th>Payer</th>
+                  <th>Book Of Business</th>
+                  <th>Brand</th>
+                  <th>Indication</th>
+                  <th>Benefit Type</th>
+                  <th>PBM Coverage</th>
+                  <th>Number of Lives</th>
+                  <th>Simplified Policy status before</th>
+                  <th>Simplified Policy status after win</th>
+                  <th>Policy Status before Win</th>
+                  <th>Policy Status after Win</th>
+                  <th>Win Start Date</th>
+                  <th>Win End Date</th>
+                  <th>Steward Assigned</th>
+                  <th>Status</th>
+                  <th>Win already exists in AG</th>
+                  <th>Last Update</th>
+                  <th>Medical Policy Link</th>
+                  <th>Pharmacy Policy Link</th>
+                  <th>Medical and Pharmacy Policy Link</th>
+                  <th>PA Policy Link</th>
+                  <th>Wins Triggered by DCR?</th>
+                </tr>
+              </thead>
+              <tbody id="winsGridBody"><!-- rows injected by JS --></tbody>
+            </table>
+          </div>
+          <div class="footer-bar">
+            <span id="winsRowCount">0</span> wins shown · <span id="winsSelCount">0</span> selected<span id="winsDedupNote"></span>
+          </div>
+        </div>
+      </div><!-- /#winsView -->
+
+      <!-- ===== AI DRAFT DCR STORE VIEW ===== -->
+      <div id="draftDcrView" hidden>
+        <section class="draft-request-card">
+          <div class="draft-card-title">
+            <span class="draft-card-icon">▣</span>
+            <span>Requests</span>
+          </div>
+          <div class="draft-subtabs">
+            <a class="draft-tab" data-draftview="all">All Requests</a>
+            <a class="draft-tab" data-draftview="open">Open Requests</a>
+            <a class="draft-tab active" data-draftview="mine">My Requests</a>
+            <a class="draft-tab" data-draftview="completed">Completed Requests</a>
+          </div>
+          <div class="draft-request-actions">
+            <button class="draft-bulk-link" id="draftBulkAssignTop">♟ Bulk Assign</button>
+          </div>
+          <div class="draft-request-body">
+            <div class="draft-grid-wrap">
+              <table class="draft-grid">
+                <thead>
+                  <tr id="draftHeadRow">
+                    <th>Dcr Identifier</th>
+                    <th>Payer</th>
+                    <th>Book of Business</th>
+                    <th>Product</th>
+                    <th>Indication</th>
+                    <th>Benefit Type</th>
+                    <th>Number of Lives</th>
+                    <th>Submitted</th>
+                    <th>Steward Assigned</th>
+                    <th>Status</th>
+                    <th>Last Activity Date</th>
+                    <th>isDuplicate</th>
+                    <th>Dcr URL</th>
+                    <th>State</th>
+                  </tr>
+                </thead>
+                <tbody id="draftBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="draft-card-foot">
+            <span id="draftRowCount">0</span> requests shown · <span id="draftSelCount">0</span> selected
+            <button class="draft-assign-btn" id="draftAssignBtn">✎ Assign DCR to Steward</button>
+          </div>
+        </section>
+      </div><!-- /#draftDcrView -->
+
+      <!-- ===== POLICY WIN DETAIL VIEW ===== -->
+      <div id="winDetailView" hidden>
+        <!-- action bar -->
+        <div class="wd-actionbar">
+          <button class="link-btn wd-back" id="wdBack">↩ Return to Policy Wins</button>
+          <div class="wd-actions">
+            <button class="wd-abtn danger" id="wdInvalidate">⊘ Invalidate</button>
+            <button class="wd-abtn danger" id="wdReject">⊘ Reject</button>
+            <button class="wd-abtn" id="wdEdit" disabled>✎ Edit</button>
+            <button class="wd-abtn primary" id="wdApprove">✔ Approve</button>
+          </div>
+        </div>
+
+        <div class="wd-layout">
+          <!-- main card -->
+          <div class="wd-main">
+            <div class="wd-head">
+              <div class="wd-head-left">
+                <span class="wd-payer-ico">ℹ</span>
+                <span class="wd-payer" id="wdPayer">—</span>
+                <span class="wd-chip-label">Status</span> <span id="wdStatusChip"></span>
+                <span class="wd-chip-label">WIN ID</span> <span class="wd-winid" id="wdWinId">—</span>
+                <span class="wd-chip-label">SPOC Assigned</span> <span class="wd-spoc" id="wdSpoc">—</span>
+              </div>
+              <div class="wd-head-right">
+                <div class="wd-steward-label">STEWARD ASSIGNED</div>
+                <select class="wd-steward-select" id="wdSteward"></select>
+              </div>
+            </div>
+
+            <table class="wd-values">
+              <thead>
+                <tr>
+                  <th class="wd-vlabel">Values</th>
+                  <th>Before Win</th>
+                  <th>After Win</th>
+                </tr>
+              </thead>
+              <tbody id="wdValuesBody"><!-- rows injected by JS --></tbody>
+            </table>
+
+            <div class="wd-activity" id="wdActivity"><!-- log injected by JS --></div>
+          </div>
+
+          <!-- summary sidebar -->
+          <aside class="wd-summary">
+            <div class="wd-summary-title">📄 Summary</div>
+            <div class="wd-summary-card">
+              <div class="wd-summary-h">Policy Information</div>
+              <div class="wd-kv"><span>Win ID</span><b id="wdSumWinId">—</b></div>
+              <div class="wd-kv"><span>Payer</span><b id="wdSumPayer">—</b></div>
+              <div class="wd-kv"><span>BoB</span><b id="wdSumBob">—</b></div>
+              <div class="wd-kv"><span>Product</span><b id="wdSumProduct">—</b></div>
+              <div class="wd-kv"><span>Indication</span><b id="wdSumIndication">—</b></div>
+              <div class="wd-kv"><span>Benefit Type</span><b id="wdSumBenefit">—</b></div>
+              <div class="wd-kv"><span>PBM Coverage</span><b id="wdSumPbmCoverage">—</b></div>
+            </div>
+            <div class="wd-summary-card">
+              <div class="wd-summary-h">Wins Information</div>
+              <div class="wd-kv"><span>Date Submitted</span><b id="wdSumSubmitted">—</b></div>
+              <div class="wd-kv"><span>SPOC Assigned</span><b id="wdSumSpoc">—</b></div>
+              <div class="wd-kv"><span>Steward Assigned</span><b id="wdSumSteward">—</b></div>
+              <div class="wd-kv"><span>Policy Win Status</span><b id="wdSumStatus">—</b></div>
+              <div class="wd-kv"><span>P360 Status</span><b id="wdSumP360">—</b></div>
+              <div class="wd-kv"><span>Steward Rationale</span><b id="wdSumRationale">—</b></div>
+              <div class="wd-kv"><span>Win already exists in AG</span><b id="wdSumExistsAg">—</b></div>
+              <div class="wd-kv"><span>Wins Triggered by DCR?</span><b id="wdSumDcr">—</b></div>
+            </div>
+            <!-- Duplicate siblings panel (shown only when this win is a duplicate) -->
+            <div class="wd-summary-card wd-dup-card" id="wdDupCard" hidden>
+              <div class="wd-summary-h" id="wdDupHeading">⚑ Duplicate</div>
+              <div class="wd-dup-desc" id="wdDupDesc"></div>
+              <div class="wd-dup-siblings" id="wdDupSiblings"><!-- injected by JS --></div>
+            </div>
+          </aside>
+        </div>
+      </div><!-- /#winDetailView -->
+
+      <!-- ===== STEWARDSHIP TOOL VIEW ===== -->
+      <div id="stewardshipToolView" hidden>
+        <div class="content-head">
+          <div class="section-tag">🧭 Stewardship Tool</div>
+        </div>
+
+        <!-- KPI summary cards -->
+        <div class="st-kpis" id="stKpis"><!-- cards injected by JS --></div>
+
+        <div class="st-page-card">
+          <div class="st-subtabs">
+            <a class="sttab active" data-stview="queue">Assignment Queue</a>
+            <a class="sttab" data-stview="mine">My Workload</a>
+            <a class="sttab" data-stview="all">All Requests</a>
+          </div>
+          <div class="st-toolbar">
+            <input type="text" class="st-search" id="stSearch" placeholder="⌕ Search Req-ID, payer, brand…" />
+            <div class="st-toolbar-right">
+              <select class="st-assignee" id="stAssignee">
+                <!-- steward options injected by JS -->
+              </select>
+              <button class="btn btn-bulk" id="stBulkAssignBtn" disabled>⇲ Assign Selected</button>
+            </div>
+          </div>
+          <div class="st-grid-wrap">
+            <table class="st-grid" id="stGrid">
+              <thead>
+                <tr>
+                  <th class="stcol-check"><input type="checkbox" id="stSelectAll" /></th>
+                  <th>Req-ID</th>
+                  <th>Steward Assigned</th>
+                  <th>Payer</th>
+                  <th>Brand</th>
+                  <th>Indication</th>
+                  <th>Book of Business</th>
+                  <th>Benefit Type</th>
+                  <th>PBM Coverage</th>
+                  <th>Lives Covered</th>
+                  <th>MMIT Verification</th>
+                  <th>DCR Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="stGridBody"><!-- rows injected by JS --></tbody>
+            </table>
+          </div>
+          <div class="footer-bar">
+            <span id="stRowCount">0</span> requests shown · <span id="stSelCount">0</span> selected
+          </div>
+        </div>
+      </div><!-- /#stewardshipToolView -->
+    </main>
   </div>
+
+  <!-- ============ BULK ASSIGN MODAL ============ -->
+  <div class="modal-overlay" id="bulkModal">
+    <div class="modal">
+      <div class="modal-head">
+        <span>BulkAssignSingleStewardToMultipleRecords</span>
+        <button class="modal-x" id="bulkClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-label-row">
+          <label class="modal-label">Reviewer Id <span class="req">*</span></label>
+          <button class="assign-me-btn modal-assign-me" id="bulkAssignMe">Assign to me</button>
+        </div>
+        <select class="modal-select" id="reviewerSelect">
+          <option value="">Select an option...</option>
+          <option>A. Martinez (Steward)</option>
+          <option>J. Chen (Steward)</option>
+          <option>R. Patel (Steward)</option>
+          <option>S. Okafor (Steward)</option>
+          <option>L. Nguyen (Steward)</option>
+        </select>
+        <div class="modal-hint" id="bulkHint">No DCRs selected yet.</div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="bulkCancel">Cancel</button>
+        <button class="btn btn-bulk" id="bulkAssignConfirm">Assign Bulk Records</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ HISTORY POPUP ============ -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal modal-lg">
+      <div class="modal-head">
+        <span id="historyTitle">Edit History</span>
+        <button class="modal-x" id="historyClose">✕</button>
+      </div>
+      <div class="modal-body">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr><th>Timestamp</th><th>Field</th><th>Old Value</th><th>New Value</th><th>User</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DCR CREATED TOAST ============ -->
+  <!-- ===== SAVE / RENAME FILTER MODAL ===== -->
+  <div class="modal-overlay" id="filterModal">
+    <div class="modal-card">
+      <h3 class="modal-title" id="filterModalTitle">Save Filter</h3>
+      <label class="modal-label" for="filterNameInput">Filter name</label>
+      <input type="text" class="modal-input" id="filterNameInput" placeholder="e.g. Ocrevus MS – Aug review" maxlength="60" />
+      <div class="modal-preview" id="filterPreview"></div>
+      <div class="modal-actions">
+        <button class="mbtn ghost" id="filterCancelBtn">Cancel</button>
+        <button class="mbtn primary" id="filterSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SAVED FILTERS TABLE MODAL ===== -->
+  <div class="modal-overlay" id="savedModal">
+    <div class="modal-card modal-wide">
+      <div class="modal-head-row">
+        <h3 class="modal-title">☆ Saved Filters</h3>
+        <button class="modal-x" id="savedCloseBtn" title="Close">✕</button>
+      </div>
+      <div class="saved-search-row">
+        <input type="text" class="saved-search" id="savedSearch"
+               placeholder="🔍 Search saved filters by name, criteria or creator…" />
+      </div>
+      <p class="saved-hint-line">Click a row to load that filter into the sidebar.</p>
+      <p class="saved-empty-note" id="savedTableEmpty">
+        No saved filters yet. Tick some filters and click <strong>Save Filter</strong>.
+      </p>
+      <div class="saved-table-wrap" id="savedTableWrap">
+        <table class="saved-table">
+          <thead>
+            <tr>
+              <th>Filter Name</th>
+              <th>Filter Criteria</th>
+              <th>Created By</th>
+              <th>Created On</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="savedTableBody"></tbody>
+        </table>
+      </div>
+      <p class="saved-no-match" id="savedNoMatch">No filters match your search.</p>
+    </div>
+  </div>
+
+  <!-- ===== CREATE DCR / PAYER DETAILS MODAL ===== -->
+  <div class="modal-overlay" id="dcrModal">
+    <div class="modal-card pd-modal">
+      <div class="pd-head">
+        <span class="pd-title">Payer Details</span>
+        <div class="pd-head-right">
+          <button class="btn btn-ghost pd-head-cancel" id="dcrCancel">Cancel</button>
+          <button class="modal-x" id="dcrClose" title="Close">✕</button>
+        </div>
+      </div>
+
+      <div class="pd-body">
+        <!-- Top summary strip: 6 payer/context fields in two columns -->
+        <div class="pd-summary">
+          <div class="pd-sum-col">
+            <div class="pd-sum-item"><span class="pd-sum-ico">ℹ</span><div><div class="pd-sum-label">Payer</div><div class="pd-sum-value" id="pdPayer">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">℞</span><div><div class="pd-sum-label">Product</div><div class="pd-sum-value" id="pdProduct">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">$</span><div><div class="pd-sum-label">Benefit Type</div><div class="pd-sum-value" id="pdBenefit">—</div></div></div>
+          </div>
+          <div class="pd-sum-col">
+            <div class="pd-sum-item"><span class="pd-sum-ico">▤</span><div><div class="pd-sum-label">Book of Business</div><div class="pd-sum-value" id="pdBob">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">✚</span><div><div class="pd-sum-label">Indication</div><div class="pd-sum-value" id="pdIndication">—</div></div></div>
+            <div class="pd-sum-item"><span class="pd-sum-ico">◔</span><div><div class="pd-sum-label">State</div><div class="pd-sum-value" id="pdState">—</div></div></div>
+          </div>
+        </div>
+
+        <div class="pd-content">
+          <!-- LEFT: read-only coverage context -->
+          <div class="pd-left">
+            <div class="pd-ctx-cell">
+              <div class="pd-ctx-label">GNE HPM Status</div>
+              <div class="pd-ctx-value" id="dcrGneHpm">—</div>
+            </div>
+            <div class="pd-ctx-cell">
+              <div class="pd-ctx-label">PA and PI Summary</div>
+              <div class="pd-ctx-value" id="dcrPaPiSummary">—</div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Values / Current / Proposed comparison table -->
+          <div class="pd-right">
+            <table class="pd-table">
+              <thead>
+                <tr><th class="pd-th-val">Values</th><th>Current</th><th>Proposed</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="pd-val">Prior Authorization Required</td>
+                  <td><input class="pd-input pd-current" id="pdCurPa" readonly value="No" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="dcrPaRequired"><option>No</option><option>Yes</option></select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Step Edit</td>
+                  <td><input class="pd-input pd-current" id="pdCurStepEdit" readonly value="No" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="dcrStepEdit"><option>Yes</option><option>No</option></select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Number of Steps</td>
+                  <td><input class="pd-input pd-current" id="pdCurNumSteps" readonly value="1" /></td>
+                  <td><input type="number" class="pd-input pd-proposed" id="dcrNumSteps" min="0" value="1" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Step Therapy Placement</td>
+                  <td><input class="pd-input pd-current" id="pdCurPlacement" readonly value="Not Covered" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="dcrStepPlacement">
+                      <option>N/A</option><option>Not Covered</option><option>ST Single Generic</option>
+                      <option>ST Generic and Brand</option><option>ST Single Brand</option><option>No Step</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Step Products</td>
+                  <td><input class="pd-input pd-current" id="pdCurStepProducts" readonly value="" /></td>
+                  <td><input type="text" class="pd-input pd-proposed" id="dcrStepProducts" /></td>
+                </tr>
+
+                <tr class="pd-spacer"><td colspan="3"></td></tr>
+
+                <tr>
+                  <td class="pd-val">Derived Simplified Policy Status</td>
+                  <td><input class="pd-input pd-current" id="pdCurSimplified" readonly value="NOT COVERED" /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropSimplified" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">PBM Coverage</td>
+                  <td><input class="pd-input pd-current" id="pdCurPbmCoverage" readonly value="National Formulary" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="pdPropPbmCoverage">
+                      <option>National Formulary</option>
+                      <option>Custom Formulary</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Policy Link</td>
+                  <td><input class="pd-input pd-current" id="pdCurPolicyLink" readonly /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropPolicyLink" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">Site of Care Link</td>
+                  <td><input class="pd-input pd-current" id="pdCurSocLink" readonly /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropSocLink" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">PA Form Link</td>
+                  <td><input class="pd-input pd-current" id="pdCurPaFormLink" readonly /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropPaFormLink" /></td>
+                </tr>
+
+                <tr class="pd-spacer"><td colspan="3"></td></tr>
+
+                <tr>
+                  <td class="pd-val">Effective Policy Date</td>
+                  <td><input class="pd-input pd-current" id="pdCurEffDate" readonly value="—" /></td>
+                  <td><input class="pd-input pd-proposed" id="pdPropEffDate" placeholder="tbd" /></td>
+                </tr>
+                <tr>
+                  <td class="pd-val">State</td>
+                  <td>
+                    <select class="pd-input pd-current" id="pdCurStateRow" disabled>
+                      <option>National</option><option>AK</option><option>AL</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="pdPropStateRow">
+                      <option>National</option><option>AK</option><option>AL</option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd-foot">
+        <button class="btn dcr-create-confirm" id="dcrCreateConfirm">Create DCR</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js?v=60"></script>
 </body>
 </html>
