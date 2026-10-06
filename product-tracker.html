@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=56" />
+<link rel="stylesheet" href="styles.css?v=60" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -17,6 +17,7 @@
       <a class="nav-tab active" data-tab="stewardship">Payer Coverage Tracker</a>
       <a class="nav-tab" data-tab="wins">Policy Wins</a>
       <a class="nav-tab" data-tab="sttool">Stewardship Tool</a>
+      <a class="nav-tab" data-tab="drafts">Draft DCR Store</a>
       <a class="nav-tab" data-tab="metric">Metric Dashboard</a>
       <div class="nav-dropdown">
         <a class="nav-tab">Helpful Links ▾</a>
@@ -191,6 +192,47 @@
         <div class="filter-group">
           <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
           <div class="fg-body" id="stFilterBob"></div>
+        </div>
+      </div>
+
+      <!-- ===== AI DRAFT DCR FILTERS ===== -->
+      <div id="draftFilters" hidden>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>STATUS <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterStatus"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterPayer"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>PRODUCT <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterProduct"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterBob"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>INDICATION <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterIndication"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>STEWARD ASSIGNED <span class="chev">▾</span></div>
+          <div class="fg-body" id="draftFilterSteward"></div>
+        </div>
+        <div class="filter-group">
+          <div class="fg-title" data-toggle>FILTER ON IMPACT/TREATED LIFE <span class="chev">▾</span></div>
+          <div class="fg-body">
+            <label><input type="checkbox" class="filter-cb draft-impact-cb" checked /> Use [IMPACT] Lives <span class="count">4</span></label>
+            <div class="range-note">LIVES</div>
+            <input type="range" min="0" max="100" value="86" class="slider" id="draftLivesSlider" />
+            <div class="draft-range-inputs">
+              <span>Min value</span>
+              <span>—</span>
+              <span>Max value</span>
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -425,6 +467,7 @@
                     <th>Brand</th>
                     <th>Book of Business</th>
                     <th>Benefit Type</th>
+                    <th>PBM Coverage</th>
                     <th>Sub-Indication</th>
                   </tr>
                 </thead>
@@ -462,6 +505,7 @@
                   <th>Brand</th>
                   <th>Indication</th>
                   <th>Benefit Type</th>
+                  <th>PBM Coverage</th>
                   <th>Number of Lives</th>
                   <th>Simplified Policy status before</th>
                   <th>Simplified Policy status after win</th>
@@ -488,6 +532,54 @@
           </div>
         </div>
       </div><!-- /#winsView -->
+
+      <!-- ===== AI DRAFT DCR STORE VIEW ===== -->
+      <div id="draftDcrView" hidden>
+        <section class="draft-request-card">
+          <div class="draft-card-title">
+            <span class="draft-card-icon">▣</span>
+            <span>Requests</span>
+          </div>
+          <div class="draft-subtabs">
+            <a class="draft-tab" data-draftview="all">All Requests</a>
+            <a class="draft-tab" data-draftview="open">Open Requests</a>
+            <a class="draft-tab active" data-draftview="mine">My Requests</a>
+            <a class="draft-tab" data-draftview="completed">Completed Requests</a>
+          </div>
+          <div class="draft-request-actions">
+            <button class="draft-bulk-link" id="draftBulkAssignTop">♟ Bulk Assign</button>
+          </div>
+          <div class="draft-request-body">
+            <div class="draft-grid-wrap">
+              <table class="draft-grid">
+                <thead>
+                  <tr id="draftHeadRow">
+                    <th>Dcr Identifier</th>
+                    <th>Payer</th>
+                    <th>Book of Business</th>
+                    <th>Product</th>
+                    <th>Indication</th>
+                    <th>Benefit Type</th>
+                    <th>Number of Lives</th>
+                    <th>Submitted</th>
+                    <th>Steward Assigned</th>
+                    <th>Status</th>
+                    <th>Last Activity Date</th>
+                    <th>isDuplicate</th>
+                    <th>Dcr URL</th>
+                    <th>State</th>
+                  </tr>
+                </thead>
+                <tbody id="draftBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="draft-card-foot">
+            <span id="draftRowCount">0</span> requests shown · <span id="draftSelCount">0</span> selected
+            <button class="draft-assign-btn" id="draftAssignBtn">✎ Assign DCR to Steward</button>
+          </div>
+        </section>
+      </div><!-- /#draftDcrView -->
 
       <!-- ===== POLICY WIN DETAIL VIEW ===== -->
       <div id="winDetailView" hidden>
@@ -544,6 +636,7 @@
               <div class="wd-kv"><span>Product</span><b id="wdSumProduct">—</b></div>
               <div class="wd-kv"><span>Indication</span><b id="wdSumIndication">—</b></div>
               <div class="wd-kv"><span>Benefit Type</span><b id="wdSumBenefit">—</b></div>
+              <div class="wd-kv"><span>PBM Coverage</span><b id="wdSumPbmCoverage">—</b></div>
             </div>
             <div class="wd-summary-card">
               <div class="wd-summary-h">Wins Information</div>
@@ -602,6 +695,7 @@
                   <th>Indication</th>
                   <th>Book of Business</th>
                   <th>Benefit Type</th>
+                  <th>PBM Coverage</th>
                   <th>Lives Covered</th>
                   <th>MMIT Verification</th>
                   <th>DCR Status</th>
@@ -803,6 +897,16 @@
                   <td><input class="pd-input pd-proposed" id="pdPropSimplified" /></td>
                 </tr>
                 <tr>
+                  <td class="pd-val">PBM Coverage</td>
+                  <td><input class="pd-input pd-current" id="pdCurPbmCoverage" readonly value="National Formulary" /></td>
+                  <td>
+                    <select class="pd-input pd-proposed" id="pdPropPbmCoverage">
+                      <option>National Formulary</option>
+                      <option>Custom Formulary</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
                   <td class="pd-val">Policy Link</td>
                   <td><input class="pd-input pd-current" id="pdCurPolicyLink" readonly /></td>
                   <td><input class="pd-input pd-proposed" id="pdPropPolicyLink" /></td>
@@ -852,6 +956,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=56"></script>
+  <script src="app.js?v=60"></script>
 </body>
 </html>
