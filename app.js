@@ -635,11 +635,11 @@ function setTrackerFilterSelection(row) {
 // ---- blank tracker creation ------------------------------------
 function nextManualReqId() {
   const nums = ROWS
-    .map(r => /^REQ-MANUAL-(\d+)$/.exec(r.id || ""))
+    .map(r => /^REQ-(?:MANUAL|Synthetic)-(\d+)$/.exec(r.id || ""))
     .filter(Boolean)
     .map(m => Number(m[1]));
   const next = nums.length ? Math.max(...nums) + 1 : 1;
-  return `REQ-MANUAL-${String(next).padStart(3, "0")}`;
+  return `REQ-Synthetic-${String(next).padStart(3, "0")}`;
 }
 
 function trackerField(id) {
