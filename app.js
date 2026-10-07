@@ -526,7 +526,7 @@ function brandAccessScore(brand) {
 
 function relativeAccessPositionForRow(r) {
   const brands = selectedBrandsInOrder();
-  if (!brands.length) return r.relAccess || "NA";
+  if (!brands.length) return "NA";
   const gneBrand = brands[0];
   if (r.brand === gneBrand) return "NA";
   if (!brands.includes(r.brand)) return "NA";
