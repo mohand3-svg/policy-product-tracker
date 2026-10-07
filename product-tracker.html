@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=65" />
+<link rel="stylesheet" href="styles.css?v=66" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -252,6 +252,8 @@
         </div>
         <div class="toolbar">
           <button class="btn btn-new-tracker" id="newTrackerBtn">New Tracker</button>
+          <button class="btn btn-manual-grid" id="addManualRowBtn" disabled>Add Blank Row</button>
+          <button class="btn btn-manual-grid" id="addManualColumnBtn" disabled>Add Blank Column</button>
           <button class="btn btn-edit" id="editToggleBtn">Edit</button>
           <button class="btn btn-multi" id="createMultiBtn" disabled>Create Multiple DCR</button>
           <button class="btn btn-bulk" id="bulkAssignBtn" disabled>⇲ Bulk Assign</button>
@@ -262,7 +264,7 @@
       <div class="table-wrap">
         <table class="grid" id="grid">
           <thead>
-            <tr>
+            <tr id="trackerHeaderRow">
               <th class="col-check"><input type="checkbox" id="selectAll" /></th>
               <th>Req-ID</th>
               <th>Steward Assigned</th>
@@ -981,6 +983,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=65"></script>
+  <script src="app.js?v=66"></script>
 </body>
 </html>

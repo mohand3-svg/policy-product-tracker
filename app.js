@@ -60,6 +60,7 @@ const COVERAGE = {
 
 // ---- persistence (survive navigation to the form page) ----------
 const STORE_KEY = "pist_rows_v5";
+const CUSTOM_COLUMNS_KEY = "pist_manual_columns_v1";
 function loadRows() {
   try {
     const saved = sessionStorage.getItem(STORE_KEY);
@@ -71,6 +72,20 @@ function saveRows() {
   try { sessionStorage.setItem(STORE_KEY, JSON.stringify(ROWS)); } catch (e) { /* ignore */ }
 }
 const ROWS = loadRows();
+function loadCustomColumns() {
+  try {
+    const saved = sessionStorage.getItem(CUSTOM_COLUMNS_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : [];
+    }
+  } catch (e) { /* ignore */ }
+  return [];
+}
+function saveCustomColumns() {
+  try { sessionStorage.setItem(CUSTOM_COLUMNS_KEY, JSON.stringify(CUSTOM_COLUMNS)); } catch (e) { /* ignore */ }
+}
+const CUSTOM_COLUMNS = loadCustomColumns();
 
 // ---- helper to format lives -------------------------------------
 const fmtLives = n => {
@@ -154,8 +169,8 @@ function buildManualCell(r, field, fallback) {
   });
   td.addEventListener("blur", () => {
     const raw = td.textContent.trim();
-    const next = field === "lives" ? Math.max(0, Number(raw.replace(/,/g, "")) || 0) : raw;
-    const displayNext = field === "lives" ? fmtLives(next) : next;
+    const next = raw;
+    const displayNext = next;
     if (String(next) !== String(r[field] ?? "")) {
       logHistory(r.id, field, r[field] || "—", next || "—");
       r[field] = next;
@@ -169,6 +184,35 @@ function buildManualCell(r, field, fallback) {
     }
     td.textContent = displayNext || fallback;
     td.classList.toggle("placeholder", !displayNext);
+  });
+  return td;
+}
+
+function buildCustomManualCell(r, column) {
+  if (!r.custom) r.custom = {};
+  const td = document.createElement("td");
+  td.className = "manual-edit-cell manual-custom-cell";
+  td.contentEditable = "true";
+  td.dataset.columnId = column.id;
+  const value = r.custom[column.id] || "";
+  td.textContent = value || "<free text>";
+  td.classList.toggle("placeholder", !value);
+  td.addEventListener("focus", () => {
+    if (td.classList.contains("placeholder")) {
+      td.textContent = "";
+      td.classList.remove("placeholder");
+    }
+  });
+  td.addEventListener("blur", () => {
+    const next = td.textContent.trim();
+    const stored = next || "";
+    if (stored !== (r.custom[column.id] || "")) {
+      logHistory(r.id, column.label, r.custom[column.id] || "—", stored || "—");
+      r.custom[column.id] = stored;
+      markDirty();
+    }
+    td.textContent = stored || "<free text>";
+    td.classList.toggle("placeholder", !stored);
   });
   return td;
 }
@@ -202,7 +246,7 @@ function buildManualTextCells(r) {
     buildManualCell(r, "indication", "<free text>"),
     buildManualCell(r, "bob", "<free text>"),
     buildManualCell(r, "benefit", "<free text>"),
-    buildManualCell(r, "lives", "0"),
+    buildManualCell(r, "lives", "<free text>"),
     buildManualCell(r, "policyLink1", "<free text>"),
     buildManualCell(r, "policyLink2", "<free text>"),
     buildManualCell(r, "policyLink3", "<free text>"),
@@ -215,8 +259,34 @@ function buildManualTextCells(r) {
   ];
 }
 
+function renderTrackerHeaders(showCustomColumns) {
+  const row = document.getElementById("trackerHeaderRow");
+  if (!row) return;
+  row.querySelectorAll(".manual-custom-header").forEach(th => th.remove());
+  if (!showCustomColumns) return;
+  const action = row.lastElementChild;
+  CUSTOM_COLUMNS.forEach(col => {
+    const th = document.createElement("th");
+    th.className = "manual-custom-header";
+    th.textContent = col.label;
+    th.contentEditable = "true";
+    th.title = "Click to rename column";
+    th.addEventListener("blur", () => {
+      const next = th.textContent.trim() || col.label;
+      if (next !== col.label) {
+        col.label = next;
+        saveCustomColumns();
+      }
+      th.textContent = col.label;
+    });
+    row.insertBefore(th, action);
+  });
+}
+
 // ---- render rows -------------------------------------------------
 function renderRows() {
+  const manualContext = currentManualContext();
+  renderTrackerHeaders(Boolean(manualContext));
   gridBody.innerHTML = "";
   const visible = filterRows();
   visible.forEach(r => {
@@ -241,20 +311,28 @@ function renderRows() {
     const textCells = r.manual ? buildManualTextCells(r) : buildStandardTextCells(r);
     textCells.forEach(td => tr.appendChild(td));
 
-    // MMIT Verification Status (select)
-    const tdMmit = document.createElement("td");
-    tdMmit.appendChild(buildSelect(MMIT_OPTS, r.mmit, "mmit", r.manual));
-    tr.appendChild(tdMmit);
-
-    // DCR Status (select) — locked once a DCR has been created
-    const tdDcr = document.createElement("td");
-    const dcrSel = buildSelect(DCR_OPTS, r.dcr, "dcr", r.manual);
-    if (r.dcrCode && r.dcr !== "BridgingIssues") {
-      dcrSel.disabled = true;
-      dcrSel.title = "DCR created — status locked";
+    // MMIT Verification Status
+    if (r.manual) {
+      tr.appendChild(buildManualCell(r, "mmit", "<free text>"));
+    } else {
+      const tdMmit = document.createElement("td");
+      tdMmit.appendChild(buildSelect(MMIT_OPTS, r.mmit, "mmit"));
+      tr.appendChild(tdMmit);
     }
-    tdDcr.appendChild(dcrSel);
-    tr.appendChild(tdDcr);
+
+    // DCR Status — locked once a DCR has been created for seeded rows.
+    if (r.manual) {
+      tr.appendChild(buildManualCell(r, "dcr", "<free text>"));
+    } else {
+      const tdDcr = document.createElement("td");
+      const dcrSel = buildSelect(DCR_OPTS, r.dcr, "dcr");
+      if (r.dcrCode && r.dcr !== "BridgingIssues") {
+        dcrSel.disabled = true;
+        dcrSel.title = "DCR created — status locked";
+      }
+      tdDcr.appendChild(dcrSel);
+      tr.appendChild(tdDcr);
+    }
 
     // Create DCR (per-row action)
     const tdCreate = document.createElement("td");
@@ -271,15 +349,32 @@ function renderRows() {
     }
     tr.appendChild(tdCreate);
 
-    // GNE HPM Status (dropdown)
-    const tdGne = document.createElement("td");
-    tdGne.appendChild(buildGneSelect(r));
-    tr.appendChild(tdGne);
+    // GNE HPM Status
+    if (r.manual) {
+      tr.appendChild(buildManualCell(r, "gne", "<free text>"));
+    } else {
+      const tdGne = document.createElement("td");
+      tdGne.appendChild(buildGneSelect(r));
+      tr.appendChild(tdGne);
+    }
 
     // PA and PI Summary (editable free text)
     tr.appendChild(buildFreeText(r, "pa"));
     // Comments / Links or Queries
     tr.appendChild(buildFreeText(r, "comments"));
+
+    if (manualContext) {
+      CUSTOM_COLUMNS.forEach(col => {
+        if (r.manual) {
+          tr.appendChild(buildCustomManualCell(r, col));
+        } else {
+          const td = document.createElement("td");
+          td.className = "manual-custom-empty";
+          td.textContent = "—";
+          tr.appendChild(td);
+        }
+      });
+    }
 
     // Action
     const tdAct = document.createElement("td");
@@ -328,6 +423,8 @@ function buildFreeText(r, field) {
 
 // ---- steward cell ------------------------------------------------
 function buildStewardCell(r) {
+  if (r.manual) return buildManualCell(r, "steward", "<free text>");
+
   const td = document.createElement("td");
   td.className = "steward-cell";
 
@@ -437,6 +534,53 @@ function updateCounts() {
   const multi = sel >= 2;
   document.getElementById("createMultiBtn").disabled = !multi;
   document.getElementById("bulkAssignBtn").disabled = !multi;
+  updateManualGridButtons();
+}
+
+function currentManualContext() {
+  const brand = [...document.querySelectorAll(".brand-cb:checked")]
+    .map(cb => cb.value)
+    .find(v => ROWS.some(r => r.manual && r.brand === v));
+  if (!brand) return null;
+  const row = ROWS.find(r => r.manual && r.brand === brand);
+  return row ? { brand: row.brand, indication: row.indication } : null;
+}
+
+function updateManualGridButtons() {
+  const hasManualContext = Boolean(currentManualContext());
+  const rowBtn = document.getElementById("addManualRowBtn");
+  const colBtn = document.getElementById("addManualColumnBtn");
+  if (rowBtn) rowBtn.disabled = !hasManualContext;
+  if (colBtn) colBtn.disabled = !hasManualContext;
+}
+
+function makeManualTrackerRow(brand, indication) {
+  const custom = {};
+  CUSTOM_COLUMNS.forEach(col => { custom[col.id] = ""; });
+  return {
+    id: nextManualReqId(),
+    steward: "",
+    parentPayer: "",
+    payer: "",
+    brand,
+    indication,
+    bob: "",
+    benefit: "",
+    form: "",
+    lives: "",
+    mmitHpm: "",
+    mmit: "",
+    dcr: "",
+    dcrCode: "",
+    gne: "",
+    relAccess: "",
+    pa: "<Free Text>",
+    comments: "<Free Text>",
+    gate: "",
+    geo: "",
+    custom,
+    manual: true,
+  };
 }
 
 function filterCheckboxExists(selector, value) {
@@ -551,29 +695,7 @@ function createBlankTracker() {
     return;
   }
 
-  const row = {
-    id: nextManualReqId(),
-    steward: CURRENT_USER,
-    parentPayer: "",
-    payer: "New Payer",
-    brand,
-    indication,
-    bob: "Commercial",
-    benefit: "Pharmacy",
-    form: "",
-    lives: 0,
-    mmitHpm: "<Free Text>",
-    mmit: "New",
-    dcr: "New",
-    dcrCode: "",
-    gne: "Unknown",
-    relAccess: "—",
-    pa: "<Free Text>",
-    comments: "<Free Text>",
-    gate: "",
-    geo: "National",
-    manual: true,
-  };
+  const row = makeManualTrackerRow(brand, indication);
 
   ROWS.unshift(row);
   history[row.id] = [];
@@ -585,6 +707,42 @@ function createBlankTracker() {
   closeNewTrackerModal();
   renderRows();
   showToast(`Created ${row.id} for ${brand}`, false);
+}
+
+function addManualRow() {
+  const ctx = currentManualContext();
+  if (!ctx) {
+    showToast("Select a manual tracker brand first", true);
+    return;
+  }
+  const row = makeManualTrackerRow(ctx.brand, ctx.indication);
+  ROWS.unshift(row);
+  history[row.id] = [];
+  logHistory(row.id, "Policy Coverage Tracker", "—", "Blank row added");
+  saveRows();
+  setTrackerFilterSelection(row);
+  activateTrackerSubtab("all");
+  renderRows();
+  showToast("Blank row added", false);
+}
+
+function addManualColumn() {
+  const ctx = currentManualContext();
+  if (!ctx) {
+    showToast("Select a manual tracker brand first", true);
+    return;
+  }
+  const label = `Free Text ${CUSTOM_COLUMNS.length + 1}`;
+  const column = { id: `manual_col_${Date.now()}`, label };
+  CUSTOM_COLUMNS.push(column);
+  ROWS.filter(r => r.manual).forEach(r => {
+    if (!r.custom) r.custom = {};
+    r.custom[column.id] = "";
+  });
+  saveCustomColumns();
+  saveRows();
+  renderRows();
+  showToast(`${label} column added`, false);
 }
 
 // ---- row events --------------------------------------------------
@@ -676,6 +834,11 @@ editToggleBtn.addEventListener("click", () => {
     });
   }
 })();
+
+const addManualRowBtn = document.getElementById("addManualRowBtn");
+const addManualColumnBtn = document.getElementById("addManualColumnBtn");
+if (addManualRowBtn) addManualRowBtn.addEventListener("click", addManualRow);
+if (addManualColumnBtn) addManualColumnBtn.addEventListener("click", addManualColumn);
 
 // ============ CREATE DCR ============
 document.getElementById("createMultiBtn").addEventListener("click", () => {

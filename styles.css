@@ -186,6 +186,7 @@ body {
 .btn-save { background: var(--green); color: #fff; }
 .btn-dcr { background: var(--orange); color: #fff; }
 .btn-new-tracker { background: #2563eb; color: #fff; }
+.btn-manual-grid { background: #eef4ff; color: #2563eb; border: 1px solid #bfd0f5; }
 .btn-multi { background: var(--purple); color: #fff; }
 .btn-bulk { background: var(--teal); color: #fff; }
 .btn-ghost { background: #e6e8ef; color: var(--text); }
@@ -236,6 +237,12 @@ body {
 .manual-free-text {
   min-width: 210px; white-space: normal;
 }
+.manual-custom-header { min-width: 150px; cursor: text; }
+.manual-custom-header:focus {
+  outline: 2px solid #7aa7f8; outline-offset: -2px; background: #f4f8ff;
+}
+.manual-custom-cell { min-width: 150px; }
+.manual-custom-empty { color: #a4adba; background: #fafbfd; }
 .manual-edit-cell.placeholder,
 .manual-free-text.placeholder {
   color: #8a94a6; font-style: italic;
