@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=60" />
+<link rel="stylesheet" href="styles.css?v=61" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -251,6 +251,7 @@
           <a class="subtab" data-view="completed">Completed Requests <span class="subtab-count" id="count-completed">0</span></a>
         </div>
         <div class="toolbar">
+          <button class="btn btn-new-tracker" id="newTrackerBtn">New Tracker</button>
           <button class="btn btn-edit" id="editToggleBtn">Edit</button>
           <button class="btn btn-multi" id="createMultiBtn" disabled>Create Multiple DCR</button>
           <button class="btn btn-bulk" id="bulkAssignBtn" disabled>⇲ Bulk Assign</button>
@@ -808,6 +809,67 @@
     </div>
   </div>
 
+  <!-- ===== NEW BLANK POLICY COVERAGE TRACKER MODAL ===== -->
+  <div class="modal-overlay" id="newTrackerModal">
+    <div class="modal-card tracker-modal">
+      <div class="modal-head-row">
+        <h3 class="modal-title">New Policy Coverage Tracker</h3>
+        <button class="modal-x" id="newTrackerClose" title="Close">✕</button>
+      </div>
+      <div class="tracker-form">
+        <label>
+          <span>Brand <b class="req">*</b></span>
+          <input type="text" id="newTrackerBrand" class="modal-input" placeholder="Enter new or existing brand" />
+        </label>
+        <label>
+          <span>Indication <b class="req">*</b></span>
+          <input type="text" id="newTrackerIndication" class="modal-input" placeholder="Enter indication" />
+        </label>
+        <label>
+          <span>Payer</span>
+          <input type="text" id="newTrackerPayer" class="modal-input" placeholder="Payer name" />
+        </label>
+        <label>
+          <span>Parent Payer</span>
+          <input type="text" id="newTrackerParentPayer" class="modal-input" placeholder="Parent payer" />
+        </label>
+        <label>
+          <span>Book of Business</span>
+          <select id="newTrackerBob" class="modal-input">
+            <option>Commercial</option>
+            <option>Medicare Advantage</option>
+            <option>Medicaid Managed</option>
+            <option>Medicaid FFS</option>
+            <option>Government</option>
+          </select>
+        </label>
+        <label>
+          <span>Benefit Type</span>
+          <select id="newTrackerBenefit" class="modal-input">
+            <option>Pharmacy</option>
+            <option>Medical</option>
+          </select>
+        </label>
+        <label>
+          <span>State</span>
+          <input type="text" id="newTrackerState" class="modal-input" placeholder="National, AL, CA..." value="National" />
+        </label>
+        <label>
+          <span>Lives Covered</span>
+          <input type="number" id="newTrackerLives" class="modal-input" min="0" placeholder="0" />
+        </label>
+        <label class="tracker-form-wide">
+          <span>Coverage Notes</span>
+          <textarea id="newTrackerNotes" class="modal-input tracker-notes" placeholder="Free text coverage details, policy source, or questions"></textarea>
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="newTrackerCancel">Cancel</button>
+        <button class="btn btn-new-tracker" id="newTrackerCreate">Create Tracker</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== CREATE DCR / PAYER DETAILS MODAL ===== -->
   <div class="modal-overlay" id="dcrModal">
     <div class="modal-card pd-modal">
@@ -956,6 +1018,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=60"></script>
+  <script src="app.js?v=61"></script>
 </body>
 </html>

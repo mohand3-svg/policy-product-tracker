@@ -73,7 +73,10 @@ function saveRows() {
 const ROWS = loadRows();
 
 // ---- helper to format lives -------------------------------------
-const fmtLives = n => n.toLocaleString();
+const fmtLives = n => {
+  const num = Number(n);
+  return Number.isFinite(num) ? num.toLocaleString() : "—";
+};
 function pbmCoverageForPolicy(policy, index) {
   const benefit = String(policy.benefit || "").toUpperCase();
   return benefit.includes("PHARMACY") && index % 3 === 1
@@ -158,7 +161,8 @@ function renderRows() {
 
     // simple text cells
     const textCells = [
-      r.parentPayer || "—", r.payer, r.brand, r.indication, r.bob, r.benefit, fmtLives(r.lives),
+      sfEsc(r.parentPayer || "—"), sfEsc(r.payer), sfEsc(r.brand), sfEsc(r.indication),
+      sfEsc(r.bob), sfEsc(r.benefit), fmtLives(r.lives),
       `<span class="link-cell">Policy</span>`,
       `<span class="link-cell">PA Form</span>`,
       `<span class="link-cell">Drug List</span>`,
@@ -166,8 +170,8 @@ function renderRows() {
       `<span class="freetext">&lt;free text&gt;</span>`,
       `<span class="freetext">&lt;free text&gt;</span>`,
       `<span class="freetext">&lt;free text&gt;</span>`,
-      r.relAccess || "—",
-      r.mmitHpm,
+      sfEsc(r.relAccess || "—"),
+      sfEsc(r.mmitHpm),
     ];
     textCells.forEach(html => {
       const td = document.createElement("td");
@@ -305,6 +309,7 @@ function assignSteward(r, name) {
 
 // ---- history -----------------------------------------------------
 function logHistory(id, field, oldV, newV) {
+  if (!history[id]) history[id] = [];
   history[id].push({
     ts: new Date().toLocaleString(),
     field, old: oldV, neu: newV,
@@ -354,6 +359,111 @@ function updateCounts() {
   const multi = sel >= 2;
   document.getElementById("createMultiBtn").disabled = !multi;
   document.getElementById("bulkAssignBtn").disabled = !multi;
+}
+
+// ---- blank tracker creation ------------------------------------
+function nextManualReqId() {
+  const nums = ROWS
+    .map(r => /^REQ-MANUAL-(\d+)$/.exec(r.id || ""))
+    .filter(Boolean)
+    .map(m => Number(m[1]));
+  const next = nums.length ? Math.max(...nums) + 1 : 1;
+  return `REQ-MANUAL-${String(next).padStart(3, "0")}`;
+}
+
+function trackerField(id) {
+  return document.getElementById(id);
+}
+
+function trackerValue(id) {
+  const el = trackerField(id);
+  return el ? el.value.trim() : "";
+}
+
+function resetNewTrackerForm() {
+  [
+    "newTrackerBrand", "newTrackerIndication", "newTrackerPayer",
+    "newTrackerParentPayer", "newTrackerLives", "newTrackerNotes",
+  ].forEach(id => {
+    const el = trackerField(id);
+    if (el) el.value = "";
+  });
+  const state = trackerField("newTrackerState");
+  if (state) state.value = "National";
+  const bob = trackerField("newTrackerBob");
+  if (bob) bob.value = "Commercial";
+  const benefit = trackerField("newTrackerBenefit");
+  if (benefit) benefit.value = "Pharmacy";
+}
+
+function openNewTrackerModal() {
+  resetNewTrackerForm();
+  const modal = trackerField("newTrackerModal");
+  if (modal) modal.classList.add("open");
+  const brand = trackerField("newTrackerBrand");
+  if (brand) brand.focus();
+}
+
+function closeNewTrackerModal() {
+  const modal = trackerField("newTrackerModal");
+  if (modal) modal.classList.remove("open");
+}
+
+function activateTrackerSubtab(view) {
+  document.querySelectorAll("#stewardshipView .subtab").forEach(t => {
+    t.classList.toggle("active", (t.dataset.view || "all") === view);
+  });
+  currentView = view;
+}
+
+function createBlankTracker() {
+  const brand = trackerValue("newTrackerBrand");
+  const indication = trackerValue("newTrackerIndication");
+  if (!brand) {
+    showToast("Brand is required", true);
+    trackerField("newTrackerBrand")?.focus();
+    return;
+  }
+  if (!indication) {
+    showToast("Indication is required", true);
+    trackerField("newTrackerIndication")?.focus();
+    return;
+  }
+
+  const livesRaw = trackerValue("newTrackerLives");
+  const lives = livesRaw ? Math.max(0, Number(livesRaw) || 0) : 0;
+  const row = {
+    id: nextManualReqId(),
+    steward: CURRENT_USER,
+    parentPayer: trackerValue("newTrackerParentPayer"),
+    payer: trackerValue("newTrackerPayer") || "New Payer",
+    brand,
+    indication,
+    bob: trackerValue("newTrackerBob") || "Commercial",
+    benefit: trackerValue("newTrackerBenefit") || "Pharmacy",
+    form: "",
+    lives,
+    mmitHpm: "<Free Text>",
+    mmit: "New",
+    dcr: "New",
+    dcrCode: "",
+    gne: "Unknown",
+    relAccess: "—",
+    pa: "<Free Text>",
+    comments: trackerValue("newTrackerNotes") || "<Free Text>",
+    gate: "",
+    geo: trackerValue("newTrackerState") || "National",
+    manual: true,
+  };
+
+  ROWS.unshift(row);
+  history[row.id] = [];
+  logHistory(row.id, "Policy Coverage Tracker", "—", "Blank tracker created");
+  saveRows();
+  activateTrackerSubtab("all");
+  closeNewTrackerModal();
+  renderRows();
+  showToast(`Created ${row.id} for ${brand}`, false);
 }
 
 // ---- row events --------------------------------------------------
@@ -425,6 +535,26 @@ editToggleBtn.addEventListener("click", () => {
     showToast("Changes submitted successfully", false);
   }
 });
+
+// ============ NEW BLANK TRACKER ============
+(function wireNewTrackerModal() {
+  const open = trackerField("newTrackerBtn");
+  const close = trackerField("newTrackerClose");
+  const cancel = trackerField("newTrackerCancel");
+  const create = trackerField("newTrackerCreate");
+  const modal = trackerField("newTrackerModal");
+  if (open) open.addEventListener("click", openNewTrackerModal);
+  if (close) close.addEventListener("click", closeNewTrackerModal);
+  if (cancel) cancel.addEventListener("click", closeNewTrackerModal);
+  if (create) create.addEventListener("click", createBlankTracker);
+  if (modal) {
+    modal.addEventListener("click", e => { if (e.target === modal) closeNewTrackerModal(); });
+    modal.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeNewTrackerModal();
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") createBlankTracker();
+    });
+  }
+})();
 
 // ============ CREATE DCR ============
 document.getElementById("createMultiBtn").addEventListener("click", () => {
