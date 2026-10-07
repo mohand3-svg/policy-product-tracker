@@ -221,16 +221,16 @@ body {
 }
 .freetext[contenteditable="true"] {
   font-style: normal; color: var(--text);
-  background: #fff; outline: none;
-  box-shadow: inset 0 0 0 1px #d5dce8;
-  border-radius: 4px; min-width: 170px; min-height: 26px;
-  display: block; padding: 6px 8px; line-height: 1.35;
+  background: #fffdf4; outline: none;
+  box-shadow: none; border-radius: 0;
+  min-width: 170px; line-height: 1.35;
 }
+.manual-row td { background: #fffdf7; }
+.manual-row:hover td { background: #fff9eb; }
 .manual-edit-cell {
-  background: #fff; color: var(--text); font-style: normal;
-  box-shadow: inset 0 0 0 1px #d5dce8;
-  border-radius: 4px; min-width: 140px; cursor: text;
-  padding: 7px 9px !important; line-height: 1.35;
+  color: var(--text); font-style: normal;
+  box-shadow: none; border-radius: 0; min-width: 140px; cursor: text;
+  line-height: 1.35;
   white-space: normal;
 }
 .manual-free-text {
@@ -242,16 +242,16 @@ body {
 }
 .manual-edit-cell:focus,
 .freetext[contenteditable="true"]:focus {
-  background: #f8fbff;
+  background: #f4f8ff !important;
   box-shadow: inset 0 0 0 2px #7aa7f8;
 }
 .history-btn {
-  border: 1px solid #c7d4eb; background: #fff; color: #2563eb;
-  border-radius: 4px; padding: 5px 9px; font-size: 11.5px;
+  border: 1px solid transparent; background: transparent; color: #2563eb;
+  border-radius: 4px; padding: 4px 6px; font-size: 11.5px;
   font-weight: 700; cursor: pointer; white-space: nowrap;
 }
 .history-btn:hover {
-  background: #f2f6ff;
+  background: #eef4ff; border-color: #c7d4eb;
 }
 
 /* status cells */

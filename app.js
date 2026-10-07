@@ -222,6 +222,7 @@ function renderRows() {
   visible.forEach(r => {
     const tr = document.createElement("tr");
     tr.dataset.id = r.id;
+    if (r.manual) tr.classList.add("manual-row");
 
     // checkbox
     const tdc = document.createElement("td");
