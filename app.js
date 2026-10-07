@@ -285,8 +285,8 @@ function renderTrackerHeaders(showCustomColumns) {
 
 // ---- render rows -------------------------------------------------
 function renderRows() {
-  const manualContext = currentManualContext();
-  renderTrackerHeaders(Boolean(manualContext));
+  const trackerContext = currentTrackerContext();
+  renderTrackerHeaders(Boolean(trackerContext));
   gridBody.innerHTML = "";
   const visible = filterRows();
   visible.forEach(r => {
@@ -363,16 +363,9 @@ function renderRows() {
     // Comments / Links or Queries
     tr.appendChild(buildFreeText(r, "comments"));
 
-    if (manualContext) {
+    if (trackerContext) {
       CUSTOM_COLUMNS.forEach(col => {
-        if (r.manual) {
-          tr.appendChild(buildCustomManualCell(r, col));
-        } else {
-          const td = document.createElement("td");
-          td.className = "manual-custom-empty";
-          td.textContent = "—";
-          tr.appendChild(td);
-        }
+        tr.appendChild(buildCustomManualCell(r, col));
       });
     }
 
@@ -537,21 +530,25 @@ function updateCounts() {
   updateManualGridButtons();
 }
 
-function currentManualContext() {
-  const brand = [...document.querySelectorAll(".brand-cb:checked")]
-    .map(cb => cb.value)
-    .find(v => ROWS.some(r => r.manual && r.brand === v));
-  if (!brand) return null;
-  const row = ROWS.find(r => r.manual && r.brand === brand);
-  return row ? { brand: row.brand, indication: row.indication } : null;
+function currentTrackerContext() {
+  const selectedBrand = [...document.querySelectorAll(".brand-cb:checked")].map(cb => cb.value)[0] || "";
+  const selectedIndication = [...document.querySelectorAll(".indication-cb:checked")].map(cb => cb.value)[0] || "";
+  if (selectedBrand) {
+    const row = ROWS.find(r => r.brand === selectedBrand && (!selectedIndication || String(r.indication || "").toLowerCase().includes(selectedIndication.toLowerCase())));
+    return {
+      brand: selectedBrand,
+      indication: selectedIndication || row?.indication || "",
+    };
+  }
+  return null;
 }
 
 function updateManualGridButtons() {
-  const hasManualContext = Boolean(currentManualContext());
+  const hasTrackerContext = Boolean(currentTrackerContext());
   const rowBtn = document.getElementById("addManualRowBtn");
   const colBtn = document.getElementById("addManualColumnBtn");
-  if (rowBtn) rowBtn.disabled = !hasManualContext;
-  if (colBtn) colBtn.disabled = !hasManualContext;
+  if (rowBtn) rowBtn.disabled = !hasTrackerContext;
+  if (colBtn) colBtn.disabled = !hasTrackerContext;
 }
 
 function makeManualTrackerRow(brand, indication) {
@@ -710,9 +707,9 @@ function createBlankTracker() {
 }
 
 function addManualRow() {
-  const ctx = currentManualContext();
+  const ctx = currentTrackerContext();
   if (!ctx) {
-    showToast("Select a manual tracker brand first", true);
+    showToast("Select a brand first", true);
     return;
   }
   const row = makeManualTrackerRow(ctx.brand, ctx.indication);
@@ -727,9 +724,9 @@ function addManualRow() {
 }
 
 function addManualColumn() {
-  const ctx = currentManualContext();
+  const ctx = currentTrackerContext();
   if (!ctx) {
-    showToast("Select a manual tracker brand first", true);
+    showToast("Select a brand first", true);
     return;
   }
   const label = `Free Text ${CUSTOM_COLUMNS.length + 1}`;
