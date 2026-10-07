@@ -143,7 +143,15 @@ function buildManualCell(r, field, fallback) {
   td.contentEditable = "true";
   td.dataset.field = field;
   const value = r[field];
-  td.textContent = value === undefined || value === null || value === "" ? fallback : String(value);
+  const isEmpty = value === undefined || value === null || value === "";
+  td.textContent = isEmpty ? fallback : String(value);
+  td.classList.toggle("placeholder", isEmpty);
+  td.addEventListener("focus", () => {
+    if (td.classList.contains("placeholder")) {
+      td.textContent = "";
+      td.classList.remove("placeholder");
+    }
+  });
   td.addEventListener("blur", () => {
     const raw = td.textContent.trim();
     const next = field === "lives" ? Math.max(0, Number(raw.replace(/,/g, "")) || 0) : raw;
@@ -160,6 +168,7 @@ function buildManualCell(r, field, fallback) {
       }
     }
     td.textContent = displayNext || fallback;
+    td.classList.toggle("placeholder", !displayNext);
   });
   return td;
 }
@@ -273,7 +282,7 @@ function renderRows() {
 
     // Action
     const tdAct = document.createElement("td");
-    tdAct.innerHTML = `<button class="icon-btn act-hist" title="History">🕑</button>`;
+    tdAct.innerHTML = `<button class="history-btn act-hist" title="View change history">History</button>`;
     tr.appendChild(tdAct);
 
     gridBody.appendChild(tr);
@@ -287,18 +296,30 @@ function renderRows() {
 const FREETEXT_LABELS = { pa: "PA/PI Summary", comments: "Comments" };
 function buildFreeText(r, field) {
   const td = document.createElement("td");
-  td.className = "freetext";
+  td.className = r.manual ? "freetext manual-free-text" : "freetext";
   td.dataset.field = field;
-  td.textContent = r[field] || "<Free Text>";
+  const fallback = "<free text>";
+  const current = r[field] && r[field] !== "<Free Text>" ? r[field] : "";
+  td.textContent = current || fallback;
+  td.classList.toggle("placeholder", !current);
   if (editMode || r.manual) {
     td.contentEditable = "true";
+    td.addEventListener("focus", () => {
+      if (td.classList.contains("placeholder")) {
+        td.textContent = "";
+        td.classList.remove("placeholder");
+      }
+    });
     td.addEventListener("blur", () => {
       const val = td.textContent.trim();
-      if (val !== (r[field] || "")) {
-        logHistory(r.id, FREETEXT_LABELS[field] || field, r[field] || "—", val);
-        r[field] = val;
+      const next = val || "<Free Text>";
+      if (next !== (r[field] || "")) {
+        logHistory(r.id, FREETEXT_LABELS[field] || field, r[field] || "—", next);
+        r[field] = next;
         markDirty();
       }
+      td.textContent = val || fallback;
+      td.classList.toggle("placeholder", !val);
     });
   }
   return td;

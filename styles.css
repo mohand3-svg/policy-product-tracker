@@ -221,16 +221,37 @@ body {
 }
 .freetext[contenteditable="true"] {
   font-style: normal; color: var(--text);
-  background: #fffbe9; outline: 1px dashed var(--yellow);
-  border-radius: 3px; min-width: 120px; display: inline-block; padding: 2px 4px;
+  background: #fff; outline: none;
+  box-shadow: inset 0 0 0 1px #d5dce8;
+  border-radius: 4px; min-width: 170px; min-height: 26px;
+  display: block; padding: 6px 8px; line-height: 1.35;
 }
 .manual-edit-cell {
-  background: #fffdf1; color: var(--text); font-style: normal;
-  outline: 1px dashed #e0c34f; outline-offset: -4px;
-  min-width: 130px; cursor: text;
+  background: #fff; color: var(--text); font-style: normal;
+  box-shadow: inset 0 0 0 1px #d5dce8;
+  border-radius: 4px; min-width: 140px; cursor: text;
+  padding: 7px 9px !important; line-height: 1.35;
+  white-space: normal;
 }
-.manual-edit-cell:focus {
-  background: #fff9d8; outline: 2px solid #f0c94a;
+.manual-free-text {
+  min-width: 210px; white-space: normal;
+}
+.manual-edit-cell.placeholder,
+.manual-free-text.placeholder {
+  color: #8a94a6; font-style: italic;
+}
+.manual-edit-cell:focus,
+.freetext[contenteditable="true"]:focus {
+  background: #f8fbff;
+  box-shadow: inset 0 0 0 2px #7aa7f8;
+}
+.history-btn {
+  border: 1px solid #c7d4eb; background: #fff; color: #2563eb;
+  border-radius: 4px; padding: 5px 9px; font-size: 11.5px;
+  font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.history-btn:hover {
+  background: #f2f6ff;
 }
 
 /* status cells */
