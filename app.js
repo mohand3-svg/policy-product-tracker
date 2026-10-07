@@ -103,6 +103,7 @@ function pbmCoverageForPolicy(policy, index) {
 let editMode = false;
 const history = {}; // id -> [ {ts, field, old, neu, user} ]
 ROWS.forEach(r => history[r.id] = []);
+let selectedBrandOrder = [];
 
 const gridBody = document.getElementById("gridBody");
 
@@ -228,8 +229,8 @@ function buildStandardTextCells(r) {
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
-    sfEsc(r.relAccess || "—"),
     sfEsc(r.mmitHpm),
+    sfEsc(relativeAccessPositionForRow(r)),
   ];
   return textCells.map(html => {
     const td = document.createElement("td");
@@ -254,9 +255,16 @@ function buildManualTextCells(r) {
     buildManualCell(r, "reporterLink1", "<free text>"),
     buildManualCell(r, "reporterLink2", "<free text>"),
     buildManualCell(r, "reporterLink3", "<free text>"),
-    buildManualCell(r, "relAccess", "<free text>"),
     buildManualCell(r, "mmitHpm", "<free text>"),
+    buildCalculatedRapCell(r),
   ];
+}
+
+function buildCalculatedRapCell(r) {
+  const td = document.createElement("td");
+  td.className = "rap-cell";
+  td.textContent = relativeAccessPositionForRow(r);
+  return td;
 }
 
 function renderTrackerHeaders(showCustomColumns) {
@@ -479,6 +487,57 @@ function logHistory(id, field, oldV, newV) {
   });
 }
 
+// ---- Relative Access Position -----------------------------------
+const ACCESS_SCORE = {
+  "Disadvantaged": 1,
+  "At Par": 2,
+  "Advantaged": 3,
+};
+
+function syncBrandSelectionOrder(changedCb) {
+  if (changedCb && changedCb.classList.contains("brand-cb")) {
+    if (changedCb.checked && !selectedBrandOrder.includes(changedCb.value)) {
+      selectedBrandOrder.push(changedCb.value);
+    }
+    if (!changedCb.checked) {
+      selectedBrandOrder = selectedBrandOrder.filter(v => v !== changedCb.value);
+    }
+  }
+  const checked = new Set([...document.querySelectorAll(".brand-cb:checked")].map(cb => cb.value));
+  selectedBrandOrder = selectedBrandOrder.filter(v => checked.has(v));
+  document.querySelectorAll(".brand-cb:checked").forEach(cb => {
+    if (!selectedBrandOrder.includes(cb.value)) selectedBrandOrder.push(cb.value);
+  });
+}
+
+function selectedBrandsInOrder() {
+  syncBrandSelectionOrder();
+  return selectedBrandOrder.slice();
+}
+
+function brandAccessScore(brand) {
+  const scores = ROWS
+    .filter(r => r.brand === brand)
+    .map(r => ACCESS_SCORE[r.relAccess])
+    .filter(v => Number.isFinite(v));
+  if (!scores.length) return null;
+  return scores.reduce((sum, v) => sum + v, 0) / scores.length;
+}
+
+function relativeAccessPositionForRow(r) {
+  const brands = selectedBrandsInOrder();
+  if (!brands.length) return r.relAccess || "NA";
+  const gneBrand = brands[0];
+  if (r.brand === gneBrand) return "NA";
+  if (!brands.includes(r.brand)) return "NA";
+  const gneScore = brandAccessScore(gneBrand);
+  const competitorScore = brandAccessScore(r.brand);
+  if (gneScore == null || competitorScore == null) return "NA";
+  if (competitorScore > gneScore) return "Advantaged";
+  if (competitorScore < gneScore) return "Disadvantaged";
+  return "At Par";
+}
+
 // ---- filtering ---------------------------------------------------
 let currentView = "all";
 function filterRows() {
@@ -593,7 +652,7 @@ function addManualFilterOption(bodyId, cbClass, value, count) {
   cb.type = "checkbox";
   cb.className = `filter-cb ${cbClass}`;
   cb.value = value;
-  cb.addEventListener("change", renderRows);
+  cb.addEventListener("change", () => handleTrackerFilterChange(cb));
   label.appendChild(cb);
   label.appendChild(document.createTextNode(" " + value + " "));
   const countEl = document.createElement("span");
@@ -630,6 +689,7 @@ function setTrackerFilterSelection(row) {
   document.querySelectorAll(".indication-cb").forEach(cb => {
     cb.checked = cb.value === row.indication;
   });
+  selectedBrandOrder = [row.brand];
 }
 
 // ---- blank tracker creation ------------------------------------
@@ -1024,9 +1084,16 @@ document.getElementById("historyClose").addEventListener("click", () => historyM
 });
 
 // ============ FILTERS ============
-document.querySelectorAll(".filter-cb").forEach(cb => cb.addEventListener("change", renderRows));
+function handleTrackerFilterChange(cb) {
+  if (cb.classList.contains("brand-cb")) syncBrandSelectionOrder(cb);
+  renderRows();
+}
+document.querySelectorAll(".filter-cb").forEach(cb => {
+  cb.addEventListener("change", () => handleTrackerFilterChange(cb));
+});
 document.getElementById("resetFilters").addEventListener("click", () => {
   document.querySelectorAll(".filter-cb").forEach(c => c.checked = false);
+  selectedBrandOrder = [];
   // Clear wins filter state too, so switching tabs stays consistent
   winFilters.brand.clear(); winFilters.subInd.clear();
   winFilters.bob.clear(); winFilters.benefit.clear();
