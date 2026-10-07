@@ -381,19 +381,10 @@ function trackerValue(id) {
 }
 
 function resetNewTrackerForm() {
-  [
-    "newTrackerBrand", "newTrackerIndication", "newTrackerPayer",
-    "newTrackerParentPayer", "newTrackerLives", "newTrackerNotes",
-  ].forEach(id => {
+  ["newTrackerBrand", "newTrackerIndication"].forEach(id => {
     const el = trackerField(id);
     if (el) el.value = "";
   });
-  const state = trackerField("newTrackerState");
-  if (state) state.value = "National";
-  const bob = trackerField("newTrackerBob");
-  if (bob) bob.value = "Commercial";
-  const benefit = trackerField("newTrackerBenefit");
-  if (benefit) benefit.value = "Pharmacy";
 }
 
 function openNewTrackerModal() {
@@ -430,19 +421,17 @@ function createBlankTracker() {
     return;
   }
 
-  const livesRaw = trackerValue("newTrackerLives");
-  const lives = livesRaw ? Math.max(0, Number(livesRaw) || 0) : 0;
   const row = {
     id: nextManualReqId(),
     steward: CURRENT_USER,
-    parentPayer: trackerValue("newTrackerParentPayer"),
-    payer: trackerValue("newTrackerPayer") || "New Payer",
+    parentPayer: "",
+    payer: "New Payer",
     brand,
     indication,
-    bob: trackerValue("newTrackerBob") || "Commercial",
-    benefit: trackerValue("newTrackerBenefit") || "Pharmacy",
+    bob: "Commercial",
+    benefit: "Pharmacy",
     form: "",
-    lives,
+    lives: 0,
     mmitHpm: "<Free Text>",
     mmit: "New",
     dcr: "New",
@@ -450,9 +439,9 @@ function createBlankTracker() {
     gne: "Unknown",
     relAccess: "—",
     pa: "<Free Text>",
-    comments: trackerValue("newTrackerNotes") || "<Free Text>",
+    comments: "<Free Text>",
     gate: "",
-    geo: trackerValue("newTrackerState") || "National",
+    geo: "National",
     manual: true,
   };
 
