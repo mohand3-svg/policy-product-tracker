@@ -92,7 +92,7 @@ ROWS.forEach(r => history[r.id] = []);
 const gridBody = document.getElementById("gridBody");
 
 // ---- build a select element -------------------------------------
-function buildSelect(opts, current, kind) {
+function buildSelect(opts, current, kind, forceEnabled = false) {
   const sel = document.createElement("select");
   sel.className = "cell-select";
   opts.forEach(o => {
@@ -110,7 +110,7 @@ function buildSelect(opts, current, kind) {
     sel.className = "cell-select " + (found ? found.cls : "");
   };
   applyColor();
-  sel.disabled = !editMode;
+  sel.disabled = !editMode && !forceEnabled;
   sel.dataset.kind = kind;
   sel.addEventListener("change", () => { applyColor(); });
   return sel;
@@ -128,13 +128,82 @@ function buildGneSelect(r) {
     if (v === r.gne) opt.selected = true;
     sel.appendChild(opt);
   });
-  sel.disabled = !editMode;
+  sel.disabled = !editMode && !r.manual;
   sel.addEventListener("change", () => {
     logHistory(r.id, "GNE HPM Status", r.gne, sel.value);
     r.gne = sel.value;
     markDirty();
   });
   return sel;
+}
+
+function buildManualCell(r, field, fallback) {
+  const td = document.createElement("td");
+  td.className = "manual-edit-cell";
+  td.contentEditable = "true";
+  td.dataset.field = field;
+  const value = r[field];
+  td.textContent = value === undefined || value === null || value === "" ? fallback : String(value);
+  td.addEventListener("blur", () => {
+    const raw = td.textContent.trim();
+    const next = field === "lives" ? Math.max(0, Number(raw.replace(/,/g, "")) || 0) : raw;
+    const displayNext = field === "lives" ? fmtLives(next) : next;
+    if (String(next) !== String(r[field] ?? "")) {
+      logHistory(r.id, field, r[field] || "—", next || "—");
+      r[field] = next;
+      markDirty();
+      if (field === "brand" || field === "indication") {
+        renderManualFilterOptions();
+        setTrackerFilterSelection(r);
+        renderRows();
+        return;
+      }
+    }
+    td.textContent = displayNext || fallback;
+  });
+  return td;
+}
+
+function buildStandardTextCells(r) {
+  const textCells = [
+    sfEsc(r.parentPayer || "—"), sfEsc(r.payer), sfEsc(r.brand), sfEsc(r.indication),
+    sfEsc(r.bob), sfEsc(r.benefit), fmtLives(r.lives),
+    `<span class="link-cell">Policy</span>`,
+    `<span class="link-cell">PA Form</span>`,
+    `<span class="link-cell">Drug List</span>`,
+    `<span class="link-cell">PA List</span>`,
+    `<span class="freetext">&lt;free text&gt;</span>`,
+    `<span class="freetext">&lt;free text&gt;</span>`,
+    `<span class="freetext">&lt;free text&gt;</span>`,
+    sfEsc(r.relAccess || "—"),
+    sfEsc(r.mmitHpm),
+  ];
+  return textCells.map(html => {
+    const td = document.createElement("td");
+    td.innerHTML = html;
+    return td;
+  });
+}
+
+function buildManualTextCells(r) {
+  return [
+    buildManualCell(r, "parentPayer", "<free text>"),
+    buildManualCell(r, "payer", "<free text>"),
+    buildManualCell(r, "brand", "<free text>"),
+    buildManualCell(r, "indication", "<free text>"),
+    buildManualCell(r, "bob", "<free text>"),
+    buildManualCell(r, "benefit", "<free text>"),
+    buildManualCell(r, "lives", "0"),
+    buildManualCell(r, "policyLink1", "<free text>"),
+    buildManualCell(r, "policyLink2", "<free text>"),
+    buildManualCell(r, "policyLink3", "<free text>"),
+    buildManualCell(r, "policyLink4", "<free text>"),
+    buildManualCell(r, "reporterLink1", "<free text>"),
+    buildManualCell(r, "reporterLink2", "<free text>"),
+    buildManualCell(r, "reporterLink3", "<free text>"),
+    buildManualCell(r, "relAccess", "<free text>"),
+    buildManualCell(r, "mmitHpm", "<free text>"),
+  ];
 }
 
 // ---- render rows -------------------------------------------------
@@ -159,34 +228,17 @@ function renderRows() {
     // Steward Assigned cell
     tr.appendChild(buildStewardCell(r));
 
-    // simple text cells
-    const textCells = [
-      sfEsc(r.parentPayer || "—"), sfEsc(r.payer), sfEsc(r.brand), sfEsc(r.indication),
-      sfEsc(r.bob), sfEsc(r.benefit), fmtLives(r.lives),
-      `<span class="link-cell">Policy</span>`,
-      `<span class="link-cell">PA Form</span>`,
-      `<span class="link-cell">Drug List</span>`,
-      `<span class="link-cell">PA List</span>`,
-      `<span class="freetext">&lt;free text&gt;</span>`,
-      `<span class="freetext">&lt;free text&gt;</span>`,
-      `<span class="freetext">&lt;free text&gt;</span>`,
-      sfEsc(r.relAccess || "—"),
-      sfEsc(r.mmitHpm),
-    ];
-    textCells.forEach(html => {
-      const td = document.createElement("td");
-      td.innerHTML = html;
-      tr.appendChild(td);
-    });
+    const textCells = r.manual ? buildManualTextCells(r) : buildStandardTextCells(r);
+    textCells.forEach(td => tr.appendChild(td));
 
     // MMIT Verification Status (select)
     const tdMmit = document.createElement("td");
-    tdMmit.appendChild(buildSelect(MMIT_OPTS, r.mmit, "mmit"));
+    tdMmit.appendChild(buildSelect(MMIT_OPTS, r.mmit, "mmit", r.manual));
     tr.appendChild(tdMmit);
 
     // DCR Status (select) — locked once a DCR has been created
     const tdDcr = document.createElement("td");
-    const dcrSel = buildSelect(DCR_OPTS, r.dcr, "dcr");
+    const dcrSel = buildSelect(DCR_OPTS, r.dcr, "dcr", r.manual);
     if (r.dcrCode && r.dcr !== "BridgingIssues") {
       dcrSel.disabled = true;
       dcrSel.title = "DCR created — status locked";
@@ -238,7 +290,7 @@ function buildFreeText(r, field) {
   td.className = "freetext";
   td.dataset.field = field;
   td.textContent = r[field] || "<Free Text>";
-  if (editMode) {
+  if (editMode || r.manual) {
     td.contentEditable = "true";
     td.addEventListener("blur", () => {
       const val = td.textContent.trim();
@@ -323,12 +375,16 @@ function filterRows() {
   const payers = [...document.querySelectorAll(".payer-cb:checked")].map(c => c.value);
   const bobs = [...document.querySelectorAll(".bob-cb:checked")].map(c => c.value);
   const brands = [...document.querySelectorAll(".brand-cb:checked")].map(c => c.value);
+  const indications = [...document.querySelectorAll(".indication-cb:checked")].map(c => c.value);
   return ROWS.filter(r => {
     const payerOk = payers.length === 0 ? true : payers.includes(r.payer);
     const bobOk = bobs.length === 0 ? true : bobs.includes(r.bob);
     const brandOk = brands.length === 0 ? true : brands.includes(r.brand);
+    const indicationOk = indications.length === 0
+      ? true
+      : indications.some(v => String(r.indication || "").toLowerCase().includes(String(v || "").toLowerCase()));
 
-    return payerOk && bobOk && brandOk && matchesView(r, currentView);
+    return payerOk && bobOk && brandOk && indicationOk && matchesView(r, currentView);
   });
 }
 
@@ -359,6 +415,58 @@ function updateCounts() {
   const multi = sel >= 2;
   document.getElementById("createMultiBtn").disabled = !multi;
   document.getElementById("bulkAssignBtn").disabled = !multi;
+}
+
+function filterCheckboxExists(selector, value) {
+  return [...document.querySelectorAll(selector)].some(cb => cb.value === value);
+}
+
+function addManualFilterOption(bodyId, cbClass, value, count) {
+  const body = document.getElementById(bodyId);
+  if (!body || !value || filterCheckboxExists(`.${cbClass}`, value)) return;
+  const label = document.createElement("label");
+  label.className = "manual-filter-option";
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.className = `filter-cb ${cbClass}`;
+  cb.value = value;
+  cb.addEventListener("change", renderRows);
+  label.appendChild(cb);
+  label.appendChild(document.createTextNode(" " + value + " "));
+  const countEl = document.createElement("span");
+  countEl.className = "count";
+  countEl.textContent = String(count);
+  label.appendChild(countEl);
+  const showMore = body.querySelector(".show-more");
+  body.insertBefore(label, showMore || null);
+}
+
+function renderManualFilterOptions() {
+  document.querySelectorAll(".manual-filter-option").forEach(el => el.remove());
+  const brandCounts = {};
+  const indicationCounts = {};
+  ROWS.filter(r => r.manual).forEach(r => {
+    if (r.brand) brandCounts[r.brand] = (brandCounts[r.brand] || 0) + 1;
+    if (r.indication) indicationCounts[r.indication] = (indicationCounts[r.indication] || 0) + 1;
+  });
+  Object.entries(brandCounts).forEach(([value, count]) => {
+    addManualFilterOption("brandFilterBody", "brand-cb", value, count);
+  });
+  Object.entries(indicationCounts).forEach(([value, count]) => {
+    addManualFilterOption("indicationFilterBody", "indication-cb", value, count);
+  });
+}
+
+function setTrackerFilterSelection(row) {
+  document.querySelectorAll("#stewardshipFilters .filter-cb").forEach(cb => {
+    cb.checked = false;
+  });
+  document.querySelectorAll(".brand-cb").forEach(cb => {
+    cb.checked = cb.value === row.brand;
+  });
+  document.querySelectorAll(".indication-cb").forEach(cb => {
+    cb.checked = cb.value === row.indication;
+  });
 }
 
 // ---- blank tracker creation ------------------------------------
@@ -449,6 +557,8 @@ function createBlankTracker() {
   history[row.id] = [];
   logHistory(row.id, "Policy Coverage Tracker", "—", "Blank tracker created");
   saveRows();
+  renderManualFilterOptions();
+  setTrackerFilterSelection(row);
   activateTrackerSubtab("all");
   closeNewTrackerModal();
   renderRows();
@@ -2609,6 +2719,7 @@ document.getElementById("savedTableBody").addEventListener("click", (e) => {
 });
 
 // ============ INIT ============
+renderManualFilterOptions();
 renderRows();
 applyMultiResult();
 sfRender();

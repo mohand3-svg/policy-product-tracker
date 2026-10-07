@@ -224,6 +224,14 @@ body {
   background: #fffbe9; outline: 1px dashed var(--yellow);
   border-radius: 3px; min-width: 120px; display: inline-block; padding: 2px 4px;
 }
+.manual-edit-cell {
+  background: #fffdf1; color: var(--text); font-style: normal;
+  outline: 1px dashed #e0c34f; outline-offset: -4px;
+  min-width: 130px; cursor: text;
+}
+.manual-edit-cell:focus {
+  background: #fff9d8; outline: 2px solid #f0c94a;
+}
 
 /* status cells */
 .cell-select {
