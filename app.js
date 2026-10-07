@@ -533,20 +533,22 @@ function currentTrackerContext() {
   const selectedIndication = [...document.querySelectorAll(".indication-cb:checked")].map(cb => cb.value)[0] || "";
   if (selectedBrand) {
     const row = ROWS.find(r => r.brand === selectedBrand && (!selectedIndication || String(r.indication || "").toLowerCase().includes(selectedIndication.toLowerCase())));
+    const syntheticRow = ROWS.find(r => r.manual && r.brand === selectedBrand && (!selectedIndication || String(r.indication || "").toLowerCase().includes(selectedIndication.toLowerCase())));
     return {
       brand: selectedBrand,
       indication: selectedIndication || row?.indication || "",
+      isSynthetic: Boolean(syntheticRow),
     };
   }
   return null;
 }
 
 function updateManualGridButtons() {
-  const hasTrackerContext = Boolean(currentTrackerContext());
+  const ctx = currentTrackerContext();
   const rowBtn = document.getElementById("addManualRowBtn");
   const colBtn = document.getElementById("addManualColumnBtn");
-  if (rowBtn) rowBtn.disabled = !hasTrackerContext;
-  if (colBtn) colBtn.disabled = !hasTrackerContext;
+  if (rowBtn) rowBtn.disabled = !ctx || !ctx.isSynthetic;
+  if (colBtn) colBtn.disabled = !ctx;
 }
 
 function makeManualTrackerRow(brand, indication) {
@@ -706,8 +708,8 @@ function createBlankTracker() {
 
 function addManualRow() {
   const ctx = currentTrackerContext();
-  if (!ctx) {
-    showToast("Select a brand first", true);
+  if (!ctx || !ctx.isSynthetic) {
+    showToast("Add Blank Row is available only for New Tracker records", true);
     return;
   }
   const row = makeManualTrackerRow(ctx.brand, ctx.indication);
