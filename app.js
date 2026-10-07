@@ -229,6 +229,7 @@ function buildStandardTextCells(r) {
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
+    sfEsc(r.relAccess || "—"),
     sfEsc(r.mmitHpm),
     sfEsc(relativeAccessPositionForRow(r)),
   ];
@@ -255,6 +256,7 @@ function buildManualTextCells(r) {
     buildManualCell(r, "reporterLink1", "<free text>"),
     buildManualCell(r, "reporterLink2", "<free text>"),
     buildManualCell(r, "reporterLink3", "<free text>"),
+    buildManualCell(r, "relAccess", "<free text>"),
     buildManualCell(r, "mmitHpm", "<free text>"),
     buildCalculatedRapCell(r),
   ];
