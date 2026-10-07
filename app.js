@@ -416,8 +416,6 @@ function buildFreeText(r, field) {
 
 // ---- steward cell ------------------------------------------------
 function buildStewardCell(r) {
-  if (r.manual) return buildManualCell(r, "steward", "<free text>");
-
   const td = document.createElement("td");
   td.className = "steward-cell";
 
