@@ -63,6 +63,25 @@
     return Object.values(stateFor(table)).some(values => Array.isArray(values));
   }
 
+  function filterMessageContainer(table) {
+    return table.closest(".table-wrap, .wins-grid-wrap, .draft-grid-wrap, .st-grid-wrap, .mp-table-wrap, .saved-table-wrap, .table-scroll") ||
+      table.parentElement;
+  }
+
+  function updateInlineFilterMessage(table) {
+    const container = filterMessageContainer(table);
+    if (!container) return;
+    const active = hasActiveFilters(table);
+    let message = container.querySelector(":scope > .inline-filter-warning");
+    if (!message && active) {
+      message = document.createElement("div");
+      message.className = "inline-filter-warning";
+      message.textContent = "Inline filters are applied. Clear inline filters to view all records.";
+      container.insertBefore(message, table);
+    }
+    if (message) message.hidden = !active;
+  }
+
   function visibleRowsIn(tbody) {
     return [...tbody.querySelectorAll("tr")].filter(row => !row.hidden && !isEmptyRow(row));
   }
@@ -96,6 +115,7 @@
       row.hidden = !match;
     });
     refreshFilterTriggers(table);
+    updateInlineFilterMessage(table);
     runAfterFilter(table, afterFilter);
   }
 

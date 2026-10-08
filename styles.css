@@ -216,6 +216,15 @@ body {
   text-transform: none !important;
   letter-spacing: 0 !important;
 }
+.inline-filter-warning {
+  margin: 0;
+  padding: 7px 10px;
+  border-bottom: 1px solid #f3b4b4;
+  background: #fff1f1;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 800;
+}
 .grid .inline-filter-row th {
   top: 30px;
   z-index: 6;
