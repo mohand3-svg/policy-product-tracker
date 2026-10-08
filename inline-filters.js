@@ -142,7 +142,7 @@
   }
 
   function setColumnSelection(table, col, values, checkedValues, afterFilter) {
-    if (checkedValues.length === values.length) {
+    if (checkedValues.length >= values.length) {
       delete stateFor(table)[col];
     } else {
       stateFor(table)[col] = checkedValues;
@@ -221,7 +221,13 @@
       list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         cb.checked = allCb.checked;
       });
-      setColumnSelection(table, col, values, checkedValues(), afterFilter);
+      if (allCb.checked) {
+        delete stateFor(table)[col];
+        applyInlineTableFilters(table, afterFilter);
+      } else {
+        stateFor(table)[col] = [];
+        applyInlineTableFilters(table, afterFilter);
+      }
       refreshAllState();
     });
     list.addEventListener("change", event => {
