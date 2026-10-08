@@ -107,6 +107,98 @@ let selectedBrandOrder = [];
 
 const gridBody = document.getElementById("gridBody");
 
+const INLINE_FILTER_STATE = {};
+
+function visibleRowsIn(tbody) {
+  return [...tbody.querySelectorAll("tr")].filter(tr => !tr.hidden && !tr.querySelector(".wins-empty, .draft-empty"));
+}
+
+function syncInlineFilteredCounts(table) {
+  const tbody = table.tBodies && table.tBodies[0];
+  if (!tbody) return;
+  const visible = visibleRowsIn(tbody).length;
+  const countTargets = {
+    grid: "rowCount",
+    winsTable: "winTableCount",
+    winsGrid: "winsRowCount",
+    stGrid: "stRowCount",
+    draftGrid: "draftRowCount",
+  };
+  const target = countTargets[table.id];
+  if (target) {
+    const el = document.getElementById(target);
+    if (el) el.textContent = String(visible);
+  }
+  if (table.id === "grid") updateCounts();
+  if (table.id === "winsGrid") updateWinsSelCount();
+  if (table.id === "stGrid") updateStSelCount();
+  if (table.id === "draftGrid") updateDraftSelection();
+}
+
+function applyInlineTableFilters(table) {
+  const tbody = table.tBodies && table.tBodies[0];
+  if (!tbody) return;
+  const filterRow = table.querySelector("thead tr.inline-filter-row");
+  if (!filterRow) return;
+  const queries = [...filterRow.querySelectorAll("input[data-col]")].map(input => ({
+    col: Number(input.dataset.col),
+    value: input.value.trim().toLowerCase(),
+  })).filter(f => f.value);
+
+  [...tbody.querySelectorAll("tr")].forEach(tr => {
+    const cells = tr.children;
+    const match = queries.every(({ col, value }) =>
+      String(cells[col]?.textContent || "").toLowerCase().includes(value));
+    tr.hidden = !match;
+  });
+  syncInlineFilteredCounts(table);
+}
+
+function ensureInlineTableFilters(tableOrId, skipLabels = []) {
+  const table = typeof tableOrId === "string" ? document.getElementById(tableOrId) : tableOrId;
+  if (!table || !table.tHead) return;
+  const key = table.id || table.className || "table";
+  if (!INLINE_FILTER_STATE[key]) INLINE_FILTER_STATE[key] = {};
+  const headerRow = [...table.tHead.rows].find(row => !row.classList.contains("inline-filter-row"));
+  if (!headerRow) return;
+  const headerCells = [...headerRow.children];
+  let filterRow = table.tHead.querySelector("tr.inline-filter-row");
+  if (filterRow && filterRow.children.length !== headerCells.length) {
+    filterRow.remove();
+    filterRow = null;
+  }
+  if (!filterRow) {
+    filterRow = document.createElement("tr");
+    filterRow.className = "inline-filter-row";
+    headerCells.forEach((th, index) => {
+      const label = th.textContent.trim();
+      const skip = th.querySelector('input[type="checkbox"]') ||
+        skipLabels.some(s => label.toLowerCase().includes(s.toLowerCase()));
+      const cell = document.createElement("th");
+      if (!skip) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "inline-table-filter";
+        input.dataset.col = String(index);
+        input.placeholder = "Filter";
+        input.value = INLINE_FILTER_STATE[key][index] || "";
+        input.addEventListener("input", () => {
+          INLINE_FILTER_STATE[key][index] = input.value;
+          applyInlineTableFilters(table);
+        });
+        cell.appendChild(input);
+      }
+      filterRow.appendChild(cell);
+    });
+    table.tHead.appendChild(filterRow);
+  } else {
+    [...filterRow.querySelectorAll("input[data-col]")].forEach(input => {
+      input.value = INLINE_FILTER_STATE[key][input.dataset.col] || "";
+    });
+  }
+  applyInlineTableFilters(table);
+}
+
 // ---- build a select element -------------------------------------
 function buildSelect(opts, current, kind, forceEnabled = false) {
   const sel = document.createElement("select");
@@ -388,6 +480,7 @@ function renderRows() {
   });
 
   wireRowEvents();
+  ensureInlineTableFilters("grid", ["Action", "Create DCR"]);
   updateCounts();
   updateTabCounts();
 }
@@ -578,9 +671,10 @@ function updateTabCounts() {
 
 // ---- counts ------------------------------------------------------
 function updateCounts() {
-  const shown = gridBody.querySelectorAll("tr").length;
+  const shown = visibleRowsIn(gridBody).length;
   document.getElementById("rowCount").textContent = shown;
-  const sel = gridBody.querySelectorAll(".row-cb:checked").length;
+  const sel = [...gridBody.querySelectorAll(".row-cb:checked")]
+    .filter(cb => !cb.closest("tr").hidden).length;
   document.getElementById("selCount").textContent = sel;
   // Create Multiple DCR + Bulk Assign require 2+ selected records
   const multi = sel >= 2;
@@ -980,6 +1074,7 @@ function openDcrModal(r) {
   setVal("pdPropEffDate", "");
   setVal("pdPropStateRow", "National");
 
+  ensureInlineTableFilters("pdDcrTable", []);
   modal.classList.add("open");
 }
 
@@ -1076,6 +1171,7 @@ function openHistory(id) {
       tbody.appendChild(tr);
     });
   }
+  ensureInlineTableFilters("historyTable", []);
   historyModal.classList.add("open");
 }
 document.getElementById("historyClose").addEventListener("click", () => historyModal.classList.remove("open"));
@@ -1413,6 +1509,7 @@ function renderWinsTable(rows) {
   body.innerHTML = "";
   if (rows.length === 0) {
     body.innerHTML = `<tr><td colspan="8" class="wins-empty">No WINs match the current filters</td></tr>`;
+    ensureInlineTableFilters("winsTable", []);
     return;
   }
   rows.forEach((w, i) => {
@@ -1428,6 +1525,7 @@ function renderWinsTable(rows) {
       `<td>${w.subInd}</td>`;
     body.appendChild(tr);
   });
+  ensureInlineTableFilters("winsTable", []);
 }
 
 // Main wins render: summary cards + pie + table, honoring filters.
@@ -1735,6 +1833,7 @@ function renderWinsPage() {
 
   if (rows.length === 0) {
     body.innerHTML = `<tr><td colspan="24" class="wins-empty">No policy wins match the current filters</td></tr>`;
+    ensureInlineTableFilters("winsGrid", ["Action"]);
     updateWinsSelCount();
     return;
   }
@@ -1768,6 +1867,7 @@ function renderWinsPage() {
     </tr>`).join("");
 
   wireWinRowChecks();
+  ensureInlineTableFilters("winsGrid", ["Action"]);
   updateWinsSelCount();
 }
 
@@ -1778,7 +1878,8 @@ function wireWinRowChecks() {
     a.addEventListener("click", () => openWinDetail(a.dataset.id)));
 }
 function updateWinsSelCount() {
-  const n = document.querySelectorAll(".win-row-cb:checked").length;
+  const n = [...document.querySelectorAll(".win-row-cb:checked")]
+    .filter(cb => !cb.closest("tr").hidden).length;
   const el = document.getElementById("winsSelCount");
   if (el) el.textContent = String(n);
 }
@@ -1940,6 +2041,7 @@ function renderWinDetail(id) {
       detailRow("Pharma Policy Link", d.vPharmBefore, d.vPharmAfter) +
       detailRow("Medical and Pharmacy Policy Link", d.vMedPharmBefore, d.vMedPharmAfter) +
       detailRow("PA Policy link", d.vPaBefore, d.vPaAfter);
+    ensureInlineTableFilters("wdValuesTable", []);
   }
 
   // Activity log (single mock entry, matching the screenshot style)
@@ -2202,6 +2304,7 @@ function renderStTool() {
 
   if (rows.length === 0) {
     body.innerHTML = `<tr><td colspan="13" class="wins-empty">No requests match the current filters</td></tr>`;
+    ensureInlineTableFilters("stGrid", ["Action"]);
     updateStSelCount();
     return;
   }
@@ -2224,6 +2327,7 @@ function renderStTool() {
     </tr>`).join("");
 
   wireStRowChecks();
+  ensureInlineTableFilters("stGrid", ["Action"]);
   updateStSelCount();
 }
 
@@ -2234,7 +2338,8 @@ function wireStRowChecks() {
     btn.addEventListener("click", () => stAssign([btn.dataset.id])));
 }
 function updateStSelCount() {
-  const n = document.querySelectorAll(".st-row-cb:checked").length;
+  const n = [...document.querySelectorAll(".st-row-cb:checked")]
+    .filter(cb => !cb.closest("tr").hidden).length;
   const el = document.getElementById("stSelCount");
   if (el) el.textContent = String(n);
   const btn = document.getElementById("stBulkAssignBtn");
@@ -2471,11 +2576,13 @@ function renderDrafts() {
     `).join("");
   }
 
+  ensureInlineTableFilters("draftGrid", ["Dcr URL", "Dcr's URL"]);
   updateDraftSelection();
 }
 
 function updateDraftSelection() {
-  const n = document.querySelectorAll("#draftBody tr.draft-selected").length;
+  const n = [...document.querySelectorAll("#draftBody tr.draft-selected")]
+    .filter(tr => !tr.hidden).length;
   const count = document.getElementById("draftSelCount");
   if (count) count.textContent = String(n);
 }
@@ -2864,6 +2971,7 @@ function sfRender() {
         <button class="sf-icon danger" data-act="delete" data-i="${i}" title="Delete">🗑</button>
       </td>
     </tr>`).join("");
+  ensureInlineTableFilters("savedFiltersTable", ["Actions"]);
 }
 
 // ---- save / rename modal ----------------------------------------

@@ -208,6 +208,44 @@ body {
   background: var(--header-bg); font-weight: 700;
   color: #3a4156; font-size: 11.5px;
 }
+.inline-filter-row th {
+  background: #fff !important;
+  padding: 5px 6px !important;
+  vertical-align: middle !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+.grid .inline-filter-row th {
+  top: 30px;
+  z-index: 6;
+}
+.wins-grid .inline-filter-row th,
+.st-grid .inline-filter-row th,
+.draft-grid .inline-filter-row th,
+.mp-table .inline-filter-row th {
+  top: 38px;
+  z-index: 3;
+}
+.inline-table-filter {
+  width: 100%;
+  min-width: 64px;
+  box-sizing: border-box;
+  border: 1px solid #d6dce8;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.2;
+  color: #374151;
+  background: #fff;
+}
+.inline-table-filter::placeholder { color: #9aa6b8; }
+.inline-table-filter:focus {
+  outline: none;
+  border-color: #7aa7f8;
+  box-shadow: 0 0 0 2px #e4efff;
+}
 .grid tbody tr:nth-child(even) { background: var(--row-alt); }
 .grid tbody tr:hover { background: #eef3ff; }
 .grid tbody tr.row-selected { background: #fdf3e3 !important; }

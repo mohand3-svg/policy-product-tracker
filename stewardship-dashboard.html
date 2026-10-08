@@ -248,6 +248,33 @@ body {
   color: var(--text); white-space: nowrap;
 }
 .data-table tbody tr:hover { background: #f7f9fc; }
+.data-table .inline-filter-row th {
+  top: 42px;
+  z-index: 2;
+  background: #fff;
+  padding: 6px 8px;
+}
+.inline-table-filter {
+  width: 100%;
+  min-width: 72px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 7px;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text);
+  background: #fff;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.inline-table-filter::placeholder { color: var(--muted); }
+.inline-table-filter:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(59, 111, 212, .12);
+}
 
 /* ===== Status pills ===== */
 .pill {
@@ -1551,6 +1578,59 @@ function renderCharts(a) {
 /* ============================================================
    4. Tables
    ============================================================ */
+const INLINE_FILTER_STATE = {};
+
+function applyInlineTableFilters(table) {
+  const tbody = table.tBodies && table.tBodies[0];
+  const filterRow = table.querySelector("thead tr.inline-filter-row");
+  if (!tbody || !filterRow) return;
+  const queries = [...filterRow.querySelectorAll("input[data-col]")].map((input) => ({
+    col: Number(input.dataset.col),
+    value: input.value.trim().toLowerCase(),
+  })).filter((f) => f.value);
+  [...tbody.querySelectorAll("tr")].forEach((tr) => {
+    const cells = tr.children;
+    const match = queries.every(({ col, value }) =>
+      String(cells[col]?.textContent || "").toLowerCase().includes(value));
+    tr.hidden = !match;
+  });
+}
+
+function ensureInlineTableFilters(tableId) {
+  const table = document.getElementById(tableId);
+  if (!table || !table.tHead) return;
+  if (!INLINE_FILTER_STATE[tableId]) INLINE_FILTER_STATE[tableId] = {};
+  const headerRow = [...table.tHead.rows].find((row) => !row.classList.contains("inline-filter-row"));
+  if (!headerRow) return;
+  const headerCells = [...headerRow.children];
+  let filterRow = table.tHead.querySelector("tr.inline-filter-row");
+  if (filterRow && filterRow.children.length !== headerCells.length) {
+    filterRow.remove();
+    filterRow = null;
+  }
+  if (!filterRow) {
+    filterRow = document.createElement("tr");
+    filterRow.className = "inline-filter-row";
+    headerCells.forEach((th, index) => {
+      const cell = document.createElement("th");
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "inline-table-filter";
+      input.dataset.col = String(index);
+      input.placeholder = "Filter";
+      input.value = INLINE_FILTER_STATE[tableId][index] || "";
+      input.addEventListener("input", () => {
+        INLINE_FILTER_STATE[tableId][index] = input.value;
+        applyInlineTableFilters(table);
+      });
+      cell.appendChild(input);
+      filterRow.appendChild(cell);
+    });
+    table.tHead.appendChild(filterRow);
+  }
+  applyInlineTableFilters(table);
+}
+
 function renderDashboardTable(rows) {
   const cols = ["DCR ID", "Platform", "Submitter", "Assignee", "Submission Date",
     "Assignment Date", "Completion Date", "Payer", "Book of Business", "Product", "Indication", "Benefit"];
@@ -1564,6 +1644,7 @@ function renderDashboardTable(rows) {
     </tr>`).join("");
   const empty = shown.length ? "" : `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--muted);padding:24px">No matching requests</td></tr>`;
   document.getElementById("dashboardTable").innerHTML = head + `<tbody>${body}${empty}</tbody>`;
+  ensureInlineTableFilters("dashboardTable");
 }
 
 function renderPolicyWinTable() {
@@ -1580,6 +1661,7 @@ function renderPolicyWinTable() {
     </tr>`).join("");
   const empty = rows.length ? "" : `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--muted);padding:24px">No policy wins</td></tr>`;
   document.getElementById("policyWinTable").innerHTML = head + `<tbody>${body}${empty}</tbody>`;
+  ensureInlineTableFilters("policyWinTable");
 }
 
 function renderStewardshipTable(rows, filter) {
@@ -1603,6 +1685,7 @@ function renderStewardshipTable(rows, filter) {
     </tr>`).join("");
   const empty = shown.length ? "" : `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--muted);padding:24px">No matching requests</td></tr>`;
   document.getElementById("stewardshipTable").innerHTML = head + `<tbody>${body}${empty}</tbody>`;
+  ensureInlineTableFilters("stewardshipTable");
 }
 
 let currentStewardTab = "all";

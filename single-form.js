@@ -25,6 +25,7 @@ const searchBtn = document.getElementById("searchBtn");
 const submitBtn = document.getElementById("submitBtn");
 const mdmId = document.getElementById("mdmId");
 const formMain = document.querySelector(".form-main");
+const INLINE_FILTER_STATE = {};
 
 // ---- dropdowns --------------------------------------------------
 // Each .fld-select cycles through its option list on click (simple
@@ -69,6 +70,61 @@ function esc(s) {
   return String(s == null ? "" : s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function applyInlineTableFilters(table) {
+  const tbody = table.tBodies && table.tBodies[0];
+  const filterRow = table.querySelector("thead tr.inline-filter-row");
+  if (!tbody || !filterRow) return;
+  const queries = [...filterRow.querySelectorAll("input[data-col]")].map(input => ({
+    col: Number(input.dataset.col),
+    value: input.value.trim().toLowerCase(),
+  })).filter(f => f.value);
+  [...tbody.querySelectorAll("tr")].forEach(tr => {
+    const cells = tr.children;
+    const match = queries.every(({ col, value }) =>
+      String(cells[col]?.textContent || "").toLowerCase().includes(value));
+    tr.hidden = !match;
+  });
+}
+
+function ensureInlineTableFilters(tableId, skipLabels = []) {
+  const table = document.getElementById(tableId);
+  if (!table || !table.tHead) return;
+  if (!INLINE_FILTER_STATE[tableId]) INLINE_FILTER_STATE[tableId] = {};
+  const headerRow = [...table.tHead.rows].find(row => !row.classList.contains("inline-filter-row"));
+  if (!headerRow) return;
+  const headerCells = [...headerRow.children];
+  let filterRow = table.tHead.querySelector("tr.inline-filter-row");
+  if (filterRow && filterRow.children.length !== headerCells.length) {
+    filterRow.remove();
+    filterRow = null;
+  }
+  if (!filterRow) {
+    filterRow = document.createElement("tr");
+    filterRow.className = "inline-filter-row";
+    headerCells.forEach((th, index) => {
+      const label = th.textContent.trim();
+      const skip = skipLabels.some(s => label.toLowerCase().includes(s.toLowerCase()));
+      const cell = document.createElement("th");
+      if (!skip) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "inline-table-filter";
+        input.dataset.col = String(index);
+        input.placeholder = "Filter";
+        input.value = INLINE_FILTER_STATE[tableId][index] || "";
+        input.addEventListener("input", () => {
+          INLINE_FILTER_STATE[tableId][index] = input.value;
+          applyInlineTableFilters(table);
+        });
+        cell.appendChild(input);
+      }
+      filterRow.appendChild(cell);
+    });
+    table.tHead.appendChild(filterRow);
+  }
+  applyInlineTableFilters(table);
 }
 
 // Demo "current policy" values keyed loosely by product; falls back to a
@@ -217,7 +273,7 @@ function populatePayerDetails() {
 
   const tableHtml =
     `<p class="assess-hint">Please provide as much information as possible in the ‘Proposed’ column to help the stewardship team conduct their assessment.</p>` +
-    `<table class="prop-table">` +
+    `<table class="prop-table" id="propTable">` +
       `<colgroup><col class="c-values"><col class="c-current"><col class="c-proposed"></colgroup>` +
       `<thead><tr><th>Values</th><th>Current</th><th>Proposed</th></tr></thead>` +
       `<tbody>${rowsHtml}</tbody>` +
@@ -230,6 +286,7 @@ function populatePayerDetails() {
     formMain.appendChild(panel);
   }
   panel.innerHTML = summaryHtml + tableHtml;
+  ensureInlineTableFilters("propTable", []);
 
   // Wire the clear (✕) affordance on selects to blank the value.
   panel.querySelectorAll(".sel-wrap .clear-x").forEach(x => {
@@ -467,6 +524,7 @@ function renderSavedFilters() {
         <button class="sf-icon danger" data-act="delete" data-i="${i}" title="Delete">🗑</button>
       </td>
     </tr>`).join("");
+  ensureInlineTableFilters("savedFiltersTable", ["Actions"]);
 }
 
 // ---- modal (save new / rename existing) -------------------------

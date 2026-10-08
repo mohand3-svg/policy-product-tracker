@@ -28,6 +28,7 @@ const body = document.getElementById("reviewBody");
 const selectAll = document.getElementById("rvSelectAll");
 const setPropBtn = document.getElementById("setPropBtn");
 const submitBtn = document.getElementById("submitChangeBtn");
+const INLINE_FILTER_STATE = {};
 
 const MIN_ROWS = 26;
 const TOTAL_COLS = 22;
@@ -35,6 +36,61 @@ const TOTAL_COLS = 22;
 function esc(s) {
   return String(s == null ? "" : s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function applyInlineTableFilters(table, afterFilter) {
+  const tbody = table.tBodies && table.tBodies[0];
+  const filterRow = table.querySelector("thead tr.inline-filter-row");
+  if (!tbody || !filterRow) return;
+  const queries = [...filterRow.querySelectorAll("input[data-col]")].map(input => ({
+    col: Number(input.dataset.col),
+    value: input.value.trim().toLowerCase(),
+  })).filter(f => f.value);
+  [...tbody.querySelectorAll("tr")].forEach(tr => {
+    const cells = tr.children;
+    const match = queries.every(({ col, value }) =>
+      String(cells[col]?.textContent || "").toLowerCase().includes(value));
+    tr.hidden = !match;
+  });
+  if (afterFilter) afterFilter();
+}
+function ensureInlineTableFilters(tableId, skipLabels = [], afterFilter) {
+  const table = document.getElementById(tableId);
+  if (!table || !table.tHead) return;
+  if (!INLINE_FILTER_STATE[tableId]) INLINE_FILTER_STATE[tableId] = {};
+  const headerRow = [...table.tHead.rows].find(row => !row.classList.contains("inline-filter-row"));
+  if (!headerRow) return;
+  const headerCells = [...headerRow.children];
+  let filterRow = table.tHead.querySelector("tr.inline-filter-row");
+  if (filterRow && filterRow.children.length !== headerCells.length) {
+    filterRow.remove();
+    filterRow = null;
+  }
+  if (!filterRow) {
+    filterRow = document.createElement("tr");
+    filterRow.className = "inline-filter-row";
+    headerCells.forEach((th, index) => {
+      const label = th.textContent.trim();
+      const skip = th.querySelector('input[type="checkbox"]') ||
+        skipLabels.some(s => label.toLowerCase().includes(s.toLowerCase()));
+      const cell = document.createElement("th");
+      if (!skip) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "inline-table-filter";
+        input.dataset.col = String(index);
+        input.placeholder = "Filter";
+        input.value = INLINE_FILTER_STATE[tableId][index] || "";
+        input.addEventListener("input", () => {
+          INLINE_FILTER_STATE[tableId][index] = input.value;
+          applyInlineTableFilters(table, afterFilter);
+        });
+        cell.appendChild(input);
+      }
+      filterRow.appendChild(cell);
+    });
+    table.tHead.appendChild(filterRow);
+  }
+  applyInlineTableFilters(table, afterFilter);
 }
 function cell(v) {
   const s = v === undefined || v === null ? "" : String(v);
@@ -110,6 +166,10 @@ function render() {
   body.innerHTML = html;
   wireRows();
   wireUrlValidation();
+  ensureInlineTableFilters("reviewTable", [], () => {
+    syncSelectAll();
+    updateToolbar();
+  });
   updateToolbar();
 }
 
@@ -180,7 +240,10 @@ function wireRows() {
       updateToolbar();
     }));
 }
-function checkedRows() { return [...body.querySelectorAll(".rv-cb:checked")]; }
+function checkedRows() {
+  return [...body.querySelectorAll(".rv-cb:checked")]
+    .filter(cb => !cb.closest("tr").hidden);
+}
 
 function updateToolbar() {
   const n = checkedRows().length;
@@ -198,14 +261,17 @@ function updateToolbar() {
 }
 
 function syncSelectAll() {
-  const boxes = [...body.querySelectorAll(".rv-cb")];
+  const boxes = [...body.querySelectorAll(".rv-cb")]
+    .filter(cb => !cb.closest("tr").hidden);
   const checked = boxes.filter(b => b.checked).length;
   selectAll.checked = boxes.length > 0 && checked === boxes.length;
   selectAll.indeterminate = checked > 0 && checked < boxes.length;
 }
 
 selectAll.addEventListener("change", e => {
-  body.querySelectorAll(".rv-cb").forEach(cb => {
+  [...body.querySelectorAll(".rv-cb")]
+    .filter(cb => !cb.closest("tr").hidden)
+    .forEach(cb => {
     cb.checked = e.target.checked;
     cb.closest("tr").classList.toggle("selected", e.target.checked);
   });

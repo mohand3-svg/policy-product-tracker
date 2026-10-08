@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=74" />
+<link rel="stylesheet" href="styles.css?v=75" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -555,7 +555,7 @@
           </div>
           <div class="draft-request-body">
             <div class="draft-grid-wrap">
-              <table class="draft-grid">
+              <table class="draft-grid" id="draftGrid">
                 <thead>
                   <tr id="draftHeadRow">
                     <th>Dcr Identifier</th>
@@ -615,7 +615,7 @@
               </div>
             </div>
 
-            <table class="wd-values">
+            <table class="wd-values" id="wdValuesTable">
               <thead>
                 <tr>
                   <th class="wd-vlabel">Values</th>
@@ -795,7 +795,7 @@
         No saved filters yet. Tick some filters and click <strong>Save Filter</strong>.
       </p>
       <div class="saved-table-wrap" id="savedTableWrap">
-        <table class="saved-table">
+        <table class="saved-table" id="savedFiltersTable">
           <thead>
             <tr>
               <th>Filter Name</th>
@@ -877,7 +877,7 @@
 
           <!-- RIGHT: Values / Current / Proposed comparison table -->
           <div class="pd-right">
-            <table class="pd-table">
+            <table class="pd-table" id="pdDcrTable">
               <thead>
                 <tr><th class="pd-th-val">Values</th><th>Current</th><th>Proposed</th></tr>
               </thead>
@@ -984,6 +984,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=74"></script>
+  <script src="app.js?v=75"></script>
 </body>
 </html>
