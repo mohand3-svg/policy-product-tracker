@@ -159,9 +159,9 @@ function displayPbmValue(r, index, field) {
   return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
 }
 
-function rowValue(r, field) {
-  if (field === "pbm") return rowPbm(r);
-  if (field === "pbmRole") return rowPbmRole(r);
+function rowValue(r, field, index = ROWS.indexOf(r)) {
+  if (field === "pbm") return displayPbmValue(r, index, "pbm");
+  if (field === "pbmRole") return displayPbmValue(r, index, "pbmRole");
   return r[COL[field]];
 }
 
@@ -176,9 +176,10 @@ function activeFilterKeys() {
 }
 
 function visibleRows() {
-  return ROWS.filter(r =>
-    activeFilterKeys().every(k => !filter[k] || rowValue(r, k) === filter[k])
-  );
+  return ROWS.filter((r, index) => {
+    if (filter.entityMode === "pbm" && displayPbmValue(r, index, "pbm") === "N/A") return false;
+    return activeFilterKeys().every(k => !filter[k] || rowValue(r, k, index) === filter[k]);
+  });
 }
 
 function syncEntityMode() {
@@ -222,6 +223,7 @@ function render() {
   const rows = visibleRows();
 
   let html = rows.map((r, i) => {
+    const originalIndex = ROWS.indexOf(r);
     const [parent, payer, bob, product, indication, benefit, pa, stepEdit,
            numSteps, placement, stepProducts, status,
            simplified, policyLink, siteLink, paLink, effDate] = r;
@@ -229,8 +231,8 @@ function render() {
       <td class="mp-check"><input type="checkbox" class="mp-row-cb"></td>
       <td>${esc(parent)}</td>
       <td>${esc(payer)}</td>
-      ${cell(displayPbmValue(r, i, "pbm"))}
-      ${cell(displayPbmValue(r, i, "pbmRole"))}
+      ${cell(displayPbmValue(r, originalIndex, "pbm"))}
+      ${cell(displayPbmValue(r, originalIndex, "pbmRole"))}
       <td>${esc(bob)}</td>
       <td>${esc(product)}</td>
       <td>${esc(indication)}</td>
@@ -368,7 +370,8 @@ reviewBtn.addEventListener("click", () => {
   const selected = checkedRows().map(cb => {
     const i = +cb.closest("tr").dataset.i;
     const row = vis[i];
-    return row ? [...row, displayPbmValue(row, i, "pbm"), displayPbmValue(row, i, "pbmRole")] : null;
+    const originalIndex = ROWS.indexOf(row);
+    return row ? [...row, displayPbmValue(row, originalIndex, "pbm"), displayPbmValue(row, originalIndex, "pbmRole")] : null;
   }).filter(Boolean);
   // Storage can throw in a sandboxed preview iframe; never let it block navigation.
   try {
