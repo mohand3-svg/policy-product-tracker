@@ -1053,7 +1053,6 @@ function openDcrModal(r) {
   setVal("pdCurPlacement", "Not Covered");
   setVal("pdCurStepProducts", "");
   setVal("pdCurSimplified", simplifiedCurrent);
-  setVal("pdCurPbmCoverage", "National Formulary");
   setVal("pdCurPolicyLink", "");
   setVal("pdCurSocLink", "");
   setVal("pdCurPaFormLink", "");
@@ -1067,7 +1066,6 @@ function openDcrModal(r) {
   setVal("dcrStepProducts", "");
   setVal("dcrNumSteps", "1");
   setVal("pdPropSimplified", "");
-  setVal("pdPropPbmCoverage", "National Formulary");
   setVal("pdPropPolicyLink", "");
   setVal("pdPropSocLink", "");
   setVal("pdPropPaFormLink", "");

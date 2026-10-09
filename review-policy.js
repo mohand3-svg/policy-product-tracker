@@ -31,7 +31,7 @@ const submitBtn = document.getElementById("submitChangeBtn");
 const INLINE_FILTER_STATE = {};
 
 const MIN_ROWS = 26;
-const TOTAL_COLS = 22;
+const TOTAL_COLS = 21;
 
 function esc(s) {
   return String(s == null ? "" : s)
@@ -115,12 +115,6 @@ function statusClass(s) {
   return "ps-unknown";
 }
 
-function pbmCoverageFor(row, index) {
-  return row[5] === "PHARMACY BENEFIT" && index % 3 === 1
-    ? "Custom Formulary"
-    : "National Formulary";
-}
-
 // DCR is valid if it has a resolvable policy status (not UNKNOWN).
 function isValid(r) { return String(r[11]).toUpperCase() !== "UNKNOWN"; }
 // Auto-approve is a mockup flag: off by default (matches screenshot ❌).
@@ -130,7 +124,6 @@ function render() {
   let html = ROWS.map((r, i) => {
     const valid = isValid(r);
     const auto = isAutoApprove(r);
-    const pbmCoverage = pbmCoverageFor(r, i);
     return `<tr data-i="${i}">
       <td class="mp-check"><input type="checkbox" class="rv-cb"></td>
       <td>${valid ? '<span class="chk-yes">✓</span>' : '<span class="x-no">✕</span>'}</td>
@@ -147,7 +140,6 @@ function render() {
       <td>${r[10] === "N/A" ? '<span class="na-pill">N/A</span>' : esc(r[10])}</td>
       <td><span class="pstatus ${statusClass(r[11])}">${esc(r[11])}</span></td>
       <td>${esc(r[12])}</td>
-      <td>${esc(pbmCoverage)}</td>
       ${urlCell(r[13])}
       ${urlCell(r[14])}
       ${urlCell(r[15])}

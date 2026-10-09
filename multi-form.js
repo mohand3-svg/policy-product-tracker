@@ -48,12 +48,6 @@ function statusClass(s) {
   return "ps-unknown";
 }
 
-function pbmCoverageFor(row, index) {
-  return row[5] === "PHARMACY BENEFIT" && index % 3 === 1
-    ? "Custom Formulary"
-    : "National Formulary";
-}
-
 const body = document.getElementById("mpBody");
 const selectAll = document.getElementById("mpSelectAll");
 const reviewBtn = document.getElementById("reviewBtn");
@@ -134,8 +128,8 @@ function visibleRows() {
   );
 }
 
-// Total column count (checkbox + 18 data columns).
-const TOTAL_COLS = 19;
+// Total column count (checkbox + 17 data columns).
+const TOTAL_COLS = 18;
 
 // Cell helper: render "N/A" (and empty) as muted italic.
 function cell(v) {
@@ -152,7 +146,6 @@ function render() {
     const [parent, payer, bob, product, indication, benefit, pa, stepEdit,
            numSteps, placement, stepProducts, status,
            simplified, policyLink, siteLink, paLink, effDate] = r;
-    const pbmCoverage = pbmCoverageFor(r, i);
     return `<tr data-i="${i}">
       <td class="mp-check"><input type="checkbox" class="mp-row-cb"></td>
       <td>${esc(parent)}</td>
@@ -168,7 +161,6 @@ function render() {
       ${cell(stepProducts)}
       <td><span class="pstatus ${statusClass(status)}">${esc(status)}</span></td>
       <td>${esc(simplified)}</td>
-      <td>${esc(pbmCoverage)}</td>
       ${cell(policyLink)}
       ${cell(siteLink)}
       ${cell(paLink)}
