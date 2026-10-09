@@ -177,10 +177,6 @@ function render() {
 
   body.innerHTML = html;
   wireRows();
-  ensureInlineTableFilters("mpTable", [], () => {
-    syncSelectAll();
-    updateReviewState();
-  });
   updateReviewState();
 }
 
