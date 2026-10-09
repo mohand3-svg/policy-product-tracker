@@ -9,8 +9,8 @@
 // Demo option lists for each searchable field.
 const OPTIONS = {
   payer: ["UNITEDHEALTHCARE", "AETNA", "HUMANA", "CIGNA", "WELLCARE", "CVS HEALTH", "UNITED FEDERATION OF TEACHERS", "UNIVERSITY OF ROCHESTER", "DOMTAR CORPORATION"],
-  pbm: ["EXPRESS SCRIPTS"],
-  pbmRole: ["PHARMACY BENEFIT MANAGER", "CUSTOMIZED FORMULARY", "FORMULARY MANAGEMENT", "NATIONAL FORMULARY"],
+  pbm: ["Express Scripts", "OptumRX", "CVS"],
+  pbmRole: ["Custom", "National", "Formulary Mgt"],
   bob: ["COMMERCIAL", "MEDICAID_MANAGED", "MEDICARE_ADVANTAGE", "MEDICAID_FFS", "GOVERNMENT"],
   product: ["OCREVUS ZUNOVO", "VABYSMO", "ACTEMRA SC", "XOLAIR VIAL", "OCREVUS", "ITOVEBI"],
   indication: ["Multiple Sclerosis", "Rheumatoid Arthritis", "Neovascular AMD", "Food Allergy", "BREAST", "BC (Her2-ve)"],
@@ -186,17 +186,32 @@ function matchesPolicyDimension(record) {
       record.subIndication.toLowerCase() === indication);
 }
 
+function sameText(a, b) {
+  return String(a || "").toLowerCase() === String(b || "").toLowerCase();
+}
+
+function selectedPbmRoleMatches(record) {
+  if (!selection.pbmRole) return true;
+  const roleMap = {
+    Custom: ["CUSTOMIZED FORMULARY"],
+    National: ["NATIONAL FORMULARY"],
+    "Formulary Mgt": ["FORMULARY MANAGEMENT", "PHARMACY BENEFIT MANAGER"],
+  };
+  const allowed = roleMap[selection.pbmRole] || [selection.pbmRole];
+  return allowed.some(role => sameText(record.pbmRole, role) || sameText(record.payerRole, role));
+}
+
 function findPolicyRecord() {
   const exact = POLICY_RECORDS.find(record =>
     matchesPolicyDimension(record) &&
-    (!selection.payer || record.payerName === selection.payer || record.mdmMcoName === selection.payer) &&
-    (!selection.pbm || record.pbmName === selection.pbm || record.mdmMcoName === selection.pbm) &&
-    (!selection.pbmRole || record.pbmRole === selection.pbmRole || record.payerRole === selection.pbmRole));
+    (!selection.payer || sameText(record.payerName, selection.payer) || sameText(record.mdmMcoName, selection.payer)) &&
+    (!selection.pbm || sameText(record.pbmName, selection.pbm) || sameText(record.mdmMcoName, selection.pbm)) &&
+    selectedPbmRoleMatches(record));
   if (exact) return exact;
 
   return POLICY_RECORDS.find(record =>
-    (!selection.payer || record.payerName === selection.payer || record.mdmMcoName === selection.payer) &&
-    (!selection.pbm || record.pbmName === selection.pbm || record.mdmMcoName === selection.pbm));
+    (!selection.payer || sameText(record.payerName, selection.payer) || sameText(record.mdmMcoName, selection.payer)) &&
+    (!selection.pbm || sameText(record.pbmName, selection.pbm) || sameText(record.mdmMcoName, selection.pbm)));
 }
 
 // ---- search -----------------------------------------------------
