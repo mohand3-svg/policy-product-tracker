@@ -26,6 +26,7 @@ const selection = { entityMode: "payer", payer: "", pbm: "", pbmRole: "", bob: "
 const searchBtn = document.getElementById("searchBtn");
 const submitBtn = document.getElementById("submitBtn");
 const mdmId = document.getElementById("mdmId");
+const detailsTitle = document.getElementById("detailsTitle");
 const formMain = document.querySelector(".form-main");
 const INLINE_FILTER_STATE = {};
 let ACTIVE_POLICY_RECORD = null;
@@ -147,6 +148,9 @@ function syncEntityMode() {
   document.querySelectorAll('input[name="entityMode"]').forEach(input => {
     input.checked = input.value === selection.entityMode;
   });
+  if (detailsTitle) {
+    detailsTitle.textContent = selection.entityMode === "pbm" ? "PBM Details" : "Payer Details";
+  }
 }
 
 function setEntityMode(mode) {
