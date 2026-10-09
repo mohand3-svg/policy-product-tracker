@@ -202,8 +202,8 @@ function setEntityMode(mode) {
   render();
 }
 
-// Total column count (checkbox + 17 data columns).
-const TOTAL_COLS = 18;
+// Total column count (checkbox + 19 data columns).
+const TOTAL_COLS = 20;
 
 // Cell helper: render "N/A" (and empty) as muted italic.
 function cell(v) {
@@ -224,6 +224,8 @@ function render() {
       <td class="mp-check"><input type="checkbox" class="mp-row-cb"></td>
       <td>${esc(parent)}</td>
       <td>${esc(payer)}</td>
+      <td>${esc(rowPbm(r))}</td>
+      <td>${esc(rowPbmRole(r))}</td>
       <td>${esc(bob)}</td>
       <td>${esc(product)}</td>
       <td>${esc(indication)}</td>

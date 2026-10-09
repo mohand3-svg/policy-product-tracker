@@ -31,7 +31,7 @@ const submitBtn = document.getElementById("submitChangeBtn");
 const INLINE_FILTER_STATE = {};
 
 const MIN_ROWS = 26;
-const TOTAL_COLS = 21;
+const TOTAL_COLS = 23;
 
 function esc(s) {
   return String(s == null ? "" : s)
@@ -115,6 +115,22 @@ function statusClass(s) {
   return "ps-unknown";
 }
 
+function rowPbm(r) {
+  const text = `${r[0]} ${r[1]}`.toUpperCase();
+  if (text.includes("CVS") || text.includes("AETNA")) return "CVS";
+  if (text.includes("CIGNA") || text.includes("84 LUMBER")) return "Express Scripts";
+  if (text.includes("UNITED") || text.includes("OPTUM")) return "OptumRX";
+  return r[5] === "PHARMACY BENEFIT" ? "Express Scripts" : "OptumRX";
+}
+
+function rowPbmRole(r) {
+  const status = String(r[11] || "").toUpperCase();
+  if (r[5] === "MEDICAL BENEFIT") return "Formulary Mgt";
+  if (status.includes("NOT COVERED")) return "National";
+  if (status.includes("BIO MANAGED") || status.includes("TO PI")) return "Custom";
+  return "Formulary Mgt";
+}
+
 // DCR is valid if it has a resolvable policy status (not UNKNOWN).
 function isValid(r) { return String(r[11]).toUpperCase() !== "UNKNOWN"; }
 // Auto-approve is a mockup flag: off by default (matches screenshot ❌).
@@ -129,6 +145,8 @@ function render() {
       <td>${valid ? '<span class="chk-yes">✓</span>' : '<span class="x-no">✕</span>'}</td>
       <td>${auto ? '<span class="chk-yes">✓</span>' : '<span class="x-no">✕</span>'}</td>
       <td>${esc(r[1])}</td>
+      <td>${esc(rowPbm(r))}</td>
+      <td>${esc(rowPbmRole(r))}</td>
       <td>${esc(r[2])}</td>
       <td>${esc(r[3])}</td>
       <td>${esc(r[4])}</td>
