@@ -412,17 +412,18 @@ function populatePayerDetails() {
 
   const cur = currentPolicy();
   const record = ACTIVE_POLICY_RECORD;
-  const payerDisplay = selection.entityMode === "payer" ? (selection.payer || record?.payerName || "—") : (record?.payerName || "—");
-  const pbmDisplay = selection.entityMode === "pbm" ? (selection.pbm || record?.pbmName || "—") : (record?.pbmName || "—");
-  const pbmRoleDisplay = selection.entityMode === "pbm" ? (selection.pbmRole || record?.pbmRole || "—") : (record?.pbmRole || "—");
+  const payerDisplay = selection.payer || record?.payerName || "—";
+  const pbmDisplay = selection.pbm || record?.pbmName || "—";
+  const pbmRoleDisplay = selection.pbmRole || record?.pbmRole || "—";
   const indicationDisplay = selection.indication || record?.subIndication || record?.indication || "";
   const stateDisplay = record?.geography || "NATIONAL";
 
   // Summary strip (two columns of key/value).
+  const entitySummary = selection.entityMode === "pbm"
+    ? [["▤", "PBM", pbmDisplay], ["▤", "Custom / National / Formulary Mgt", pbmRoleDisplay]]
+    : [["ⓘ", "Payer", payerDisplay]];
   const summary = [
-    ["ⓘ", "Payer", payerDisplay],
-    ["▤", "PBM", pbmDisplay],
-    ["▤", "PBM Role", pbmRoleDisplay],
+    ...entitySummary,
     ["▤", "Book of Business", selection.bob],
     ["◉", "Product", selection.product],
     ["▤", "Indication", indicationDisplay],
