@@ -362,10 +362,13 @@ document.getElementById("resetBtn").addEventListener("click", () => {
 reviewBtn.addEventListener("click", () => {
   if (reviewBtn.disabled) return;
   // Collect the selected rows and hand them to the Review Policy page.
+  // PBM display values are carried with the row so Review Policy mirrors
+  // exactly what was shown here, including N/A rows.
   const vis = visibleRows();
   const selected = checkedRows().map(cb => {
     const i = +cb.closest("tr").dataset.i;
-    return vis[i];
+    const row = vis[i];
+    return row ? [...row, displayPbmValue(row, i, "pbm"), displayPbmValue(row, i, "pbmRole")] : null;
   }).filter(Boolean);
   // Storage can throw in a sandboxed preview iframe; never let it block navigation.
   try {
