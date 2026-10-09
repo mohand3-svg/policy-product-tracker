@@ -1072,7 +1072,6 @@ function openDcrModal(r) {
   setVal("pdPropEffDate", "");
   setVal("pdPropStateRow", "National");
 
-  ensureInlineTableFilters("pdDcrTable", []);
   modal.classList.add("open");
 }
 

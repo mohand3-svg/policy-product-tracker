@@ -457,8 +457,6 @@ function populatePayerDetails() {
     formMain.appendChild(panel);
   }
   panel.innerHTML = summaryHtml + tableHtml;
-  ensureInlineTableFilters("propTable", []);
-
   // Wire the clear (✕) affordance on selects to blank the value.
   panel.querySelectorAll(".sel-wrap .clear-x").forEach(x => {
     x.addEventListener("click", () => {
