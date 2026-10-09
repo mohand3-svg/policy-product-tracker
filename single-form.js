@@ -8,24 +8,112 @@
 
 // Demo option lists for each searchable field.
 const OPTIONS = {
-  payer: ["UNITEDHEALTHCARE", "AETNA", "HUMANA", "CIGNA", "WELLCARE", "CVS HEALTH"],
+  payer: ["UNITEDHEALTHCARE", "AETNA", "HUMANA", "CIGNA", "WELLCARE", "CVS HEALTH", "UNITED FEDERATION OF TEACHERS", "UNIVERSITY OF ROCHESTER", "DOMTAR CORPORATION"],
+  pbm: ["EXPRESS SCRIPTS"],
+  pbmRole: ["PHARMACY BENEFIT MANAGER", "CUSTOMIZED FORMULARY", "FORMULARY MANAGEMENT", "NATIONAL FORMULARY"],
   bob: ["COMMERCIAL", "MEDICAID_MANAGED", "MEDICARE_ADVANTAGE", "MEDICAID_FFS", "GOVERNMENT"],
-  product: ["OCREVUS ZUNOVO", "VABYSMO", "ACTEMRA SC", "XOLAIR VIAL", "OCREVUS"],
-  indication: ["Multiple Sclerosis", "Rheumatoid Arthritis", "Neovascular AMD", "Food Allergy"],
+  product: ["OCREVUS ZUNOVO", "VABYSMO", "ACTEMRA SC", "XOLAIR VIAL", "OCREVUS", "ITOVEBI"],
+  indication: ["Multiple Sclerosis", "Rheumatoid Arthritis", "Neovascular AMD", "Food Allergy", "BREAST", "BC (Her2-ve)"],
   benefit: ["PHARMACY BENEFIT", "MEDICAL BENEFIT"],
 };
 
-// Required fields that must be chosen before Search is enabled.
-const REQUIRED = ["payer", "bob", "product", "indication", "benefit"];
+const ENTITY_FIELDS = ["payer", "pbm"];
+const POLICY_REQUIRED = ["bob", "product", "indication", "benefit"];
+const SEARCH_FIELDS = ["payer", "pbm", "pbmRole", ...POLICY_REQUIRED];
 
 // Current selections.
-const selection = { payer: "", bob: "", product: "", indication: "", benefit: "" };
+const selection = { payer: "", pbm: "", pbmRole: "", bob: "", product: "", indication: "", benefit: "" };
 
 const searchBtn = document.getElementById("searchBtn");
 const submitBtn = document.getElementById("submitBtn");
 const mdmId = document.getElementById("mdmId");
+const pbmId = document.getElementById("pbmId");
 const formMain = document.querySelector(".form-main");
 const INLINE_FILTER_STATE = {};
+let ACTIVE_POLICY_RECORD = null;
+
+const POLICY_RECORDS = [
+  {
+    mdmMcoId: "4000000003989",
+    mdmMcoName: "EXPRESS SCRIPTS",
+    mdmMcoCategory: "PBM",
+    bob: "COMMERCIAL",
+    geography: "NATIONAL",
+    benefit: "PHARMACY BENEFIT",
+    indication: "BREAST",
+    subIndication: "BC (Her2-ve)",
+    healthplanMgmtValue: "NOT COVERED",
+    payerId: "",
+    payerName: "",
+    payerRole: "PHARMACY BENEFIT MANAGER",
+    pbmId: "4000000003989",
+    pbmName: "EXPRESS SCRIPTS",
+    pbmRole: "PHARMACY BENEFIT MANAGER",
+    pbmParentName: "CIGNA GROUP",
+    gpoName: "ASCENT",
+    product: "ITOVEBI",
+  },
+  {
+    mdmMcoId: "4000000002808",
+    mdmMcoName: "UNITED FEDERATION OF TEACHERS",
+    mdmMcoCategory: "PAYER",
+    bob: "COMMERCIAL",
+    geography: "NATIONAL",
+    benefit: "PHARMACY BENEFIT",
+    indication: "BREAST",
+    subIndication: "BC (Her2-ve)",
+    healthplanMgmtValue: "NOT COVERED",
+    payerId: "4000000002808",
+    payerName: "UNITED FEDERATION OF TEACHERS",
+    payerRole: "EMPLOYER",
+    pbmId: "4000000003989",
+    pbmName: "EXPRESS SCRIPTS",
+    pbmRole: "CUSTOMIZED FORMULARY",
+    pbmParentName: "CIGNA GROUP",
+    gpoName: "ASCENT",
+    product: "ITOVEBI",
+  },
+  {
+    mdmMcoId: "4000000008865",
+    mdmMcoName: "UNIVERSITY OF ROCHESTER",
+    mdmMcoCategory: "PAYER",
+    bob: "COMMERCIAL",
+    geography: "NATIONAL",
+    benefit: "PHARMACY BENEFIT",
+    indication: "BREAST",
+    subIndication: "BC (Her2-ve)",
+    healthplanMgmtValue: "TO PI WITH CRITERIA",
+    payerId: "4000000008865",
+    payerName: "UNIVERSITY OF ROCHESTER",
+    payerRole: "EMPLOYER",
+    pbmId: "4000000003989",
+    pbmName: "EXPRESS SCRIPTS",
+    pbmRole: "FORMULARY MANAGEMENT",
+    pbmParentName: "CIGNA GROUP",
+    gpoName: "",
+    product: "ITOVEBI",
+  },
+  {
+    mdmMcoId: "40000000012468",
+    mdmMcoName: "DOMTAR CORPORATION",
+    mdmMcoCategory: "PAYER",
+    bob: "COMMERCIAL",
+    geography: "NATIONAL",
+    benefit: "PHARMACY BENEFIT",
+    indication: "BREAST",
+    subIndication: "BC (Her2-ve)",
+    healthplanMgmtValue: "NOT COVERED",
+    payerId: "40000000012468",
+    payerName: "DOMTAR CORPORATION",
+    payerRole: "EMPLOYER",
+    pbmId: "4000000003989",
+    pbmName: "EXPRESS SCRIPTS",
+    pbmRole: "NATIONAL FORMULARY",
+    pbmParentName: "CIGNA GROUP",
+    gpoName: "ASCENT",
+    product: "ITOVEBI",
+  },
+];
 
 // ---- dropdowns --------------------------------------------------
 // Each .fld-select cycles through its option list on click (simple
@@ -47,18 +135,50 @@ document.querySelectorAll(".fld-select[data-field]").forEach(el => {
 
 // Enable Search only when every required field is chosen.
 function refreshSearchState() {
-  const ready = REQUIRED.every(f => selection[f]);
+  const hasEntity = ENTITY_FIELDS.some(f => selection[f]);
+  const hasPolicy = POLICY_REQUIRED.every(f => selection[f]);
+  const hasPbmRole = !selection.pbm || selection.pbmRole;
+  const ready = hasEntity && hasPolicy && hasPbmRole;
   searchBtn.disabled = !ready;
   searchBtn.classList.toggle("enabled", ready);
+}
+
+function matchesPolicyDimension(record) {
+  const indication = String(selection.indication || "").toLowerCase();
+  return (!selection.bob || record.bob === selection.bob) &&
+    (!selection.product || record.product === selection.product) &&
+    (!selection.benefit || record.benefit === selection.benefit) &&
+    (!selection.indication ||
+      record.indication.toLowerCase() === indication ||
+      record.subIndication.toLowerCase() === indication);
+}
+
+function findPolicyRecord() {
+  const exact = POLICY_RECORDS.find(record =>
+    matchesPolicyDimension(record) &&
+    (!selection.payer || record.payerName === selection.payer || record.mdmMcoName === selection.payer) &&
+    (!selection.pbm || record.pbmName === selection.pbm || record.mdmMcoName === selection.pbm) &&
+    (!selection.pbmRole || record.pbmRole === selection.pbmRole || record.payerRole === selection.pbmRole));
+  if (exact) return exact;
+
+  return POLICY_RECORDS.find(record =>
+    (!selection.payer || record.payerName === selection.payer || record.mdmMcoName === selection.payer) &&
+    (!selection.pbm || record.pbmName === selection.pbm || record.mdmMcoName === selection.pbm));
 }
 
 // ---- search -----------------------------------------------------
 searchBtn.addEventListener("click", () => {
   if (searchBtn.disabled) return;
+  ACTIVE_POLICY_RECORD = findPolicyRecord();
   populatePayerDetails();
-  // A searched payer resolves an MDM id (demo value).
-  mdmId.textContent = "400000000124";
-  mdmId.classList.remove("muted");
+  const payerValue = ACTIVE_POLICY_RECORD?.payerId || (!selection.pbm ? ACTIVE_POLICY_RECORD?.mdmMcoId : "") || (!selection.pbm ? "400000000124" : "");
+  const pbmValue = ACTIVE_POLICY_RECORD?.pbmId || "";
+  mdmId.textContent = payerValue || "—";
+  mdmId.classList.toggle("muted", !payerValue);
+  if (pbmId) {
+    pbmId.textContent = pbmValue || "—";
+    pbmId.classList.toggle("muted", !pbmValue);
+  }
   // Enable submit now that the form is populated.
   submitBtn.disabled = false;
   submitBtn.classList.remove("disabled");
@@ -129,7 +249,7 @@ function ensureInlineTableFilters(tableId, skipLabels = []) {
 
 // Demo "current policy" values keyed loosely by product; falls back to a
 // generic set. Mirrors the screenshot's Current column.
-function currentPolicy() {
+function currentPolicy(record = ACTIVE_POLICY_RECORD) {
   const links = {
     site: "*Commercial and medicare coverage: https://static.cigna.com/assets/chcp/resourceLibrary/coveragePolicies/pharmacy_a-z.html#RO\nhttps://static.cigna.com/assets/chcp/pdf/coveragePolicies/pharmacy/ip_0212_coveragepositioncriteria_ocrelizumab.pdf",
     pa: "https://static.cigna.com/assets/chcp/pdf/resourceLibrary/prescription/MultipleSclerosis.pdf",
@@ -140,13 +260,13 @@ function currentPolicy() {
     numSteps: "0",
     stepPlacement: "No Step",
     stepProducts: "",
-    policyStatus: "TO PI WITH CRITERIA",
-    derived: "COVERED - NO STEPS",
+    policyStatus: record?.healthplanMgmtValue || "TO PI WITH CRITERIA",
+    derived: record?.healthplanMgmtValue || "COVERED - NO STEPS",
     policyLink: "",
     siteLink: links.site,
     paLink: links.pa,
     effDate: "",
-    state: "NATIONAL",
+    state: record?.geography || "NATIONAL",
     platform: "",
     evidence: "",
     additional: "",
@@ -161,7 +281,7 @@ const PROP_FIELDS = [
   { k: "numSteps",      label: "Number of Steps",              type: "dashNum" },
   { k: "stepPlacement", label: "Step Therapy Placement",       type: "select", opts: ["No Step", "ST Single Generic", "ST Generic and Brand", "ST Single Brand"] },
   { k: "stepProducts",  label: "Step Products",                type: "dash" },
-  { k: "policyStatus",  label: "Policy Status",                type: "select", opts: ["TO PI WITH CRITERIA", "TO PI OR BETTER", "PA REQUIRED NO CRITERIA", "BIO MANAGED 1", "NO ST"] },
+  { k: "policyStatus",  label: "Policy Status",                type: "select", opts: ["NOT COVERED", "TO PI WITH CRITERIA", "TO PI OR BETTER", "PA REQUIRED NO CRITERIA", "BIO MANAGED 1", "NO ST"] },
   { k: "derived",       label: "Derived Simplified Policy Status", type: "textReadonly" },
   { k: "policyLink",    label: "Policy Link",                  type: "text", url: true },
   { k: "siteLink",      label: "Site of Care Link",            type: "textareaLink", url: true },
@@ -242,15 +362,23 @@ function populatePayerDetails() {
   formMain.classList.add("populated");
 
   const cur = currentPolicy();
+  const record = ACTIVE_POLICY_RECORD;
+  const payerDisplay = selection.payer || record?.payerName || "—";
+  const pbmDisplay = selection.pbm || record?.pbmName || "—";
+  const pbmRoleDisplay = selection.pbmRole || record?.pbmRole || record?.payerRole || "—";
+  const indicationDisplay = selection.indication || record?.subIndication || record?.indication || "";
+  const stateDisplay = record?.geography || "NATIONAL";
 
   // Summary strip (two columns of key/value).
   const summary = [
-    ["ⓘ", "Payer", selection.payer],
+    ["ⓘ", "Payer", payerDisplay],
+    ["▤", "PBM", pbmDisplay],
+    ["▤", "PBM Role", pbmRoleDisplay],
     ["▤", "Book of Business", selection.bob],
     ["◉", "Product", selection.product],
-    ["▤", "Indication", selection.indication],
+    ["▤", "Indication", indicationDisplay],
     ["▤", "Benefit Type", selection.benefit],
-    ["◷", "State", "NATIONAL"],
+    ["◷", "State", stateDisplay],
   ];
   const summaryHtml =
     `<div class="payer-summary">` +
@@ -385,13 +513,18 @@ function updateSubmitState() {
 
 // ---- reset ------------------------------------------------------
 document.getElementById("resetBtn").addEventListener("click", () => {
-  REQUIRED.forEach(f => (selection[f] = ""));
+  SEARCH_FIELDS.forEach(f => (selection[f] = ""));
+  ACTIVE_POLICY_RECORD = null;
   document.querySelectorAll(".fld-select[data-field] span").forEach(s => {
     s.textContent = "Select…";
     s.style.color = "";
   });
   mdmId.textContent = "—";
   mdmId.classList.add("muted");
+  if (pbmId) {
+    pbmId.textContent = "—";
+    pbmId.classList.add("muted");
+  }
   submitBtn.disabled = true;
   submitBtn.classList.add("disabled");
   refreshSearchState();
@@ -403,7 +536,7 @@ document.getElementById("resetBtn").addEventListener("click", () => {
     const p = document.createElement("div");
     p.id = "formEmpty";
     p.className = "form-empty";
-    p.textContent = "Search for a payer in the left sidebar to populate the request form.";
+    p.textContent = "Search for a payer or PBM in the left sidebar to populate the request form.";
     formMain.appendChild(p);
   }
   showToast("Form reset", false);
@@ -449,7 +582,7 @@ function persistSavedFilters(list) {
 
 // Apply a stored selection object back onto the sidebar dropdowns.
 function applySelection(sel) {
-  REQUIRED.forEach(f => {
+  SEARCH_FIELDS.forEach(f => {
     selection[f] = sel[f] || "";
     const el = document.querySelector(`.fld-select[data-field="${f}"] span`);
     if (el) {
@@ -462,7 +595,7 @@ function applySelection(sel) {
 
 // Human-readable one-line summary of a saved selection.
 function summarize(sel) {
-  return REQUIRED.map(f => sel[f]).filter(Boolean).join(" · ") || "(empty)";
+  return SEARCH_FIELDS.map(f => sel[f]).filter(Boolean).join(" · ") || "(empty)";
 }
 
 // Current steward (mockup — a real app would resolve the signed-in user).
@@ -542,7 +675,7 @@ function openFilterModal(mode, index) {
   } else {
     modalTitle.textContent = "Save Filter";
     filterName.value = "";
-    const hasAny = REQUIRED.some(f => selection[f]);
+    const hasAny = SEARCH_FIELDS.some(f => selection[f]);
     filterPreview.textContent = hasAny
       ? summarize(selection)
       : "No fields selected yet — pick at least one field to save.";
@@ -559,7 +692,7 @@ function commitFilterModal() {
   const name = filterName.value.trim();
   if (!name) { showToast("Please enter a filter name", true); filterName.focus(); return; }
   // When creating, require at least one field selected.
-  if (editIndex < 0 && !REQUIRED.some(f => selection[f])) {
+  if (editIndex < 0 && !SEARCH_FIELDS.some(f => selection[f])) {
     showToast("Select at least one field before saving", true);
     return;
   }

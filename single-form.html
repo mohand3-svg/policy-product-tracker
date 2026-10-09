@@ -37,10 +37,16 @@
           <button class="search-btn" id="searchBtn" disabled>🔍 Search</button>
         </div>
       </div>
-      <p class="req-note">Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
+      <p class="req-note">Select either a payer or PBM. Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
 
-      <label class="fld-label">PAYER <span class="req">*</span></label>
+      <label class="fld-label">PAYER</label>
       <div class="fld-select" data-field="payer"><span>Select…</span><i>▾</i></div>
+
+      <label class="fld-label">PBM</label>
+      <div class="fld-select" data-field="pbm"><span>Select…</span><i>▾</i></div>
+
+      <label class="fld-label">PBM ROLE <span class="req">(required for PBM)</span></label>
+      <div class="fld-select" data-field="pbmRole"><span>Select…</span><i>▾</i></div>
 
       <label class="fld-label">BOOK OF BUSINESS <span class="req">*</span></label>
       <div class="fld-select" data-field="bob"><span>Select…</span><i>▾</i></div>
@@ -57,6 +63,9 @@
       <label class="fld-label">PAYER MDM ID</label>
       <div class="fld-value muted" id="mdmId">—</div>
 
+      <label class="fld-label">PBM MDM ID</label>
+      <div class="fld-value muted" id="pbmId">—</div>
+
       <label class="fld-label" style="border:0;">STATE</label>
       <div class="fld-value" id="stateVal">NATIONAL</div>
 
@@ -72,7 +81,7 @@
     <main class="form-main">
       <div class="form-main-head">
         <div>
-          <h2 class="payer-details">Payer Details</h2>
+          <h2 class="payer-details">Payer / PBM Details</h2>
         </div>
         <div class="form-main-actions">
           <button class="form-btn ghost" id="cancelBtn">Cancel</button>
@@ -81,7 +90,7 @@
       </div>
 
       <div class="form-empty" id="formEmpty">
-        Search for a payer in the left sidebar to populate the request form.
+        Search for a payer or PBM in the left sidebar to populate the request form.
       </div>
     </main>
   </div>
@@ -134,7 +143,7 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <script src="single-form.js?v=50"></script>
+  <script src="single-form.js?v=51"></script>
   <script src="inline-filters.js?v=3"></script>
 </body>
 </html>
