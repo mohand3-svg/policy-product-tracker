@@ -55,6 +55,7 @@ body {
   z-index: 50;
 }
 .topnav-left { display: flex; align-items: center; gap: 22px; }
+.home-brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; cursor: pointer; }
 .brand-logo {
   background: #2d4373;
   width: 26px; height: 26px;
@@ -454,8 +455,10 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
   <!-- ===== Top navigation ===== -->
   <header class="topnav">
     <div class="topnav-left">
-      <span class="brand-logo">▤</span>
-      <span class="brand-title">Policy Intelligence Stewardship Tool</span>
+      <a class="home-brand" href="index.html" aria-label="Go to Policy Intelligence home">
+        <span class="brand-logo">▤</span>
+        <span class="brand-title">Policy Intelligence Stewardship Tool</span>
+      </a>
       <nav class="topnav-links">
         <a href="#" class="nav-link" data-screen="coverage">Product Coverage</a>
         <a href="#" class="nav-link" data-screen="stewardship">Stewardship Tool</a>

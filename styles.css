@@ -38,7 +38,10 @@ body {
   flex-shrink: 0;
   gap: 18px;
 }
-.brand { display: flex; align-items: center; gap: 10px; }
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  color: inherit; text-decoration: none; cursor: pointer;
+}
 .logo {
   background: #fff; color: var(--nav-bg);
   font-weight: 800; border-radius: 6px;
