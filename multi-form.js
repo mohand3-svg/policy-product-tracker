@@ -12,9 +12,9 @@
 const SITE = "\"Commercial and medicare…";
 const PA_URL = "https://static.cigna.com/asset…";
 const ROWS = [
-  ["CIGNA GROUP", "CIGNA", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "MEDICAL BENEFIT", "Yes", "No", 0, "No Step", "N/A", "TO PI WITH CRITERIA", "COVERED – NO STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["CIGNA GROUP", "CIGNA", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
-  ["84 LUMBER COMPANY", "84 LUMBER COMPANY (EMPLOYER)", "COMMERCIAL", "XELJANZ", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
+  ["Cigna", "UNIVERSITY OF ROCHESTER", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "MEDICAL BENEFIT", "Yes", "No", 0, "No Step", "N/A", "TO PI WITH CRITERIA", "COVERED – NO STEPS", "N/A", SITE, PA_URL, "N/A"],
+  ["Cigna", "COLGATE UNIVERSITY", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
+  ["Cigna", "EVANGELICAL LUTHERAN CHURCH IN AMERICA", "COMMERCIAL", "XELJANZ", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
   ["INTERMOUNTAIN HEALTH CARE", "SELECTHEALTH", "MEDICARE_ADVANTAGE", "SIMLANDI(CF) AUTOINJECTOR", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
   ["INTERMOUNTAIN HEALTH CARE", "SELECTHEALTH", "MEDICARE_ADVANTAGE", "REMICADE", "Rheumatoid Arthritis", "MEDICAL BENEFIT", "Yes", "Yes", 3, "ST Multiple Brands", "Renflexis and 1 of [Non …", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
   ["BUILDERS FIRSTSOURCE", "BUILDERS FIRSTSOURCE (EMPLOYER)", "COMMERCIAL", "UNKNOWN", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "No", 0, "No Step", "N/A", "UNKNOWN", "UNKNOWN", "N/A", "N/A", "N/A", "N/A"],
@@ -156,6 +156,7 @@ function rowPbmRole(r) {
 
 function displayPbmValue(r, index, field) {
   if (index > 2) return "N/A";
+  if (field === "pbmRole") return "FORMULARY MANAGEMENT";
   return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
 }
 
@@ -175,10 +176,18 @@ function activeFilterKeys() {
   return [...entityKeys, ...POLICY_FILTERS];
 }
 
+function filterMatches(field, rowDisplayValue, selectedValue) {
+  if (!selectedValue) return true;
+  if (field === "pbmRole" && selectedValue === "Formulary Mgt") {
+    return rowDisplayValue === "FORMULARY MANAGEMENT";
+  }
+  return rowDisplayValue === selectedValue;
+}
+
 function visibleRows() {
   return ROWS.filter((r, index) => {
     if (filter.entityMode === "pbm" && displayPbmValue(r, index, "pbm") === "N/A") return false;
-    return activeFilterKeys().every(k => !filter[k] || rowValue(r, k, index) === filter[k]);
+    return activeFilterKeys().every(k => filterMatches(k, rowValue(r, k, index), filter[k]));
   });
 }
 
