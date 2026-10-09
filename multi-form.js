@@ -154,6 +154,11 @@ function rowPbmRole(r) {
   return "Formulary Mgt";
 }
 
+function displayPbmValue(r, index, field) {
+  if (index > 2) return "N/A";
+  return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
+}
+
 function rowValue(r, field) {
   if (field === "pbm") return rowPbm(r);
   if (field === "pbmRole") return rowPbmRole(r);
@@ -224,8 +229,8 @@ function render() {
       <td class="mp-check"><input type="checkbox" class="mp-row-cb"></td>
       <td>${esc(parent)}</td>
       <td>${esc(payer)}</td>
-      <td>${esc(rowPbm(r))}</td>
-      <td>${esc(rowPbmRole(r))}</td>
+      ${cell(displayPbmValue(r, i, "pbm"))}
+      ${cell(displayPbmValue(r, i, "pbmRole"))}
       <td>${esc(bob)}</td>
       <td>${esc(product)}</td>
       <td>${esc(indication)}</td>

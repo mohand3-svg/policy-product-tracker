@@ -131,6 +131,11 @@ function rowPbmRole(r) {
   return "Formulary Mgt";
 }
 
+function displayPbmValue(r, index, field) {
+  if (index > 2) return "N/A";
+  return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
+}
+
 // DCR is valid if it has a resolvable policy status (not UNKNOWN).
 function isValid(r) { return String(r[11]).toUpperCase() !== "UNKNOWN"; }
 // Auto-approve is a mockup flag: off by default (matches screenshot ❌).
@@ -145,8 +150,8 @@ function render() {
       <td>${valid ? '<span class="chk-yes">✓</span>' : '<span class="x-no">✕</span>'}</td>
       <td>${auto ? '<span class="chk-yes">✓</span>' : '<span class="x-no">✕</span>'}</td>
       <td>${esc(r[1])}</td>
-      <td>${esc(rowPbm(r))}</td>
-      <td>${esc(rowPbmRole(r))}</td>
+      ${cell(displayPbmValue(r, i, "pbm"))}
+      ${cell(displayPbmValue(r, i, "pbmRole"))}
       <td>${esc(r[2])}</td>
       <td>${esc(r[3])}</td>
       <td>${esc(r[4])}</td>
