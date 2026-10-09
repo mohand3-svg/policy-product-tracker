@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>UAT Policy Intelligence Update Form — Single Policy</title>
 <link rel="stylesheet" href="styles.css?v=77" />
-<link rel="stylesheet" href="form.css?v=49" />
+<link rel="stylesheet" href="form.css?v=50" />
 </head>
 <body class="form-page">
   <!-- ===== TOP BAR ===== -->
@@ -37,16 +37,26 @@
           <button class="search-btn" id="searchBtn" disabled>🔍 Search</button>
         </div>
       </div>
-      <p class="req-note">Select either a payer or PBM. Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
+      <p class="req-note">Select a search type. Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
 
-      <label class="fld-label">PAYER</label>
-      <div class="fld-select" data-field="payer"><span>Select…</span><i>▾</i></div>
+      <label class="fld-label">SEARCH BY <span class="req">*</span></label>
+      <div class="entity-toggle" id="entityToggle">
+        <label><input type="radio" name="entityMode" value="payer" checked /> Payer</label>
+        <label><input type="radio" name="entityMode" value="pbm" /> PBM</label>
+      </div>
 
-      <label class="fld-label">PBM</label>
-      <div class="fld-select" data-field="pbm"><span>Select…</span><i>▾</i></div>
+      <div class="entity-field" data-mode-field="payer">
+        <label class="fld-label">PAYER <span class="req">*</span></label>
+        <div class="fld-select" data-field="payer"><span>Select…</span><i>▾</i></div>
+      </div>
 
-      <label class="fld-label">PBM ROLE <span class="req">(required for PBM)</span></label>
-      <div class="fld-select" data-field="pbmRole"><span>Select…</span><i>▾</i></div>
+      <div class="entity-field" data-mode-field="pbm" hidden>
+        <label class="fld-label">PBM <span class="req">*</span></label>
+        <div class="fld-select" data-field="pbm"><span>Select…</span><i>▾</i></div>
+
+        <label class="fld-label">PBM ROLE <span class="req">*</span></label>
+        <div class="fld-select" data-field="pbmRole"><span>Select…</span><i>▾</i></div>
+      </div>
 
       <label class="fld-label">BOOK OF BUSINESS <span class="req">*</span></label>
       <div class="fld-select" data-field="bob"><span>Select…</span><i>▾</i></div>
@@ -60,11 +70,8 @@
       <label class="fld-label">BENEFIT TYPE <span class="req">*</span></label>
       <div class="fld-select" data-field="benefit"><span>Select…</span><i>▾</i></div>
 
-      <label class="fld-label">PAYER MDM ID</label>
+      <label class="fld-label">MDM ID</label>
       <div class="fld-value muted" id="mdmId">—</div>
-
-      <label class="fld-label">PBM MDM ID</label>
-      <div class="fld-value muted" id="pbmId">—</div>
 
       <label class="fld-label" style="border:0;">STATE</label>
       <div class="fld-value" id="stateVal">NATIONAL</div>
@@ -143,7 +150,7 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <script src="single-form.js?v=51"></script>
+  <script src="single-form.js?v=52"></script>
   <script src="inline-filters.js?v=3"></script>
 </body>
 </html>

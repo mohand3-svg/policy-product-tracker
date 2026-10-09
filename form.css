@@ -53,6 +53,19 @@
 }
 .fld-box { color: #333; background: #f8f9fc; }
 .fld-select i { color: #9aa1ad; font-style: normal; }
+.entity-toggle {
+  display: flex; gap: 8px; padding: 3px; border: 1px solid #d4d8e2;
+  border-radius: 6px; background: #f8f9fc;
+}
+.entity-toggle label {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 7px 8px; border-radius: 4px; font-size: 12.5px; font-weight: 700;
+  color: #4b5563; cursor: pointer;
+}
+.entity-toggle label:has(input:checked) {
+  background: #fff; color: #2563eb; box-shadow: 0 1px 3px rgba(17,24,39,.12);
+}
+.entity-toggle input { margin: 0; }
 
 /* main */
 .form-main { flex: 1; display: flex; flex-direction: column; padding: 18px 20px; overflow: hidden; }

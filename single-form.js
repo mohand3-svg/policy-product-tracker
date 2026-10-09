@@ -17,17 +17,15 @@ const OPTIONS = {
   benefit: ["PHARMACY BENEFIT", "MEDICAL BENEFIT"],
 };
 
-const ENTITY_FIELDS = ["payer", "pbm"];
 const POLICY_REQUIRED = ["bob", "product", "indication", "benefit"];
-const SEARCH_FIELDS = ["payer", "pbm", "pbmRole", ...POLICY_REQUIRED];
+const SEARCH_FIELDS = ["entityMode", "payer", "pbm", "pbmRole", ...POLICY_REQUIRED];
 
 // Current selections.
-const selection = { payer: "", pbm: "", pbmRole: "", bob: "", product: "", indication: "", benefit: "" };
+const selection = { entityMode: "payer", payer: "", pbm: "", pbmRole: "", bob: "", product: "", indication: "", benefit: "" };
 
 const searchBtn = document.getElementById("searchBtn");
 const submitBtn = document.getElementById("submitBtn");
 const mdmId = document.getElementById("mdmId");
-const pbmId = document.getElementById("pbmId");
 const formMain = document.querySelector(".form-main");
 const INLINE_FILTER_STATE = {};
 let ACTIVE_POLICY_RECORD = null;
@@ -133,11 +131,46 @@ document.querySelectorAll(".fld-select[data-field]").forEach(el => {
   });
 });
 
+function setFieldValue(field, value) {
+  selection[field] = value || "";
+  const el = document.querySelector(`.fld-select[data-field="${field}"] span`);
+  if (el) {
+    el.textContent = selection[field] || "Select…";
+    el.style.color = selection[field] ? "#333" : "";
+  }
+}
+
+function syncEntityMode() {
+  document.querySelectorAll("[data-mode-field]").forEach(el => {
+    el.hidden = el.dataset.modeField !== selection.entityMode;
+  });
+  document.querySelectorAll('input[name="entityMode"]').forEach(input => {
+    input.checked = input.value === selection.entityMode;
+  });
+}
+
+function setEntityMode(mode) {
+  selection.entityMode = mode === "pbm" ? "pbm" : "payer";
+  if (selection.entityMode === "payer") {
+    setFieldValue("pbm", "");
+    setFieldValue("pbmRole", "");
+  } else {
+    setFieldValue("payer", "");
+  }
+  syncEntityMode();
+  refreshSearchState();
+}
+
+document.querySelectorAll('input[name="entityMode"]').forEach(input => {
+  input.addEventListener("change", () => setEntityMode(input.value));
+});
+syncEntityMode();
+
 // Enable Search only when every required field is chosen.
 function refreshSearchState() {
-  const hasEntity = ENTITY_FIELDS.some(f => selection[f]);
+  const hasEntity = selection.entityMode === "pbm" ? !!selection.pbm : !!selection.payer;
   const hasPolicy = POLICY_REQUIRED.every(f => selection[f]);
-  const hasPbmRole = !selection.pbm || selection.pbmRole;
+  const hasPbmRole = selection.entityMode !== "pbm" || selection.pbmRole;
   const ready = hasEntity && hasPolicy && hasPbmRole;
   searchBtn.disabled = !ready;
   searchBtn.classList.toggle("enabled", ready);
@@ -171,14 +204,11 @@ searchBtn.addEventListener("click", () => {
   if (searchBtn.disabled) return;
   ACTIVE_POLICY_RECORD = findPolicyRecord();
   populatePayerDetails();
-  const payerValue = ACTIVE_POLICY_RECORD?.payerId || (!selection.pbm ? ACTIVE_POLICY_RECORD?.mdmMcoId : "") || (!selection.pbm ? "400000000124" : "");
-  const pbmValue = ACTIVE_POLICY_RECORD?.pbmId || "";
-  mdmId.textContent = payerValue || "—";
-  mdmId.classList.toggle("muted", !payerValue);
-  if (pbmId) {
-    pbmId.textContent = pbmValue || "—";
-    pbmId.classList.toggle("muted", !pbmValue);
-  }
+  const mdmValue = selection.entityMode === "pbm"
+    ? ACTIVE_POLICY_RECORD?.pbmId
+    : (ACTIVE_POLICY_RECORD?.payerId || ACTIVE_POLICY_RECORD?.mdmMcoId || "400000000124");
+  mdmId.textContent = mdmValue || "—";
+  mdmId.classList.toggle("muted", !mdmValue);
   // Enable submit now that the form is populated.
   submitBtn.disabled = false;
   submitBtn.classList.remove("disabled");
@@ -363,9 +393,9 @@ function populatePayerDetails() {
 
   const cur = currentPolicy();
   const record = ACTIVE_POLICY_RECORD;
-  const payerDisplay = selection.payer || record?.payerName || "—";
-  const pbmDisplay = selection.pbm || record?.pbmName || "—";
-  const pbmRoleDisplay = selection.pbmRole || record?.pbmRole || record?.payerRole || "—";
+  const payerDisplay = selection.entityMode === "payer" ? (selection.payer || record?.payerName || "—") : (record?.payerName || "—");
+  const pbmDisplay = selection.entityMode === "pbm" ? (selection.pbm || record?.pbmName || "—") : (record?.pbmName || "—");
+  const pbmRoleDisplay = selection.entityMode === "pbm" ? (selection.pbmRole || record?.pbmRole || "—") : (record?.pbmRole || "—");
   const indicationDisplay = selection.indication || record?.subIndication || record?.indication || "";
   const stateDisplay = record?.geography || "NATIONAL";
 
@@ -513,7 +543,10 @@ function updateSubmitState() {
 
 // ---- reset ------------------------------------------------------
 document.getElementById("resetBtn").addEventListener("click", () => {
-  SEARCH_FIELDS.forEach(f => (selection[f] = ""));
+  SEARCH_FIELDS.forEach(f => {
+    if (f !== "entityMode") selection[f] = "";
+  });
+  selection.entityMode = "payer";
   ACTIVE_POLICY_RECORD = null;
   document.querySelectorAll(".fld-select[data-field] span").forEach(s => {
     s.textContent = "Select…";
@@ -521,10 +554,7 @@ document.getElementById("resetBtn").addEventListener("click", () => {
   });
   mdmId.textContent = "—";
   mdmId.classList.add("muted");
-  if (pbmId) {
-    pbmId.textContent = "—";
-    pbmId.classList.add("muted");
-  }
+  syncEntityMode();
   submitBtn.disabled = true;
   submitBtn.classList.add("disabled");
   refreshSearchState();
@@ -582,20 +612,24 @@ function persistSavedFilters(list) {
 
 // Apply a stored selection object back onto the sidebar dropdowns.
 function applySelection(sel) {
+  const savedMode = sel.entityMode || (sel.pbm ? "pbm" : "payer");
   SEARCH_FIELDS.forEach(f => {
-    selection[f] = sel[f] || "";
+    selection[f] = f === "entityMode" ? savedMode : (sel[f] || "");
     const el = document.querySelector(`.fld-select[data-field="${f}"] span`);
     if (el) {
       el.textContent = selection[f] || "Select…";
       el.style.color = selection[f] ? "#333" : "";
     }
   });
+  syncEntityMode();
   refreshSearchState();
 }
 
 // Human-readable one-line summary of a saved selection.
 function summarize(sel) {
-  return SEARCH_FIELDS.map(f => sel[f]).filter(Boolean).join(" · ") || "(empty)";
+  const mode = sel.entityMode === "pbm" ? "PBM" : "Payer";
+  const fields = SEARCH_FIELDS.filter(f => f !== "entityMode").map(f => sel[f]).filter(Boolean);
+  return [mode, ...fields].join(" · ") || "(empty)";
 }
 
 // Current steward (mockup — a real app would resolve the signed-in user).
@@ -675,7 +709,7 @@ function openFilterModal(mode, index) {
   } else {
     modalTitle.textContent = "Save Filter";
     filterName.value = "";
-    const hasAny = SEARCH_FIELDS.some(f => selection[f]);
+    const hasAny = SEARCH_FIELDS.some(f => f !== "entityMode" && selection[f]);
     filterPreview.textContent = hasAny
       ? summarize(selection)
       : "No fields selected yet — pick at least one field to save.";
@@ -692,7 +726,7 @@ function commitFilterModal() {
   const name = filterName.value.trim();
   if (!name) { showToast("Please enter a filter name", true); filterName.focus(); return; }
   // When creating, require at least one field selected.
-  if (editIndex < 0 && !SEARCH_FIELDS.some(f => selection[f])) {
+  if (editIndex < 0 && !SEARCH_FIELDS.some(f => f !== "entityMode" && selection[f])) {
     showToast("Select at least one field before saving", true);
     return;
   }
