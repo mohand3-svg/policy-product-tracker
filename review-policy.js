@@ -158,10 +158,6 @@ function render() {
   body.innerHTML = html;
   wireRows();
   wireUrlValidation();
-  ensureInlineTableFilters("reviewTable", [], () => {
-    syncSelectAll();
-    updateToolbar();
-  });
   updateToolbar();
 }
 

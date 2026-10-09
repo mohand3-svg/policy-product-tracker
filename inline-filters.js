@@ -11,7 +11,6 @@
     stGrid: { skip: ["Action"], after: () => callIfPresent(["updateStSelCount"]) },
     historyTable: { skip: [] },
     savedFiltersTable: { skip: ["Actions"] },
-    reviewTable: { skip: [], after: () => callIfPresent(["syncSelectAll", "updateToolbar"]) },
     dashboardTable: { skip: [] },
     policyWinTable: { skip: [] },
     stewardshipTable: { skip: [] },
