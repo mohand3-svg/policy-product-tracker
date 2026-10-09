@@ -30,16 +30,29 @@
     <!-- ===== LEFT SEARCH PANEL ===== -->
     <aside class="form-sidebar">
       <div class="search-head">
-        <span class="search-title">Search Payer</span>
+        <span class="search-title">Search Policy</span>
         <button class="link-btn" id="resetBtn">↻ Reset</button>
       </div>
-      <p class="req-note">Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
+      <p class="req-note">Select a search type. Fields marked with an asterisk (<span class="req">*</span>) are required.</p>
 
-      <label class="fld-label">PARENT PAYER <span class="req">*</span></label>
-      <div class="fld-select" data-field="parentPayer"><span>Search…</span><i>▾</i></div>
+      <label class="fld-label">SEARCH BY <span class="req">*</span></label>
+      <div class="entity-toggle" id="entityToggle">
+        <label><input type="radio" name="entityMode" value="payer" checked /> Payer</label>
+        <label><input type="radio" name="entityMode" value="pbm" /> PBM</label>
+      </div>
 
-      <label class="fld-label">PAYER <span class="req">*</span></label>
-      <div class="fld-select" data-field="payer"><span>Search…</span><i>▾</i></div>
+      <div class="entity-field" data-mode-field="payer">
+        <label class="fld-label">PARENT PAYER <span class="req">*</span></label>
+        <div class="fld-select" data-field="parentPayer"><span>Search…</span><i>▾</i></div>
+
+        <label class="fld-label">PAYER <span class="req">*</span></label>
+        <div class="fld-select" data-field="payer"><span>Search…</span><i>▾</i></div>
+      </div>
+
+      <div class="entity-field" data-mode-field="pbm" hidden>
+        <label class="fld-label">PBM <span class="req">*</span></label>
+        <div class="fld-select" data-field="pbm"><span>Search…</span><i>▾</i></div>
+      </div>
 
       <label class="fld-label">BOOK OF BUSINESS <span class="req">*</span></label>
       <div class="fld-select" data-field="bob"><span>Search…</span><i>▾</i></div>
@@ -53,6 +66,11 @@
       <label class="fld-label">BENEFIT TYPE <span class="req">*</span></label>
       <div class="fld-select" data-field="benefit"><span>Search…</span><i>▾</i></div>
 
+      <div class="entity-field" data-mode-field="pbm" hidden>
+        <label class="fld-label">CUSTOM / NATIONAL / FORMULARY MGT <span class="req">*</span></label>
+        <div class="fld-select" data-field="pbmRole"><span>Search…</span><i>▾</i></div>
+      </div>
+
       <label class="fld-label">STATE</label>
       <div class="fld-value" id="stateVal">NATIONAL</div>
     </aside>
@@ -61,7 +79,7 @@
     <main class="form-main populated">
       <div class="form-main-head">
         <div>
-          <h2 class="payer-details">Payer Details</h2>
+          <h2 class="payer-details" id="detailsTitle">Payer Details</h2>
           <div class="user-guide">ⓘ User guide for Multiple Policies update form</div>
         </div>
         <div class="form-main-actions">
@@ -101,7 +119,7 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <script src="multi-form.js?v=46"></script>
+  <script src="multi-form.js?v=47"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>

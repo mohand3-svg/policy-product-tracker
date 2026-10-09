@@ -54,7 +54,23 @@ const reviewBtn = document.getElementById("reviewBtn");
 const INLINE_FILTER_STATE = {};
 
 // Current left-panel filter selections (empty = no filter).
-const filter = { parentPayer: "", payer: "", bob: "", product: "", indication: "", benefit: "" };
+const POLICY_FILTERS = ["bob", "product", "indication", "benefit"];
+const filter = {
+  entityMode: "payer",
+  parentPayer: "",
+  payer: "",
+  pbm: "",
+  bob: "",
+  product: "",
+  indication: "",
+  benefit: "",
+  pbmRole: "",
+};
+
+const STATIC_OPTIONS = {
+  pbm: ["Express Scripts", "OptumRX", "CVS"],
+  pbmRole: ["Custom", "National", "Formulary Mgt"],
+};
 
 // Escape for safe insertion.
 function esc(s) {
@@ -122,10 +138,68 @@ function ensureInlineTableFilters(tableId, skipLabels = [], afterFilter) {
 // Column index per filter key (into a ROW array).
 const COL = { parentPayer: 0, payer: 1, bob: 2, product: 3, indication: 4, benefit: 5 };
 
+function rowPbm(r) {
+  const text = `${r[0]} ${r[1]}`.toUpperCase();
+  if (text.includes("CVS") || text.includes("AETNA")) return "CVS";
+  if (text.includes("CIGNA") || text.includes("84 LUMBER")) return "Express Scripts";
+  if (text.includes("UNITED") || text.includes("OPTUM")) return "OptumRX";
+  return r[5] === "PHARMACY BENEFIT" ? "Express Scripts" : "OptumRX";
+}
+
+function rowPbmRole(r) {
+  const status = String(r[11] || "").toUpperCase();
+  if (r[5] === "MEDICAL BENEFIT") return "Formulary Mgt";
+  if (status.includes("NOT COVERED")) return "National";
+  if (status.includes("BIO MANAGED") || status.includes("TO PI")) return "Custom";
+  return "Formulary Mgt";
+}
+
+function rowValue(r, field) {
+  if (field === "pbm") return rowPbm(r);
+  if (field === "pbmRole") return rowPbmRole(r);
+  return r[COL[field]];
+}
+
+function optionValues(field) {
+  if (STATIC_OPTIONS[field]) return STATIC_OPTIONS[field];
+  return [...new Set(ROWS.map(r => rowValue(r, field)).filter(Boolean))];
+}
+
+function activeFilterKeys() {
+  const entityKeys = filter.entityMode === "pbm" ? ["pbm", "pbmRole"] : ["parentPayer", "payer"];
+  return [...entityKeys, ...POLICY_FILTERS];
+}
+
 function visibleRows() {
   return ROWS.filter(r =>
-    Object.keys(filter).every(k => !filter[k] || r[COL[k]] === filter[k])
+    activeFilterKeys().every(k => !filter[k] || rowValue(r, k) === filter[k])
   );
+}
+
+function syncEntityMode() {
+  document.querySelectorAll("[data-mode-field]").forEach(el => {
+    el.hidden = el.dataset.modeField !== filter.entityMode;
+  });
+  document.querySelectorAll('input[name="entityMode"]').forEach(input => {
+    input.checked = input.value === filter.entityMode;
+  });
+  const detailsTitle = document.getElementById("detailsTitle");
+  if (detailsTitle) detailsTitle.textContent = filter.entityMode === "pbm" ? "PBM Details" : "Payer Details";
+}
+
+function setEntityMode(mode) {
+  filter.entityMode = mode === "pbm" ? "pbm" : "payer";
+  if (filter.entityMode === "payer") {
+    filter.pbm = "";
+    filter.pbmRole = "";
+  } else {
+    filter.parentPayer = "";
+    filter.payer = "";
+  }
+  selectAll.checked = false;
+  selectAll.indeterminate = false;
+  syncEntityMode();
+  render();
 }
 
 // Total column count (checkbox + 17 data columns).
@@ -253,7 +327,7 @@ document.querySelectorAll(".fld-select[data-field]").forEach(el => {
   el.addEventListener("click", ev => {
     // Ignore clicks on the chip's clear (✕); that's handled separately.
     if (ev.target.closest(".fld-chip")) return;
-    const values = [...new Set(ROWS.map(r => r[COL[field]]))];
+    const values = optionValues(field);
     const cur = filter[field];
     const idx = values.indexOf(cur);
     // cycle: (none) -> v0 -> v1 -> ... -> (none)
@@ -262,10 +336,17 @@ document.querySelectorAll(".fld-select[data-field]").forEach(el => {
   });
 });
 
+document.querySelectorAll('input[name="entityMode"]').forEach(input => {
+  input.addEventListener("change", () => setEntityMode(input.value));
+});
+
 // ---- reset ------------------------------------------------------
 document.getElementById("resetBtn").addEventListener("click", () => {
-  Object.keys(filter).forEach(k => (filter[k] = ""));
+  Object.keys(filter).forEach(k => {
+    filter[k] = k === "entityMode" ? "payer" : "";
+  });
   selectAll.checked = false; selectAll.indeterminate = false;
+  syncEntityMode();
   render();
   showToast("Filters reset", false);
 });
@@ -300,4 +381,5 @@ function showToast(msg, isErr) {
 }
 
 // ---- init -------------------------------------------------------
+syncEntityMode();
 render();
