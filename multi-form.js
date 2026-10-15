@@ -167,6 +167,14 @@ function displayPbmValue(r, index, field) {
   return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
 }
 
+function hasPbmDetails(r, index) {
+  return displayPbmValue(r, index, "pbm") !== "N/A";
+}
+
+function isPbmSearchRow(r, index) {
+  return hasPbmDetails(r, index) && r[COL.benefit] === "PHARMACY BENEFIT";
+}
+
 function rowValue(r, field, index = ROWS.indexOf(r)) {
   if (field === "pbm") return displayPbmValue(r, index, "pbm");
   if (field === "pbmRole") return displayPbmValue(r, index, "pbmRole");
@@ -176,7 +184,10 @@ function rowValue(r, field, index = ROWS.indexOf(r)) {
 function optionValues(field) {
   if (field === "benefit" && filter.entityMode === "pbm") return ["PHARMACY BENEFIT"];
   if (STATIC_OPTIONS[field]) return STATIC_OPTIONS[field];
-  return [...new Set(ROWS.map(r => rowValue(r, field)).filter(Boolean))];
+  const candidates = filter.entityMode === "pbm"
+    ? ROWS.map((r, index) => ({ r, index })).filter(({ r, index }) => isPbmSearchRow(r, index))
+    : ROWS.map((r, index) => ({ r, index }));
+  return [...new Set(candidates.map(({ r, index }) => rowValue(r, field, index)).filter(Boolean))];
 }
 
 function activeFilterKeys() {
@@ -195,7 +206,7 @@ function filterMatches(field, rowDisplayValue, selectedValue) {
 
 function visibleRows() {
   return ROWS.filter((r, index) => {
-    if (filter.entityMode === "pbm" && displayPbmValue(r, index, "pbm") === "N/A") return false;
+    if (filter.entityMode === "pbm" && !isPbmSearchRow(r, index)) return false;
     return activeFilterKeys().every(k => filterMatches(k, rowValue(r, k, index), filter[k]));
   });
 }
@@ -221,6 +232,9 @@ function setEntityMode(mode) {
     filter.payer = "";
     filter.pbmRole = "National";
     filter.benefit = "PHARMACY BENEFIT";
+    ["bob", "product", "indication"].forEach(field => {
+      if (filter[field] && !optionValues(field).includes(filter[field])) filter[field] = "";
+    });
   }
   selectAll.checked = false;
   selectAll.indeterminate = false;
