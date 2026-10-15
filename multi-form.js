@@ -163,7 +163,7 @@ function rowPbmRole(r) {
 
 function displayPbmValue(r, index, field) {
   if (index > 2) return "N/A";
-  if (field === "pbmRole") return "FORMULARY MANAGEMENT";
+  if (field === "pbmRole") return "National Formulary";
   return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
 }
 
