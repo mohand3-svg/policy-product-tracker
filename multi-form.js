@@ -186,6 +186,7 @@ function activeFilterKeys() {
 
 function filterMatches(field, rowDisplayValue, selectedValue) {
   if (!selectedValue) return true;
+  if (field === "pbmRole" && selectedValue === "National") return true;
   if (field === "pbmRole" && selectedValue === "Formulary Management") {
     return rowDisplayValue === "FORMULARY MANAGEMENT";
   }
