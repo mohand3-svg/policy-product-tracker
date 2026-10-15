@@ -23,6 +23,11 @@ const PBM_ROLE_OPTIONS = [
   { label: "Formulary Management", disabled: true },
 ];
 
+function optionsForField(field) {
+  if (field === "benefit" && selection.entityMode === "pbm") return ["PHARMACY BENEFIT"];
+  return OPTIONS[field] || [];
+}
+
 const POLICY_REQUIRED = ["bob", "product", "indication", "benefit"];
 const SEARCH_FIELDS = ["entityMode", "payer", "pbm", "pbmRole", ...POLICY_REQUIRED];
 
@@ -165,7 +170,7 @@ document.querySelectorAll(".fld-select[data-field]").forEach(el => {
       openPbmRoleMenu(el);
       return;
     }
-    const opts = OPTIONS[field] || [];
+    const opts = optionsForField(field);
     const cur = selection[field];
     const idx = opts.indexOf(cur);
     const next = opts[(idx + 1) % opts.length];
@@ -205,6 +210,7 @@ function setEntityMode(mode) {
   } else {
     setFieldValue("payer", "");
     setFieldValue("pbmRole", "National");
+    setFieldValue("benefit", "PHARMACY BENEFIT");
   }
   syncEntityMode();
   refreshSearchState();

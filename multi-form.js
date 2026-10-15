@@ -173,6 +173,7 @@ function rowValue(r, field, index = ROWS.indexOf(r)) {
 }
 
 function optionValues(field) {
+  if (field === "benefit" && filter.entityMode === "pbm") return ["PHARMACY BENEFIT"];
   if (STATIC_OPTIONS[field]) return STATIC_OPTIONS[field];
   return [...new Set(ROWS.map(r => rowValue(r, field)).filter(Boolean))];
 }
@@ -217,6 +218,7 @@ function setEntityMode(mode) {
     filter.parentPayer = "";
     filter.payer = "";
     filter.pbmRole = "National";
+    filter.benefit = "PHARMACY BENEFIT";
   }
   selectAll.checked = false;
   selectAll.indeterminate = false;
