@@ -302,10 +302,10 @@ function renderChips() {
   document.querySelectorAll(".fld-select[data-field]").forEach(el => {
     const field = el.dataset.field;
     const val = filter[field];
-    const span = el.querySelector("span");
-    // remove any existing chip
-    const old = el.querySelector(".fld-chip");
-    if (old) old.remove();
+    const span = [...el.children].find(child =>
+      child.tagName === "SPAN" && !child.classList.contains("fld-chip"));
+    if (!span) return;
+    el.querySelectorAll(".fld-chip").forEach(chip => chip.remove());
     if (val) {
       span.style.display = "none";
       const chip = document.createElement("span");
