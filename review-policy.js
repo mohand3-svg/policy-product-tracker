@@ -9,7 +9,7 @@
 // 0 parentPayer, 1 payer, 2 bob, 3 product, 4 indication, 5 benefit,
 // 6 pa, 7 stepEdit, 8 numSteps, 9 placement, 10 stepProducts, 11 status,
 // 12 simplified, 13 policyLink, 14 siteLink, 15 paLink, 16 effDate,
-// 17 displayed PBM, 18 displayed Custom/National/Formulary Mgt
+// 17 displayed PBM, 18 displayed PBM Role
 
 // A couple of demo rows shown if the page is opened directly.
 const FALLBACK = [
