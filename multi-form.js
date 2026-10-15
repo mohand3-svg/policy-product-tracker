@@ -227,7 +227,7 @@ function setEntityMode(mode) {
     filter.parentPayer = "";
     filter.payer = "";
     filter.pbmRole = "National";
-    filter.benefit = "";
+    filter.benefit = "PHARMACY BENEFIT";
     ["bob", "product", "indication"].forEach(field => {
       if (filter[field] && !optionValues(field).includes(filter[field])) filter[field] = "";
     });
