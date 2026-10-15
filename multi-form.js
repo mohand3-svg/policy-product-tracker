@@ -13,7 +13,7 @@ const SITE = "\"Commercial and medicare…";
 const PA_URL = "https://static.cigna.com/asset…";
 const ROWS = [
   ["Cigna", "SELECTHEALTH", "COMMERCIAL", "XOLAIR", "Multiple Sclerosis", "PHARMACY BENEFIT", "Yes", "Yes", 1, "ST Single Generic", "1 of [montelukast, cetirizine]", "BIO MANAGED", "COVERED – WITH STEPS", "https://payer.example/selecthealth-xolair", SITE, PA_URL, "2026-11-01"],
-  ["Cigna", "UNIVERSITY OF ROCHESTER", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "MEDICAL BENEFIT", "Yes", "No", 0, "No Step", "N/A", "TO PI WITH CRITERIA", "COVERED – NO STEPS", "N/A", SITE, PA_URL, "N/A"],
+  ["Cigna", "UNIVERSITY OF ROCHESTER", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "PHARMACY BENEFIT", "Yes", "No", 0, "No Step", "N/A", "TO PI WITH CRITERIA", "COVERED – NO STEPS", "N/A", SITE, PA_URL, "N/A"],
   ["Cigna", "COLGATE UNIVERSITY", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
   ["Cigna", "EVANGELICAL LUTHERAN CHURCH IN AMERICA", "COMMERCIAL", "XELJANZ", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
   ["INTERMOUNTAIN HEALTH CARE", "SELECTHEALTH", "MEDICARE_ADVANTAGE", "SIMLANDI(CF) AUTOINJECTOR", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
