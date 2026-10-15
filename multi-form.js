@@ -69,8 +69,14 @@ const filter = {
 
 const STATIC_OPTIONS = {
   pbm: ["Express Scripts", "OptumRX", "CVS"],
-  pbmRole: ["Custom", "National", "Formulary Mgt"],
+  pbmRole: ["National"],
 };
+
+const PBM_ROLE_OPTIONS = [
+  { label: "National", disabled: false },
+  { label: "Custom", disabled: true },
+  { label: "Formulary Management", disabled: true },
+];
 
 // Escape for safe insertion.
 function esc(s) {
@@ -148,10 +154,10 @@ function rowPbm(r) {
 
 function rowPbmRole(r) {
   const status = String(r[11] || "").toUpperCase();
-  if (r[5] === "MEDICAL BENEFIT") return "Formulary Mgt";
+  if (r[5] === "MEDICAL BENEFIT") return "Formulary Management";
   if (status.includes("NOT COVERED")) return "National";
   if (status.includes("BIO MANAGED") || status.includes("TO PI")) return "Custom";
-  return "Formulary Mgt";
+  return "Formulary Management";
 }
 
 function displayPbmValue(r, index, field) {
@@ -178,7 +184,7 @@ function activeFilterKeys() {
 
 function filterMatches(field, rowDisplayValue, selectedValue) {
   if (!selectedValue) return true;
-  if (field === "pbmRole" && selectedValue === "Formulary Mgt") {
+  if (field === "pbmRole" && selectedValue === "Formulary Management") {
     return rowDisplayValue === "FORMULARY MANAGEMENT";
   }
   return rowDisplayValue === selectedValue;
@@ -210,6 +216,7 @@ function setEntityMode(mode) {
   } else {
     filter.parentPayer = "";
     filter.payer = "";
+    filter.pbmRole = "National";
   }
   selectAll.checked = false;
   selectAll.indeterminate = false;
@@ -300,6 +307,39 @@ function renderChips() {
   });
 }
 
+function closePbmRoleMenus() {
+  document.querySelectorAll(".pbm-role-menu").forEach(menu => menu.remove());
+}
+
+function openPbmRoleMenu(el) {
+  const existing = el.querySelector(".pbm-role-menu");
+  closePbmRoleMenus();
+  if (existing) return;
+
+  const menu = document.createElement("div");
+  menu.className = "pbm-role-menu";
+  PBM_ROLE_OPTIONS.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "pbm-role-option";
+    btn.textContent = opt.label;
+    btn.disabled = opt.disabled;
+    btn.setAttribute("aria-disabled", opt.disabled ? "true" : "false");
+    btn.classList.toggle("active", filter.pbmRole === opt.label);
+    btn.addEventListener("click", ev => {
+      ev.stopPropagation();
+      if (opt.disabled) return;
+      filter.pbmRole = opt.label;
+      closePbmRoleMenus();
+      render();
+    });
+    menu.appendChild(btn);
+  });
+  el.appendChild(menu);
+}
+
+document.addEventListener("click", closePbmRoleMenus);
+
 function wireRows() {
   body.querySelectorAll(".mp-row-cb").forEach(cb =>
     cb.addEventListener("change", e => {
@@ -343,8 +383,13 @@ selectAll.addEventListener("change", e => {
 document.querySelectorAll(".fld-select[data-field]").forEach(el => {
   const field = el.dataset.field;
   el.addEventListener("click", ev => {
+    ev.stopPropagation();
     // Ignore clicks on the chip's clear (✕); that's handled separately.
     if (ev.target.closest(".fld-chip")) return;
+    if (field === "pbmRole") {
+      openPbmRoleMenu(el);
+      return;
+    }
     const values = optionValues(field);
     const cur = filter[field];
     const idx = values.indexOf(cur);

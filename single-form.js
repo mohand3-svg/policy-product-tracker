@@ -10,12 +10,18 @@
 const OPTIONS = {
   payer: ["UNITEDHEALTHCARE", "AETNA", "HUMANA", "CIGNA", "WELLCARE", "CVS HEALTH", "UNITED FEDERATION OF TEACHERS", "UNIVERSITY OF ROCHESTER", "DOMTAR CORPORATION"],
   pbm: ["Express Scripts", "OptumRX", "CVS"],
-  pbmRole: ["Custom", "National", "Formulary Mgt"],
+  pbmRole: ["National"],
   bob: ["COMMERCIAL", "MEDICAID_MANAGED", "MEDICARE_ADVANTAGE", "MEDICAID_FFS", "GOVERNMENT"],
   product: ["OCREVUS ZUNOVO", "VABYSMO", "ACTEMRA SC", "XOLAIR VIAL", "OCREVUS", "ITOVEBI"],
   indication: ["Multiple Sclerosis", "Rheumatoid Arthritis", "Neovascular AMD", "Food Allergy", "BREAST", "BC (Her2-ve)"],
   benefit: ["PHARMACY BENEFIT", "MEDICAL BENEFIT"],
 };
+
+const PBM_ROLE_OPTIONS = [
+  { label: "National", disabled: false },
+  { label: "Custom", disabled: true },
+  { label: "Formulary Management", disabled: true },
+];
 
 const POLICY_REQUIRED = ["bob", "product", "indication", "benefit"];
 const SEARCH_FIELDS = ["entityMode", "payer", "pbm", "pbmRole", ...POLICY_REQUIRED];
@@ -117,10 +123,48 @@ const POLICY_RECORDS = [
 // ---- dropdowns --------------------------------------------------
 // Each .fld-select cycles through its option list on click (simple
 // mockup interaction — no real dropdown widget needed).
+function closePbmRoleMenus() {
+  document.querySelectorAll(".pbm-role-menu").forEach(menu => menu.remove());
+}
+
+function openPbmRoleMenu(el) {
+  const existing = el.querySelector(".pbm-role-menu");
+  closePbmRoleMenus();
+  if (existing) return;
+
+  const menu = document.createElement("div");
+  menu.className = "pbm-role-menu";
+  PBM_ROLE_OPTIONS.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "pbm-role-option";
+    btn.textContent = opt.label;
+    btn.disabled = opt.disabled;
+    btn.setAttribute("aria-disabled", opt.disabled ? "true" : "false");
+    btn.classList.toggle("active", selection.pbmRole === opt.label);
+    btn.addEventListener("click", ev => {
+      ev.stopPropagation();
+      if (opt.disabled) return;
+      setFieldValue("pbmRole", opt.label);
+      closePbmRoleMenus();
+      refreshSearchState();
+    });
+    menu.appendChild(btn);
+  });
+  el.appendChild(menu);
+}
+
+document.addEventListener("click", closePbmRoleMenus);
+
 document.querySelectorAll(".fld-select[data-field]").forEach(el => {
   const field = el.dataset.field;
   const span = el.querySelector("span");
-  el.addEventListener("click", () => {
+  el.addEventListener("click", ev => {
+    ev.stopPropagation();
+    if (field === "pbmRole") {
+      openPbmRoleMenu(el);
+      return;
+    }
     const opts = OPTIONS[field] || [];
     const cur = selection[field];
     const idx = opts.indexOf(cur);
@@ -160,6 +204,7 @@ function setEntityMode(mode) {
     setFieldValue("pbmRole", "");
   } else {
     setFieldValue("payer", "");
+    setFieldValue("pbmRole", "National");
   }
   syncEntityMode();
   refreshSearchState();
@@ -199,7 +244,7 @@ function selectedPbmRoleMatches(record) {
   const roleMap = {
     Custom: ["CUSTOMIZED FORMULARY"],
     National: ["NATIONAL FORMULARY"],
-    "Formulary Mgt": ["FORMULARY MANAGEMENT", "PHARMACY BENEFIT MANAGER"],
+    "Formulary Management": ["FORMULARY MANAGEMENT", "PHARMACY BENEFIT MANAGER"],
   };
   const allowed = roleMap[selection.pbmRole] || [selection.pbmRole];
   return allowed.some(role => sameText(record.pbmRole, role) || sameText(record.payerRole, role));

@@ -56,6 +56,21 @@
 }
 .fld-box { color: #333; background: #f8f9fc; }
 .fld-select i { color: #9aa1ad; font-style: normal; }
+.pbm-role-menu {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30;
+  background: #fff; border: 1px solid #d4d8e2; border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(17,24,39,.14); padding: 4px;
+}
+.pbm-role-option {
+  width: 100%; border: 0; background: #fff; color: #1f2937;
+  display: block; text-align: left; padding: 8px 9px; border-radius: 4px;
+  font: inherit; font-size: 12.5px; cursor: pointer;
+}
+.pbm-role-option:hover,
+.pbm-role-option.active { background: #eef4ff; color: #1d4ed8; }
+.pbm-role-option:disabled {
+  color: #9aa1ad; background: #f4f6fa; cursor: not-allowed;
+}
 .entity-toggle {
   display: flex; gap: 8px; padding: 3px; border: 1px solid #d4d8e2;
   border-radius: 6px; background: #f8f9fc;
