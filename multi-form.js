@@ -302,26 +302,25 @@ function renderChips() {
   document.querySelectorAll(".fld-select[data-field]").forEach(el => {
     const field = el.dataset.field;
     const val = filter[field];
-    const span = [...el.children].find(child =>
-      child.tagName === "SPAN" && !child.classList.contains("fld-chip"));
-    if (!span) return;
-    el.querySelectorAll(".fld-chip").forEach(chip => chip.remove());
+    el.replaceChildren();
     if (val) {
-      span.style.display = "none";
       const chip = document.createElement("span");
       chip.className = "fld-chip";
-      chip.innerHTML = `${esc(val)} <span class="x" title="Clear">✕</span>`;
-      chip.querySelector(".x").addEventListener("click", ev => {
-        ev.stopPropagation();
-        filter[field] = "";
-        render();
-      });
-      el.insertBefore(chip, span);
+      chip.textContent = val;
+      const clear = document.createElement("span");
+      clear.className = "x";
+      clear.title = "Clear";
+      clear.textContent = "✕";
+      chip.appendChild(clear);
+      el.appendChild(chip);
     } else {
-      span.style.display = "";
+      const span = document.createElement("span");
       span.textContent = "Search…";
-      span.style.color = "";
+      el.appendChild(span);
     }
+    const caret = document.createElement("i");
+    caret.textContent = "▾";
+    el.appendChild(caret);
   });
 }
 
@@ -402,8 +401,11 @@ document.querySelectorAll(".fld-select[data-field]").forEach(el => {
   const field = el.dataset.field;
   el.addEventListener("click", ev => {
     ev.stopPropagation();
-    // Ignore clicks on the chip's clear (✕); that's handled separately.
-    if (ev.target.closest(".fld-chip")) return;
+    if (ev.target.classList.contains("x")) {
+      filter[field] = "";
+      render();
+      return;
+    }
     if (field === "pbmRole") {
       openPbmRoleMenu(el);
       return;
