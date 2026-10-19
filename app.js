@@ -2359,6 +2359,8 @@ function updateStSelCount() {
   if (el) el.textContent = String(n);
   const btn = document.getElementById("stBulkAssignBtn");
   if (btn) btn.disabled = false;
+  const footerBtn = document.getElementById("stFooterAssignBtn");
+  if (footerBtn) footerBtn.hidden = !(ST_SUBVIEW === "all" || ST_SUBVIEW === "open");
 }
 
 function getSelectedStIds() {
@@ -2412,10 +2414,9 @@ document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
 
 (function wireStBulkAssign() {
   const btn = document.getElementById("stBulkAssignBtn");
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    openStBulkAssignModal();
-  });
+  if (btn) btn.addEventListener("click", openStBulkAssignModal);
+  const footerBtn = document.getElementById("stFooterAssignBtn");
+  if (footerBtn) footerBtn.addEventListener("click", openStBulkAssignModal);
 })();
 
 /* ============================================================

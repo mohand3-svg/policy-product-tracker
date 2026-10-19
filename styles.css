@@ -560,7 +560,15 @@ body {
 }
 .icon-btn:hover { background: #e3e8f5; }
 
-.footer-bar { padding: 8px 4px; font-size: 12px; color: var(--muted); }
+.footer-bar {
+  padding: 8px 4px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 
 /* ============ MODALS ============ */
 .modal-overlay {
@@ -931,6 +939,16 @@ body {
 }
 .st-toolbar .btn-bulk:hover:not(:disabled) { background: #f2f6ff; }
 .st-toolbar .btn-bulk:disabled { color: #9aa1ad; border-color: #e2e6ee; cursor: not-allowed; }
+.st-footer-assign {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #cfd6e2;
+  border-radius: 4px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.st-footer-assign:hover { background: #f8faff; border-color: #b9ccf5; }
 
 /* Grid */
 .st-grid-wrap { overflow: auto; max-height: calc(100vh - 340px); border-top: 1px solid #eef0f4; }
