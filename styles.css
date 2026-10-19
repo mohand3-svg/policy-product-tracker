@@ -943,7 +943,7 @@ body {
 
 /* Grid */
 .st-grid-wrap { overflow: auto; max-height: calc(100vh - 340px); border-top: 1px solid #eef0f4; }
-.st-grid { border-collapse: collapse; font-size: 12px; width: 100%; min-width: 1200px; }
+.st-grid { border-collapse: collapse; font-size: 12px; width: 100%; min-width: 1500px; }
 .st-grid thead th {
   position: sticky; top: 0; z-index: 2; background: #f6f8fc; text-align: left;
   font-weight: 700; color: #374151; padding: 10px 12px; line-height: 1.25;
@@ -961,6 +961,8 @@ body {
 .st-grid td.st-steward { color: #1f2937; font-weight: 600; }
 .st-grid td.st-unassigned { color: #b45309; font-style: italic; }
 .st-grid .st-assign-one { color: #2563eb; font-weight: 600; }
+.st-grid .st-link-cell { color: #2563eb; font-weight: 700; }
+.st-grid .st-flag { color: #c4121a; font-size: 14px; text-align: center; }
 
 /* Status badges */
 .st-badge {

@@ -2174,9 +2174,8 @@ function setWinDetailStatus(newStatus) {
 })();
 
 /* ============================================================
-   STEWARDSHIP TOOL — standalone page (Assignment Queue / My
-   Workload / All Requests). Reuses SEED_ROWS: lets a lead see
-   workload distribution and (mock-)assign requests to stewards.
+   STEWARDSHIP TOOL — request review page. Reuses SEED_ROWS so the
+   DSA tab can show a static stewardship request queue in-place.
    ============================================================ */
 const ST_CURRENT_USER = "A. Martinez";   // "My Workload" owner (matches CURRENT_USER)
 const ST_STEWARDS = ["Syed Riyaz", "Adriana Jazbor", "A. Martinez", "J. Chen", "R. Patel", "S. Okafor", "L. Nguyen"];
@@ -2185,7 +2184,7 @@ const ST_STEWARDS = ["Syed Riyaz", "Adriana Jazbor", "A. Martinez", "J. Chen", "
 let ST_ROWS = SEED_ROWS.map(r => ({ ...r }));
 
 const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
-let ST_SUBVIEW = "queue";   // queue | mine | all
+let ST_SUBVIEW = "all";   // all | open | mine | completed
 let stBuilt = false;
 
 function stStewardLabel(v) { return v && v.trim() ? v : "Unassigned"; }
@@ -2244,10 +2243,15 @@ function stFilteredRows() {
       [r.id, r.payer, r.brand, r.indication, r.steward].join(" ").toLowerCase().includes(q));
   }
   switch (ST_SUBVIEW) {
-    case "mine":  return rows.filter(r => r.steward === ST_CURRENT_USER);
-    case "all":   return rows;
-    case "queue":
-    default:      return rows.filter(r => !r.steward || !r.steward.trim());  // unassigned
+    case "open":
+      return rows.filter(r => ["New", "BridgingIssues"].includes(r.dcr));
+    case "mine":
+      return rows.filter(r => r.steward === ST_CURRENT_USER);
+    case "completed":
+      return rows.filter(r => ["NotRequired", "DCRCreated"].includes(r.dcr));
+    case "all":
+    default:
+      return rows;
   }
 }
 
@@ -2294,14 +2298,13 @@ function renderStKpis() {
 function renderStTool() {
   const body = document.getElementById("stGridBody");
   if (!body) return;
-  renderStKpis();
   const rows = stFilteredRows();
   const cnt = document.getElementById("stRowCount");
   if (cnt) cnt.textContent = String(rows.length);
 
   if (rows.length === 0) {
-    body.innerHTML = `<tr><td colspan="13" class="wins-empty">No requests match the current filters</td></tr>`;
-    ensureInlineTableFilters("stGrid", ["Action"]);
+    body.innerHTML = `<tr><td colspan="18" class="wins-empty">No requests match the current filters</td></tr>`;
+    ensureInlineTableFilters("stGrid", ["Dcr's URL"]);
     updateStSelCount();
     return;
   }
@@ -2309,30 +2312,33 @@ function renderStTool() {
   body.innerHTML = rows.map((r, i) => `
     <tr>
       <td class="stcol-check"><input type="checkbox" class="st-row-cb" data-id="${sfEsc(r.id)}" /></td>
-      <td class="st-id">${sfEsc(r.id)}</td>
-      <td class="${(!r.steward || !r.steward.trim()) ? "st-unassigned" : "st-steward"}">${sfEsc(stStewardLabel(r.steward))}</td>
-      <td>${sfEsc(r.payer)}</td>
+      <td>${sfEsc(i === 0 ? "N/A" : r.payer)}</td>
+      <td>${sfEsc(i < 3 ? "Express Scripts" : "N/A")}</td>
+      <td>${sfEsc(i < 3 ? "National Formulary" : "N/A")}</td>
       <td>${sfEsc(r.brand)}</td>
       <td>${sfEsc(r.indication)}</td>
       <td>${sfEsc(r.bob)}</td>
       <td>${sfEsc(r.benefit)}</td>
-      <td>${sfEsc(pbmCoverageForPolicy(r, i))}</td>
+      <td class="st-id">DCR-${sfEsc(String(1000 + i))}</td>
       <td class="st-lives">${Number(r.lives).toLocaleString()}</td>
-      <td>${stMmitBadge(r.mmit)}</td>
-      <td>${stStatusBadge(r.dcr)}</td>
-      <td><button class="link-btn st-assign-one" data-id="${sfEsc(r.id)}">Assign</button></td>
+      <td>${sfEsc(i % 2 ? "Oct 16, 2026, 9:44 AM" : "Oct 16, 2026, 9:50 AM")}</td>
+      <td>NATIONAL</td>
+      <td class="st-link-cell">Udaya Kumar Konga</td>
+      <td class="${(!r.steward || !r.steward.trim()) ? "st-unassigned" : "st-steward"}">${sfEsc(stStewardLabel(r.steward))}</td>
+      <td>${stStatusBadge(i === 0 ? "DCRCreated" : r.dcr)}</td>
+      <td>${sfEsc(i % 2 ? "Oct 16, 2026, 9:46 AM" : "Oct 16, 2026, 9:50 AM")}</td>
+      <td class="st-flag">${i % 4 === 1 ? "⚑" : ""}</td>
+      <td class="st-link-cell">Open DCRs</td>
     </tr>`).join("");
 
   wireStRowChecks();
-  ensureInlineTableFilters("stGrid", ["Action"]);
+  ensureInlineTableFilters("stGrid", ["Dcr's URL"]);
   updateStSelCount();
 }
 
 function wireStRowChecks() {
   document.querySelectorAll(".st-row-cb").forEach(cb =>
     cb.addEventListener("change", updateStSelCount));
-  document.querySelectorAll(".st-assign-one").forEach(btn =>
-    btn.addEventListener("click", () => stAssign([btn.dataset.id])));
 }
 function updateStSelCount() {
   const n = [...document.querySelectorAll(".st-row-cb:checked")]
@@ -2735,10 +2741,6 @@ const winsView = document.getElementById("winsView");
 document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
   t.addEventListener("click", () => {
     const tab = t.dataset.tab;
-    if (tab === "sttool") {
-      window.location.href = "stewardship-dashboard.html?screen=stewardship";
-      return;
-    }
 
     document.querySelectorAll(".nav-tab").forEach(x => x.classList.remove("active"));
     t.classList.add("active");

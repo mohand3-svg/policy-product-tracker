@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=78" />
+<link rel="stylesheet" href="styles.css?v=79" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -666,25 +666,23 @@
       <!-- ===== STEWARDSHIP TOOL VIEW ===== -->
       <div id="stewardshipToolView" hidden>
         <div class="content-head">
-          <div class="section-tag">🧭 Stewardship Tool</div>
+          <div class="section-tag">▣ Requests</div>
         </div>
-
-        <!-- KPI summary cards -->
-        <div class="st-kpis" id="stKpis"><!-- cards injected by JS --></div>
 
         <div class="st-page-card">
           <div class="st-subtabs">
-            <a class="sttab active" data-stview="queue">Assignment Queue</a>
-            <a class="sttab" data-stview="mine">My Workload</a>
-            <a class="sttab" data-stview="all">All Requests</a>
+            <a class="sttab active" data-stview="all">All Requests</a>
+            <a class="sttab" data-stview="open">Open Requests</a>
+            <a class="sttab" data-stview="mine">My Requests</a>
+            <a class="sttab" data-stview="completed">Completed Requests</a>
           </div>
           <div class="st-toolbar">
-            <input type="text" class="st-search" id="stSearch" placeholder="⌕ Search Req-ID, payer, brand…" />
+            <input type="text" class="st-search" id="stSearch" placeholder="Search DCR, payer, brand, indication…" />
             <div class="st-toolbar-right">
               <select class="st-assignee" id="stAssignee">
                 <!-- steward options injected by JS -->
               </select>
-              <button class="btn btn-bulk" id="stBulkAssignBtn" disabled>⇲ Assign Selected</button>
+              <button class="btn btn-bulk" id="stBulkAssignBtn" disabled>👤 Bulk Assign</button>
             </div>
           </div>
           <div class="st-grid-wrap">
@@ -692,18 +690,23 @@
               <thead>
                 <tr>
                   <th class="stcol-check"><input type="checkbox" id="stSelectAll" /></th>
-                  <th>Req-ID</th>
-                  <th>Steward Assigned</th>
                   <th>Payer</th>
+                  <th>PBM</th>
+                  <th>PBM Role</th>
                   <th>Brand</th>
                   <th>Indication</th>
                   <th>Book of Business</th>
                   <th>Benefit Type</th>
-                  <th>PBM Coverage</th>
+                  <th>Dcr Identifier</th>
                   <th>Lives Covered</th>
-                  <th>MMIT Verification</th>
-                  <th>DCR Status</th>
-                  <th>Action</th>
+                  <th>Date Submitted</th>
+                  <th>State</th>
+                  <th>Submitter</th>
+                  <th>Steward Assigned</th>
+                  <th>Status</th>
+                  <th>Last Activity Date</th>
+                  <th>Duplicate</th>
+                  <th>Dcr's URL</th>
                 </tr>
               </thead>
               <tbody id="stGridBody"><!-- rows injected by JS --></tbody>
@@ -974,7 +977,7 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=78"></script>
+  <script src="app.js?v=79"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>
