@@ -2359,7 +2359,9 @@ function updateStSelCount() {
   if (el) el.textContent = String(n);
   const btn = document.getElementById("stBulkAssignBtn");
   if (btn) {
+    const isCompleted = ST_SUBVIEW === "completed";
     btn.disabled = false;
+    btn.hidden = isCompleted;
     const isMine = ST_SUBVIEW === "mine";
     btn.classList.toggle("st-bulk-review", isMine);
     btn.textContent = isMine ? "⌘ Bulk Approve/Reject" : "👤 Bulk Assign";
