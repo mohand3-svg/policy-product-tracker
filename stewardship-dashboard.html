@@ -591,9 +591,10 @@ body {
   border-bottom-color: #0b65d8;
 }
 .st-bulk-btn {
-  padding: 5px 10px;
+  padding: 8px 18px;
   border-radius: 2px;
-  font-size: 10px;
+  font-size: 13px;
+  font-weight: 700;
 }
 .st-card-footer {
   display: flex;
@@ -2128,6 +2129,10 @@ function renderStewardshipTable(rows, filter) {
 let currentStewardTab = "all";
 function syncStewardActions() {
   const hideActions = currentStewardTab === "completed";
+  const bulkBtn = document.querySelector(".st-bulk-btn");
+  if (bulkBtn) {
+    bulkBtn.textContent = currentStewardTab === "my" ? "⌘ Bulk Approve/Reject" : "👤 Bulk Assign";
+  }
   document.querySelectorAll(".st-bulk-btn, .st-assign-btn").forEach((btn) => {
     btn.classList.toggle("hidden", hideActions);
   });
