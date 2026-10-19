@@ -2242,6 +2242,7 @@ function renderStewardshipTable(rows, filter) {
   const body = shown.map((r, i) => {
     const duplicate = i % 4 === 1 ? "⚑" : "";
     const steward = i % 7 === 0 ? "N/A" : r.steward;
+    const displayPayer = i === 0 ? "N/A" : r.payer;
     const displayStatus = i === 0 ? "Approved" : r.status;
     const statusClass = pillClass(displayStatus).replace("-", "");
     const lives = r.lives ? fmt(r.lives) : "N/A";
@@ -2254,7 +2255,7 @@ function renderStewardshipTable(rows, filter) {
     <tr class="${i === 0 ? "selected" : ""}">
       <td class="stcol-check"><input type="checkbox" ${i === 0 ? "checked" : ""} /></td>
       <td class="st-id">${r.id}</td>
-      <td>${r.payer}</td>
+      <td>${displayPayer}</td>
       <td class="${pbm === "N/A" ? "st-muted-cell" : ""}">${pbm}</td>
       <td class="${pbmRole === "N/A" ? "st-muted-cell" : ""}">${pbmRole}</td>
       <td>${r.bob}</td>
