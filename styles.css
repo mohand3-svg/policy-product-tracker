@@ -1340,6 +1340,10 @@ body.sttool-active .sidebar-saved {
   background: #fff; color: #2563eb; border: 1px solid #b9ccf5;
   display: inline-flex; align-items: center; gap: 6px;
 }
+.st-toolbar .btn-bulk.st-bulk-review {
+  color: #0b5cad;
+  border-color: #2e6bd6;
+}
 .st-toolbar .btn-bulk:hover:not(:disabled) { background: #f2f6ff; }
 .st-toolbar .btn-bulk:disabled { color: #9aa1ad; border-color: #e2e6ee; cursor: not-allowed; }
 .st-footer-assign {

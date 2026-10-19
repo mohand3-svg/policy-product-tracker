@@ -2358,7 +2358,12 @@ function updateStSelCount() {
   const el = document.getElementById("stSelCount");
   if (el) el.textContent = String(n);
   const btn = document.getElementById("stBulkAssignBtn");
-  if (btn) btn.disabled = false;
+  if (btn) {
+    btn.disabled = false;
+    const isMine = ST_SUBVIEW === "mine";
+    btn.classList.toggle("st-bulk-review", isMine);
+    btn.textContent = isMine ? "⌘ Bulk Approve/Reject" : "👤 Bulk Assign";
+  }
   const footerBtn = document.getElementById("stFooterAssignBtn");
   if (footerBtn) footerBtn.hidden = !(ST_SUBVIEW === "all" || ST_SUBVIEW === "open");
 }
@@ -2414,7 +2419,13 @@ document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
 
 (function wireStBulkAssign() {
   const btn = document.getElementById("stBulkAssignBtn");
-  if (btn) btn.addEventListener("click", openStBulkAssignModal);
+  if (btn) btn.addEventListener("click", () => {
+    if (ST_SUBVIEW === "mine") {
+      showToast("Bulk Approve/Reject — demo placeholder", false);
+      return;
+    }
+    openStBulkAssignModal();
+  });
   const footerBtn = document.getElementById("stFooterAssignBtn");
   if (footerBtn) footerBtn.addEventListener("click", openStBulkAssignModal);
 })();
