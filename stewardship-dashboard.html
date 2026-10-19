@@ -435,9 +435,24 @@ body {
 .stewardship-active .sidebar {
   top: 48px;
   width: 255px;
-  min-height: calc(100vh - 48px);
+  height: calc(100vh - 48px);
+  min-height: 0;
   padding: 16px 12px 28px;
   border-right: 1px solid #bfc5ce;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #c5cad3 transparent;
+}
+.stewardship-active .sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+.stewardship-active .sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stewardship-active .sidebar::-webkit-scrollbar-thumb {
+  background: #c5cad3;
+  border-radius: 999px;
 }
 .stewardship-active .content {
   padding: 16px 20px 40px;
@@ -445,7 +460,10 @@ body {
 }
 .stewardship-active #filterDateRange,
 .stewardship-active #filterCreationBy,
-.stewardship-active #filterSubmissionType { display: none !important; }
+.stewardship-active #filterStatus,
+.stewardship-active #filterSubmissionType,
+.stewardship-active #filterPayer,
+.stewardship-active #filterProduct { display: none !important; }
 .stewardship-active .st-only { display: block; }
 .stewardship-active .sidebar-header {
   height: 36px;
@@ -465,6 +483,9 @@ body {
   color: #667085;
   font-size: 10px;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .stewardship-active .checkbox-row {
   padding: 4px 0;
@@ -490,10 +511,15 @@ body {
   color: #667085;
 }
 .stewardship-active .show-more {
+  width: 100%;
+  border: 0;
+  background: #f4f6f9;
+  color: #667085;
   padding: 5px;
   margin-top: 5px;
   border-radius: 2px;
   font-size: 10px;
+  cursor: default;
 }
 .mini-bar {
   display: inline-block;
@@ -552,6 +578,74 @@ body {
   font: inherit;
   font-size: 10px;
   padding: 6px;
+}
+.st-text-filter {
+  width: 100%;
+  height: 26px;
+  border: 1px solid #cbd3df;
+  border-radius: 2px;
+  font: inherit;
+  font-size: 10.5px;
+  padding: 4px 6px;
+  background: #fff;
+}
+.st-date-controls select,
+.st-date-controls input {
+  border: 1px solid #cbd3df;
+  border-radius: 2px;
+  height: 24px;
+  font: inherit;
+  font-size: 10px;
+  background: #fff;
+}
+.st-date-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+.st-date-top select {
+  width: 82px;
+}
+.st-relative {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #667085;
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+.st-toggle {
+  width: 20px;
+  height: 11px;
+  border-radius: 999px;
+  background: #e6ebf2;
+  border: 1px solid #c9d1dd;
+  display: inline-block;
+  position: relative;
+}
+.st-toggle::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #c9d1dd;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+}
+.st-date-label {
+  display: block;
+  color: #667085;
+  font-size: 9.5px;
+  margin-top: 5px;
+}
+.st-date-line {
+  display: grid;
+  grid-template-columns: 1fr 40px;
+  gap: 4px;
+  margin-top: 2px;
 }
 .st-workbench {
   min-height: calc(100vh - 80px);
@@ -774,11 +868,41 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
       <div class="filter-group" id="filterProduct"></div>
 
       <div class="filter-group st-only">
+        <div class="filter-group-title">STATUS</div>
+        <div class="checkbox-row"><label><input type="checkbox" /> NEW</label><span class="checkbox-count">482</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> APPROVED</label><span class="checkbox-count">269</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> IN PROGRESS</label><span class="checkbox-count">70</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> REJECTED</label><span class="checkbox-count">47</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> REVERTED</label><span class="checkbox-count">5</span></div>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">PAYER</div>
+        <div class="checkbox-row"><label><input type="checkbox" /> 3M (EMPLOYER)</label><span class="checkbox-count">115</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> CIGNA</label><span class="checkbox-count">63</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> 84 LUMBER COMPANY (EMPLOY...</label><span class="checkbox-count">44</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> AETNA</label><span class="checkbox-count">34</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> DELAWARE FIRST HEALTH</label><span class="checkbox-count">33</span></div>
+        <button class="show-more">Show more</button>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">PRODUCT</div>
+        <div class="checkbox-row"><label><input type="checkbox" /> OCREVUS ZUNOVO</label><span class="checkbox-count">273</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> ACTEMRA SC</label><span class="checkbox-count">104</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> VABYSMO</label><span class="checkbox-count">85</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> ALECENSA</label><span class="checkbox-count">46</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> OCREVUS</label><span class="checkbox-count">30</span></div>
+        <button class="show-more">Show more</button>
+      </div>
+
+      <div class="filter-group st-only">
         <div class="filter-group-title">BOOK OF BUSINESS</div>
         <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> COMMERCIAL</label><span class="checkbox-count">691</span><span class="mini-bar wide"></span></div>
         <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> MEDICARE_ADVANTAGE</label><span class="checkbox-count">106</span><span class="mini-bar sm"></span></div>
         <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> MEDICAID_MANAGED</label><span class="checkbox-count">49</span><span class="mini-bar xs"></span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> GOVERNMENT</label><span class="checkbox-count">20</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> MEDICAID_FFS</label><span class="checkbox-count">5</span></div>
         <button class="show-more">Show more</button>
       </div>
 
@@ -788,6 +912,7 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
         <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> Rheumatoid Arthritis</label><span class="checkbox-count">231</span><span class="mini-bar med"></span></div>
         <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> Neovascular Age Relat...</label><span class="checkbox-count">66</span><span class="mini-bar sm"></span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> ALK mutation positive...</label><span class="checkbox-count">53</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> Primary Progressive M...</label><span class="checkbox-count">33</span></div>
         <button class="show-more">Show more</button>
       </div>
 
@@ -803,6 +928,7 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
         <div class="checkbox-row"><label><input type="checkbox" /> Pradeep Lingampally</label><span class="checkbox-count">153</span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> Adriana Jazbor-Indyk</label><span class="checkbox-count">89</span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> Udayakumar Kongani</label><span class="checkbox-count">76</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> Koushik Gadey</label><span class="checkbox-count">55</span></div>
         <button class="show-more">Show more</button>
       </div>
 
@@ -811,21 +937,34 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
         <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> Unknown user or group</label><span class="checkbox-count">482</span><span class="mini-bar wide"></span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> System Admin</label><span class="checkbox-count">89</span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> Pradeep Lingampally</label><span class="checkbox-count">68</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> pharma PPDQABOT</label><span class="checkbox-count">29</span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> Thomas Flanagan</label><span class="checkbox-count">26</span></div>
         <button class="show-more">Show more</button>
       </div>
 
       <div class="filter-group st-only">
         <div class="filter-group-title">DCR IDENTIFIER</div>
-        <input class="date-input" type="text" />
+        <input class="st-text-filter" type="text" />
       </div>
 
       <div class="filter-group st-only">
         <div class="filter-group-title">DATE SUBMITTED</div>
-        <select class="select-input"><option>Time range</option></select>
-        <label class="snap-check"><input type="checkbox" /> Relative to today</label>
-        <input class="date-input" type="text" placeholder="After (inclusive)" />
-        <input class="date-input" type="text" placeholder="Before (inclusive)" />
+        <div class="st-date-controls">
+          <div class="st-date-top">
+            <select><option>Time range</option></select>
+            <span class="st-relative"><span class="st-toggle"></span> Relative to today</span>
+          </div>
+          <label class="st-date-label">After (inclusive)</label>
+          <div class="st-date-line">
+            <input type="text" value="Start time" />
+            <select><option>EDT</option></select>
+          </div>
+          <label class="st-date-label">Before (inclusive)</label>
+          <div class="st-date-line">
+            <input type="text" value="End time" />
+            <select><option>EDT</option></select>
+          </div>
+        </div>
       </div>
 
       <div class="filter-group st-only">
@@ -834,11 +973,12 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
         <div class="checkbox-row"><label><input type="checkbox" /> No value</label><span class="checkbox-count">50</span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> CA</label><span class="checkbox-count">16</span></div>
         <div class="checkbox-row"><label><input type="checkbox" /> AK</label><span class="checkbox-count">11</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> AR</label><span class="checkbox-count">8</span></div>
         <button class="show-more">Show more</button>
       </div>
 
       <div class="filter-group st-only">
-        <div class="filter-group-title">FILTER ON [IMPACT]TREATED LIFE</div>
+        <div class="filter-group-title"><span>FILTER ON [IMPACT]TREATED LIFE</span><span>⌃</span></div>
         <div class="st-life-tag">[Uat] [IMPACT] Lives <strong>164</strong></div>
         <div class="st-range-widget">
           <div class="st-range-line"><span></span></div>
