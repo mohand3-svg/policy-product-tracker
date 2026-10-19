@@ -400,6 +400,259 @@ body {
 }
 .steward-tab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
 
+/* Stewardship screenshot-style workbench */
+.st-only { display: none; }
+.stewardship-active { background: #d5d7db; }
+.stewardship-active .topnav {
+  height: 48px;
+  background: #0f4f93;
+  padding: 0 12px;
+}
+.stewardship-active .brand-logo {
+  background: #f3f7ff;
+  color: #0f4f93;
+  border-radius: 3px;
+}
+.stewardship-active .brand-title { font-size: 13px; }
+.stewardship-active .topnav-links { gap: 18px; margin-left: 8px; }
+.stewardship-active .nav-link {
+  color: #eef5ff;
+  font-size: 11px;
+  padding: 16px 0;
+}
+.stewardship-active .nav-link.active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+.stewardship-active .nav-btn {
+  border-color: rgba(255,255,255,.42);
+  color: #fff;
+  border-radius: 2px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+.stewardship-active .layout { background: #d5d7db; }
+.stewardship-active .sidebar {
+  top: 48px;
+  width: 255px;
+  min-height: calc(100vh - 48px);
+  padding: 16px 12px 28px;
+  border-right: 1px solid #bfc5ce;
+}
+.stewardship-active .content {
+  padding: 16px 20px 40px;
+  background: #d5d7db;
+}
+.stewardship-active #filterDateRange,
+.stewardship-active #filterCreationBy,
+.stewardship-active #filterSubmissionType { display: none !important; }
+.stewardship-active .st-only { display: block; }
+.stewardship-active .sidebar-header {
+  height: 36px;
+  margin: 0 0 12px;
+}
+.stewardship-active .filters-title {
+  color: #111827;
+  font-size: 13px;
+}
+.stewardship-active .reset-link { font-size: 11px; }
+.stewardship-active .filter-group {
+  margin: 0 -12px;
+  padding: 13px 12px;
+  border-top: 1px solid #eef1f5;
+}
+.stewardship-active .filter-group-title {
+  color: #667085;
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+.stewardship-active .checkbox-row {
+  padding: 4px 0;
+  gap: 6px;
+  font-size: 10.5px;
+}
+.stewardship-active .checkbox-row label {
+  min-width: 0;
+  flex: 1;
+  gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.stewardship-active .checkbox-row input {
+  width: 13px;
+  height: 13px;
+}
+.stewardship-active .checkbox-count {
+  min-width: 24px;
+  text-align: right;
+  font-size: 10px;
+  color: #667085;
+}
+.stewardship-active .show-more {
+  padding: 5px;
+  margin-top: 5px;
+  border-radius: 2px;
+  font-size: 10px;
+}
+.mini-bar {
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: #2f73da;
+}
+.mini-bar.wide { width: 40px; }
+.mini-bar.med { width: 28px; }
+.mini-bar.sm { width: 16px; }
+.mini-bar.xs { width: 7px; }
+.st-life-tag {
+  font-size: 10.5px;
+  color: #667085;
+  margin-bottom: 12px;
+}
+.st-life-tag strong {
+  color: #374151;
+  background: #eef0f4;
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+.st-range-widget {
+  padding: 18px 10px 10px;
+  border-left: 1px solid #dce1ea;
+}
+.st-range-line {
+  height: 2px;
+  background: #b8c3d2;
+  position: relative;
+}
+.st-range-line span {
+  position: absolute;
+  left: 28px;
+  top: -14px;
+  width: 4px;
+  height: 28px;
+  background: #2f73da;
+}
+.st-range-scale {
+  display: flex;
+  justify-content: space-between;
+  color: #7a8595;
+  font-size: 10px;
+  margin-top: 8px;
+}
+.st-range-inputs {
+  display: flex;
+  gap: 6px;
+}
+.st-range-inputs input {
+  width: 50%;
+  border: 1px solid #ccd3de;
+  border-radius: 2px;
+  font: inherit;
+  font-size: 10px;
+  padding: 6px;
+}
+.st-workbench {
+  min-height: calc(100vh - 80px);
+}
+.st-request-card {
+  width: min(900px, calc(100vw - 330px));
+  background: #fff;
+  border: 1px solid #c9ced8;
+  box-shadow: 0 1px 1px rgba(0,0,0,.03);
+}
+.st-request-title {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 18px;
+  border-bottom: 1px solid #dfe3ea;
+  font-size: 12px;
+  font-weight: 800;
+  color: #111827;
+}
+.stewardship-active .steward-tabs-row {
+  padding: 9px 18px 0;
+  align-items: flex-start;
+  border-bottom: 0;
+}
+.stewardship-active .steward-tabs {
+  gap: 18px;
+}
+.stewardship-active .steward-tab {
+  font-size: 10.5px;
+  color: #111827;
+  padding: 6px 0 10px;
+}
+.stewardship-active .steward-tab.active {
+  color: #0b65d8;
+  border-bottom-color: #0b65d8;
+}
+.st-bulk-btn {
+  padding: 5px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+}
+.st-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 9px 12px 10px;
+  border-top: 1px solid #e4e7ee;
+}
+.st-card-footer .btn-outline {
+  border-radius: 2px;
+  padding: 6px 10px;
+  font-size: 10px;
+}
+.stewardship-active .st-grid-wrap {
+  margin: 0 16px;
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid #e4e7ee;
+}
+.stewardship-active .st-grid {
+  min-width: 1450px;
+  width: max-content;
+  font-size: 10px;
+}
+.stewardship-active .st-grid thead th {
+  padding: 7px 8px;
+  color: #667085;
+  background: #f6f8fc;
+  white-space: normal;
+  line-height: 1.15;
+}
+.stewardship-active .st-grid td {
+  padding: 5px 8px;
+  line-height: 1.15;
+  white-space: normal;
+  max-width: 86px;
+  color: #111827;
+}
+.stewardship-active .st-grid tbody tr:nth-child(even) { background: #fbfcfe; }
+.stewardship-active .st-grid tbody tr.selected { background: #eaf2ff; outline: 1px solid #79aef8; outline-offset: -1px; }
+.stewardship-active .st-grid .stcol-check { width: 28px; min-width: 28px; }
+.stewardship-active .st-grid td.st-id { color: #111827; font-weight: 700; }
+.stewardship-active .st-link-cell { color: #0b65d8 !important; font-weight: 600; }
+.stewardship-active .st-flag { color: #c4121a; font-size: 13px; }
+.stewardship-active .st-status {
+  display: inline-block;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  padding: 3px 6px;
+  font-weight: 800;
+  font-size: 10px;
+  text-align: center;
+  line-height: 1.1;
+}
+.st-status.approved { background: #dff3df; color: #16703d; border-color: #94d4a3; }
+.st-status.inprogress { background: #fff2c7; color: #9a7100; border-color: #e1c35a; }
+.st-status.new { background: #eef4ff; color: #2563eb; border-color: #b7cdf9; }
+.st-status.rejected { background: #fde8e8; color: #b42318; border-color: #f4b7b7; }
+.st-status.reverted { background: #f1f3f7; color: #667085; border-color: #d8dde6; }
+
 /* ===== Utilities ===== */
 .hidden { display: none !important; }
 
@@ -457,13 +710,13 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
     <div class="topnav-left">
       <a class="home-brand" href="index.html" aria-label="Go to Policy Intelligence home">
         <span class="brand-logo">▤</span>
-        <span class="brand-title">Policy Intelligence Stewardship Tool</span>
+        <span class="brand-title">UAT Policy Intelligence Stewardship Tool</span>
       </a>
       <nav class="topnav-links">
-        <a href="#" class="nav-link" data-screen="coverage">Product Coverage</a>
+        <a href="#" class="nav-link" data-screen="policywins">Policy Wins</a>
+        <a href="#" class="nav-link" data-screen="coverage">Payer Coverage Tracker</a>
         <a href="#" class="nav-link" data-screen="stewardship">Stewardship Tool</a>
         <a href="#" class="nav-link active" data-screen="dashboard">Metric Dashboard</a>
-        <a href="#" class="nav-link" data-screen="policywins">Policy Wins</a>
       </nav>
     </div>
     <div class="topnav-right">
@@ -518,6 +771,80 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
       <div class="filter-group" id="filterPayer"></div>
       <!-- Product -->
       <div class="filter-group" id="filterProduct"></div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">BOOK OF BUSINESS</div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> COMMERCIAL</label><span class="checkbox-count">691</span><span class="mini-bar wide"></span></div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> MEDICARE_ADVANTAGE</label><span class="checkbox-count">106</span><span class="mini-bar sm"></span></div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> MEDICAID_MANAGED</label><span class="checkbox-count">49</span><span class="mini-bar xs"></span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> GOVERNMENT</label><span class="checkbox-count">20</span></div>
+        <button class="show-more">Show more</button>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">INDICATION</div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> Multiple Sclerosis</label><span class="checkbox-count">294</span><span class="mini-bar wide"></span></div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> Rheumatoid Arthritis</label><span class="checkbox-count">231</span><span class="mini-bar med"></span></div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> Neovascular Age Relat...</label><span class="checkbox-count">66</span><span class="mini-bar sm"></span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> ALK mutation positive...</label><span class="checkbox-count">53</span></div>
+        <button class="show-more">Show more</button>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">BENEFIT TYPE</div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> MEDICAL BENEFIT</label><span class="checkbox-count">541</span><span class="mini-bar wide"></span></div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> PHARMACY BENEFIT</label><span class="checkbox-count">332</span><span class="mini-bar med"></span></div>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">SUBMITTER</div>
+        <div class="checkbox-row"><label><input type="checkbox" /> pharma PPDQABOT</label><span class="checkbox-count">265</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> Pradeep Lingampally</label><span class="checkbox-count">153</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> Adriana Jazbor-Indyk</label><span class="checkbox-count">89</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> Udayakumar Kongani</label><span class="checkbox-count">76</span></div>
+        <button class="show-more">Show more</button>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">STEWARD ASSIGNED</div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> Unknown user or group</label><span class="checkbox-count">482</span><span class="mini-bar wide"></span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> System Admin</label><span class="checkbox-count">89</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> Pradeep Lingampally</label><span class="checkbox-count">68</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> Thomas Flanagan</label><span class="checkbox-count">26</span></div>
+        <button class="show-more">Show more</button>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">DCR IDENTIFIER</div>
+        <input class="date-input" type="text" />
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">DATE SUBMITTED</div>
+        <select class="select-input"><option>Time range</option></select>
+        <label class="snap-check"><input type="checkbox" /> Relative to today</label>
+        <input class="date-input" type="text" placeholder="After (inclusive)" />
+        <input class="date-input" type="text" placeholder="Before (inclusive)" />
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">STATE</div>
+        <div class="checkbox-row st-bar-row"><label><input type="checkbox" /> NATIONAL</label><span class="checkbox-count">701</span><span class="mini-bar wide"></span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> No value</label><span class="checkbox-count">50</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> CA</label><span class="checkbox-count">16</span></div>
+        <div class="checkbox-row"><label><input type="checkbox" /> AK</label><span class="checkbox-count">11</span></div>
+        <button class="show-more">Show more</button>
+      </div>
+
+      <div class="filter-group st-only">
+        <div class="filter-group-title">FILTER ON [IMPACT]TREATED LIFE</div>
+        <div class="st-life-tag">[Uat] [IMPACT] Lives <strong>164</strong></div>
+        <div class="st-range-widget">
+          <div class="st-range-line"><span></span></div>
+          <div class="st-range-scale"><span>100</span><span>4000000</span><span>12000000</span></div>
+        </div>
+        <div class="st-range-inputs"><input value="Min value" /><input value="Max value" /></div>
+      </div>
     </aside>
 
     <!-- ===== Main content ===== -->
@@ -860,17 +1187,18 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
 
       <!-- ============ STEWARDSHIP TOOL SCREEN ============ -->
       <section class="screen hidden" id="screen-stewardship">
-        <div class="card">
-          <div class="card-header big">
-            <span class="card-title">🗐 Requests</span>
-          </div>
-          <div class="card-body no-pad">
+        <div class="st-workbench">
+          <div class="st-request-card">
+            <div class="st-request-title"><span>▣</span> Requests</div>
             <div class="steward-tabs-row">
               <div class="steward-tabs" id="stewardTabs"></div>
-              <button class="btn-outline">👤 Bulk Assign</button>
+              <button class="btn-outline st-bulk-btn">👤 Bulk Assign</button>
             </div>
-            <div class="table-scroll">
-              <table class="data-table" id="stewardshipTable"></table>
+            <div class="st-grid-wrap">
+              <table class="st-grid" id="stewardshipTable"></table>
+            </div>
+            <div class="st-card-footer">
+              <button class="btn-outline">✎ Assign DCR to Steward</button>
             </div>
           </div>
         </div>
@@ -1755,27 +2083,46 @@ function renderPolicyWinTable() {
 }
 
 function renderStewardshipTable(rows, filter) {
-  const cols = ["DCR ID", "Payer", "Book of Business", "Brand", "Indication", "Benefit Type",
-    "Date Submitted", "State", "Submitter", "Steward Assigned", "Status", "Last Activity Date"];
-  const head = `<thead><tr>${cols.map((c) => `<th>${c}</th>`).join("")}</tr></thead>`;
+  const cols = ["", "Dcr Identifier", "Payer", "Book of Business", "Product", "Indication", "Benefit Type",
+    "Number of Lives", "Date Submitted↕", "State", "Submitter", "Steward Assigned", "Status",
+    "Last Activity Date↕", "Duplicate", "Dcr's URL"];
+  const head = `<thead><tr>${cols.map((c, i) => `<th class="${i === 0 ? "stcol-check" : ""}">${c}</th>`).join("")}</tr></thead>`;
 
   let list = rows;
   if (filter === "open") list = list.filter((r) => ["New", "In Progress"].includes(r.status));
   else if (filter === "completed") list = list.filter((r) => ["Approved", "Rejected"].includes(r.status));
   else if (filter === "my") list = list.filter((r) => r.steward === "John Doe");
 
-  const shown = list.slice(0, 60);
-  const body = shown.map((r) => `
-    <tr>
-      <td>${r.id}</td><td>${r.payer}</td><td>${r.bob}</td><td>${r.brand}</td>
-      <td>${r.indication}</td><td>${r.benefit}</td><td>${r.submissionDate}</td><td>${r.state}</td>
-      <td>${r.submitter}</td><td>${r.steward}</td>
-      <td><span class="pill ${pillClass(r.status)}">${r.status}</span></td>
-      <td>${r.activity}</td>
-    </tr>`).join("");
+  const shown = list.slice(0, 40);
+  const body = shown.map((r, i) => {
+    const duplicate = i % 4 === 1 ? "⚑" : "";
+    const steward = i % 7 === 0 ? "N/A" : r.steward;
+    const statusClass = pillClass(r.status).replace("-", "");
+    const lives = r.lives ? fmt(r.lives) : "N/A";
+    const date = r.submissionDate || r.date || "Oct 16, 2026, 9:50 AM";
+    const activity = r.activity || "Oct 16, 2026, 9:50 AM";
+    return `
+    <tr class="${i === 0 ? "selected" : ""}">
+      <td class="stcol-check"><input type="checkbox" ${i === 0 ? "checked" : ""} /></td>
+      <td class="st-id">${r.id}</td>
+      <td>${r.payer}</td>
+      <td>${r.bob}</td>
+      <td>${r.product || r.brand}</td>
+      <td>${r.indication}</td>
+      <td>${r.benefit} Benefit</td>
+      <td class="st-lives">${lives}</td>
+      <td>${date}</td>
+      <td>${r.state}</td>
+      <td class="st-link-cell">${r.submitter}</td>
+      <td class="st-link-cell">${steward}</td>
+      <td><span class="st-status ${statusClass}">${r.status.toUpperCase()}</span></td>
+      <td>${activity}</td>
+      <td class="st-flag">${duplicate}</td>
+      <td class="st-link-cell">Open DCRs</td>
+    </tr>`;
+  }).join("");
   const empty = shown.length ? "" : `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--muted);padding:24px">No matching requests</td></tr>`;
   document.getElementById("stewardshipTable").innerHTML = head + `<tbody>${body}${empty}</tbody>`;
-  ensureInlineTableFilters("stewardshipTable");
 }
 
 let currentStewardTab = "all";
@@ -1833,6 +2180,7 @@ function showScreen(screen) {
   const isCoverage = screen === "coverage";
   const isDashboard = screen === "dashboard" || screen === "policywins";
 
+  document.body.classList.toggle("stewardship-active", isSteward);
   document.getElementById("screen-dashboard").classList.toggle("hidden", !isDashboard);
   document.getElementById("screen-stewardship").classList.toggle("hidden", !isSteward);
   document.getElementById("screen-coverage").classList.toggle("hidden", !isCoverage);
