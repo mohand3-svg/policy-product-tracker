@@ -2242,7 +2242,8 @@ function renderStewardshipTable(rows, filter) {
   const body = shown.map((r, i) => {
     const duplicate = i % 4 === 1 ? "⚑" : "";
     const steward = i % 7 === 0 ? "N/A" : r.steward;
-    const statusClass = pillClass(r.status).replace("-", "");
+    const displayStatus = i === 0 ? "Approved" : r.status;
+    const statusClass = pillClass(displayStatus).replace("-", "");
     const lives = r.lives ? fmt(r.lives) : "N/A";
     const date = r.submissionDate || r.date || "Oct 16, 2026, 9:50 AM";
     const activity = r.activity || "Oct 16, 2026, 9:50 AM";
@@ -2265,7 +2266,7 @@ function renderStewardshipTable(rows, filter) {
       <td>${r.state}</td>
       <td class="st-link-cell">${r.submitter}</td>
       <td class="st-link-cell">${steward}</td>
-      <td><span class="st-status ${statusClass}">${r.status.toUpperCase()}</span></td>
+      <td><span class="st-status ${statusClass}">${displayStatus.toUpperCase()}</span></td>
       <td>${activity}</td>
       <td class="st-flag">${duplicate}</td>
       <td class="st-link-cell">Open DCRs</td>
