@@ -2748,6 +2748,20 @@ function showMetricSubtab(which) {
 }
 
 const winsView = document.getElementById("winsView");
+const stfModeButtons = document.querySelectorAll("[data-stf-mode]");
+const stfPayerPanel = document.getElementById("stfPayerPanel");
+const stfPbmPanel = document.getElementById("stfPbmPanel");
+const stfPbmRoleSection = document.getElementById("stfPbmRoleSection");
+stfModeButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const isPbm = btn.dataset.stfMode === "pbm";
+    stfModeButtons.forEach(x => x.classList.toggle("active", x === btn));
+    if (stfPayerPanel) stfPayerPanel.hidden = isPbm;
+    if (stfPbmPanel) stfPbmPanel.hidden = !isPbm;
+    if (stfPbmRoleSection) stfPbmRoleSection.hidden = !isPbm;
+  });
+});
+
 document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
   t.addEventListener("click", () => {
     const tab = t.dataset.tab;

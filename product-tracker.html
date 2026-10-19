@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=84" />
+<link rel="stylesheet" href="styles.css?v=85" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -182,14 +182,33 @@
           <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">REVERTED</span><span class="stf-count">5</span></label>
         </section>
 
-        <section class="stf-section">
+        <section class="stf-section stf-payer-pbm-section">
           <h3 class="stf-title">Payer</h3>
-          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">3M (EMPLOYER)</span><span class="stf-count">115</span></label>
-          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">CIGNA</span><span class="stf-count">63</span></label>
-          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">84 LUMBER COMPANY (EMPLOYER)</span><span class="stf-count">44</span></label>
-          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">AETNA</span><span class="stf-count">34</span></label>
-          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">DELAWARE FIRST HEALTH</span><span class="stf-count">33</span></label>
-          <button class="stf-show-more" type="button">Show more</button>
+          <div class="stf-switch" role="group" aria-label="Filter by Payer or PBM">
+            <button class="active" type="button" data-stf-mode="payer">Payer</button>
+            <button type="button" data-stf-mode="pbm">PBM</button>
+          </div>
+          <div class="stf-mode-panel" id="stfPayerPanel">
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">3M (EMPLOYER)</span><span class="stf-count">115</span></label>
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">CIGNA</span><span class="stf-count">63</span></label>
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">84 LUMBER COMPANY (EMPLOYER)</span><span class="stf-count">44</span></label>
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">AETNA</span><span class="stf-count">34</span></label>
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">DELAWARE FIRST HEALTH</span><span class="stf-count">33</span></label>
+            <button class="stf-show-more" type="button">Show more</button>
+          </div>
+          <div class="stf-mode-panel" id="stfPbmPanel" hidden>
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">Express Scripts</span><span class="stf-count">164</span></label>
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">CVS</span><span class="stf-count">93</span></label>
+            <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">OptumRX</span><span class="stf-count">71</span></label>
+            <button class="stf-show-more" type="button">Show more</button>
+          </div>
+        </section>
+
+        <section class="stf-section stf-pbm-role-section" id="stfPbmRoleSection" hidden>
+          <h3 class="stf-title">PBM Role</h3>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">National Formulary</span><span class="stf-count">112</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">Custom Formulary</span><span class="stf-count">34</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">Formulary Management</span><span class="stf-count">18</span></label>
         </section>
 
         <section class="stf-section">
@@ -1078,7 +1097,7 @@
 
   <div class="toast" id="toast"></div>
 
-<script src="app.js?v=84"></script>
+<script src="app.js?v=85"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>

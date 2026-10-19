@@ -228,6 +228,34 @@ body.sttool-active .sidebar-saved {
   font-weight: 400;
   line-height: .75;
 }
+.stf-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin: 0 0 10px;
+  padding: 3px;
+  border: 1px solid #d7dee9;
+  border-radius: 5px;
+  background: #f4f6f9;
+}
+.stf-switch button {
+  height: 26px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #526176;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.stf-switch button.active {
+  background: #fff;
+  color: #155bb5;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .12);
+}
+.stf-pbm-role-section {
+  padding-top: 0;
+}
 .stf-row {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr) 36px 52px;
