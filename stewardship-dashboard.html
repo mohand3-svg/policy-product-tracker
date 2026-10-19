@@ -1198,7 +1198,7 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
               <table class="st-grid" id="stewardshipTable"></table>
             </div>
             <div class="st-card-footer">
-              <button class="btn-outline">✎ Assign DCR to Steward</button>
+              <button class="btn-outline st-assign-btn">✎ Assign DCR to Steward</button>
             </div>
           </div>
         </div>
@@ -2126,6 +2126,13 @@ function renderStewardshipTable(rows, filter) {
 }
 
 let currentStewardTab = "all";
+function syncStewardActions() {
+  const hideActions = currentStewardTab === "completed";
+  document.querySelectorAll(".st-bulk-btn, .st-assign-btn").forEach((btn) => {
+    btn.classList.toggle("hidden", hideActions);
+  });
+}
+
 function renderStewardTabs(rows) {
   const all = rows.length;
   const open = rows.filter((r) => ["New", "In Progress"].includes(r.status)).length;
@@ -2147,8 +2154,10 @@ function renderStewardTabs(rows) {
       wrap.querySelectorAll(".steward-tab").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       renderStewardshipTable(applyFilters(), currentStewardTab);
+      syncStewardActions();
     });
   });
+  syncStewardActions();
 }
 
 /* ============================================================
