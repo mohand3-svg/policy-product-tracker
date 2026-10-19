@@ -728,6 +728,7 @@ body {
 }
 .stewardship-active .st-grid tbody tr:nth-child(even) { background: #fbfcfe; }
 .stewardship-active .st-grid tbody tr.selected { background: #eaf2ff; outline: 1px solid #79aef8; outline-offset: -1px; }
+.stewardship-active .st-grid tbody tr { cursor: pointer; }
 .stewardship-active .st-grid .stcol-check { width: 28px; min-width: 28px; }
 .stewardship-active .st-grid td.st-id { color: #111827; font-weight: 700; }
 .stewardship-active .st-link-cell { color: #0b65d8 !important; font-weight: 600; }
@@ -751,6 +752,265 @@ body {
 .st-status.new { background: #eef4ff; color: #2563eb; border-color: #b7cdf9; }
 .st-status.rejected { background: #fde8e8; color: #b42318; border-color: #f4b7b7; }
 .st-status.reverted { background: #f1f3f7; color: #667085; border-color: #d8dde6; }
+.stewardship-detail-active .sidebar {
+  display: none;
+}
+.stewardship-detail-active .content {
+  margin-left: 48px;
+  padding: 10px 16px 36px;
+}
+.st-detail-page {
+  min-height: calc(100vh - 70px);
+  color: #111827;
+}
+.st-detail-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.st-return-btn {
+  border: 1px solid #cdd5e1;
+  background: #eef5ff;
+  color: #0b65d8;
+  border-radius: 2px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.st-action-row {
+  display: flex;
+  gap: 8px;
+}
+.st-action-row button {
+  border: 1px solid #cdd5e1;
+  border-radius: 2px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  background: #fff;
+}
+.st-action-row .reject { color: #d14a43; background: #fff5f5; }
+.st-action-row .approve { color: #fff; background: #69a7ef; border-color: #69a7ef; }
+.st-action-row .edit { color: #fff; background: #14a05b; border-color: #14a05b; }
+.st-action-row .revert { color: #5b4300; background: #f6c431; border-color: #d7aa1c; }
+.st-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(720px, 1fr) 255px;
+  gap: 14px;
+  align-items: start;
+}
+.st-detail-main,
+.st-detail-side-card,
+.st-history-card {
+  background: #fff;
+  border: 1px solid #cfd5df;
+  box-shadow: 0 1px 2px rgba(16,24,40,.08);
+}
+.st-detail-head {
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #dfe4ec;
+}
+.st-detail-payer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.st-info-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e8f1ff;
+  color: #0b65d8;
+  font-size: 11px;
+}
+.st-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.st-detail-tag {
+  background: #edf2f8;
+  border: 1px solid #d4dbe6;
+  border-radius: 2px;
+  color: #344054;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+}
+.st-detail-tag.blue {
+  color: #1761b8;
+  background: #e8f2ff;
+}
+.st-steward-select {
+  justify-self: end;
+  color: #667085;
+  font-size: 10px;
+  text-align: left;
+}
+.st-steward-select select {
+  display: block;
+  margin-top: 4px;
+  width: 128px;
+  border: 1px solid #d8dee8;
+  border-radius: 2px;
+  padding: 5px;
+  font-size: 10px;
+  color: #667085;
+}
+.st-detail-table-wrap {
+  overflow: auto;
+}
+.st-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 10.5px;
+}
+.st-detail-table th,
+.st-detail-table td {
+  border: 1px solid #e1e6ee;
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+.st-detail-table th {
+  background: #f6f8fb;
+  text-align: left;
+  font-weight: 800;
+}
+.st-detail-table td:first-child {
+  background: #eef2f5;
+  font-weight: 800;
+  width: 190px;
+}
+.st-detail-field {
+  min-height: 28px;
+  border: 1px solid #dfe4ec;
+  border-radius: 2px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  color: #111827;
+}
+.st-detail-field.current-p360 {
+  background: #cfe3f7;
+  border-color: #c4d8ed;
+}
+.st-detail-field.textarea {
+  min-height: 54px;
+  align-items: flex-start;
+}
+.st-detail-note-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px 10px;
+  border-top: 1px solid #e1e6ee;
+}
+.st-detail-note-row button,
+.st-attach-link {
+  border: 1px solid #bed2ee;
+  color: #2f73da;
+  background: #f7fbff;
+  border-radius: 2px;
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.st-detail-side-card {
+  margin-bottom: 14px;
+}
+.st-side-title,
+.st-history-title {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-bottom: 1px solid #dfe4ec;
+  font-size: 12px;
+  font-weight: 800;
+}
+.st-side-body {
+  padding: 12px 14px;
+}
+.st-summary-box {
+  border: 1px solid #e1e6ee;
+  background: #fff;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+.st-summary-box h4 {
+  margin: 0 0 8px;
+  font-size: 11px;
+}
+.st-summary-line {
+  margin-bottom: 7px;
+}
+.st-summary-label {
+  color: #667085;
+  font-weight: 800;
+}
+.st-history-card {
+  margin-top: 12px;
+}
+.st-history-body {
+  max-height: 420px;
+  overflow: auto;
+  padding: 14px;
+  font-size: 10.5px;
+}
+.st-history-event {
+  border-left: 2px solid #cbd5e1;
+  padding: 0 0 16px 16px;
+  position: relative;
+}
+.st-history-event::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+.st-history-event h4 {
+  margin: 0 0 4px;
+  font-size: 11px;
+}
+.st-history-event p {
+  margin: 2px 0 8px;
+  color: #667085;
+}
+.st-history-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  row-gap: 8px;
+  column-gap: 16px;
+  max-width: 680px;
+}
+.st-history-grid dt {
+  color: #667085;
+  font-weight: 800;
+}
+.st-history-grid dd {
+  margin: 0;
+}
 
 /* ===== Utilities ===== */
 .hidden { display: none !important; }
@@ -1332,7 +1592,7 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
 
       <!-- ============ STEWARDSHIP TOOL SCREEN ============ -->
       <section class="screen hidden" id="screen-stewardship">
-        <div class="st-workbench">
+        <div class="st-workbench" id="stewardshipListView">
           <div class="st-request-card">
             <div class="st-request-title"><span>▣</span> Requests</div>
             <div class="steward-tabs-row">
@@ -1347,6 +1607,7 @@ window.__METRICS__ = {"schemaVersion":2,"generatedAt":"2026-08-10T17:40:53.620Z"
             </div>
           </div>
         </div>
+        <div class="st-detail-page hidden" id="stewardshipDetailView"></div>
       </section>
 
     </main>
@@ -2227,6 +2488,175 @@ function renderPolicyWinTable() {
   ensureInlineTableFilters("policyWinTable");
 }
 
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[ch]);
+}
+
+function stDetailField(value, tone = "") {
+  return `<div class="st-detail-field ${tone}">${esc(value || "-")}</div>`;
+}
+
+function stDetailRow(label, currentMmit, currentP360, proposed, approved, p360Tone = "current-p360", approvedTone = "") {
+  return `
+    <tr>
+      <td>${esc(label)}</td>
+      <td>${stDetailField(currentMmit)}</td>
+      <td>${stDetailField(currentP360, p360Tone)}</td>
+      <td>${stDetailField(proposed)}</td>
+      <td>${stDetailField(approved, approvedTone)}</td>
+    </tr>`;
+}
+
+function hideStewardshipDetail() {
+  document.body.classList.remove("stewardship-detail-active");
+  document.getElementById("stewardshipDetailView").classList.add("hidden");
+  document.getElementById("stewardshipListView").classList.remove("hidden");
+}
+
+function showStewardshipDetail(row, index) {
+  const product = row.product || row.brand || "ACTEMRA IV";
+  const displayPayer = index === 0 ? "N/A" : row.payer;
+  const displayStatus = index === 0 ? "Approved" : row.status;
+  const steward = index % 7 === 0 ? "System Admin" : row.steward;
+  const lives = row.lives ? fmt(row.lives) : "40,000,000";
+  const date = row.submissionDate || row.date || "Oct 16, 2026, 9:50 AM";
+  const detail = document.getElementById("stewardshipDetailView");
+  const rows = [
+    stDetailRow("Prior Authorization Required", "-", "No", "Yes", "Yes"),
+    stDetailRow("Step Edit", "-", "No", "Yes", "Yes"),
+    stDetailRow("Number of Steps", "0", "0", "1", "1"),
+    stDetailRow("Step Products", "-", "-", "Test Steps for Auto creation", "Test Steps for Auto creation"),
+    stDetailRow("Derived Simplified Policy Status", "-", "COVERED (NO BIOLOGIC STEPS)", "-", "-"),
+    stDetailRow("Policy Status", "-", "DRUG COVERED WITH NO PA", "1 ST (BRANDED)", "1 ST (BRANDED)"),
+    stDetailRow("Step Therapy Placement", "-", "No Step", "ST Single Brand", "ST Single Brand"),
+    stDetailRow("Policy Link", "-", "-", "", "-"),
+    stDetailRow("Site of Care Link", "-", "-", "-", "-"),
+    stDetailRow("PA Form Link", "-", "", "", "-"),
+    stDetailRow("Effective Policy Date*", "-", "-", "Fri, Oct 16, 2026", "Fri, Oct 16, 2026"),
+    stDetailRow("State", "-", row.state || "NATIONAL", row.state || "NATIONAL", row.state || "NATIONAL"),
+    stDetailRow("Platform/Tool Used to Access Data", "-", "", "-", "", "current-p360", "textarea"),
+    stDetailRow("Evidence For Policy Change", "-", "", "-", "Auto Approved Wins", "current-p360", "textarea"),
+    stDetailRow("Additional Information", "-", "", "-", "Approved DCR by auto approve process", "current-p360", "textarea"),
+  ].join("");
+
+  detail.innerHTML = `
+    <div class="st-detail-toolbar">
+      <button class="st-return-btn" id="stReturnToRequests">↩ Return to Home</button>
+      <div class="st-action-row">
+        <button class="reject">⊘ Reject</button>
+        <button class="approve">✓ Approve</button>
+        <button class="edit">✎ Edit</button>
+        <button class="revert">↺ Revert</button>
+      </div>
+    </div>
+    <div class="st-detail-layout">
+      <div>
+        <div class="st-detail-main">
+          <div class="st-detail-head">
+            <div class="st-detail-payer">
+              <span class="st-info-dot">i</span>
+              <span>${esc(displayPayer === "N/A" ? "GROUP HEALTH COOPERATIVE OF EAU CLAIRE (PRIORITY HEALTH)" : displayPayer)}</span>
+              <div class="st-detail-tags">
+                <span class="st-detail-tag blue">Status ${esc(displayStatus.toUpperCase())}</span>
+                <span class="st-detail-tag">BoB ${esc(row.bob || "MEDICAID_MANAGED")}</span>
+                <span class="st-detail-tag">Product ${esc(product)}</span>
+              </div>
+            </div>
+            <label class="st-steward-select">
+              STEWARD ASSIGNED
+              <select><option>${esc(steward)}</option></select>
+            </label>
+          </div>
+          <div class="st-detail-table-wrap">
+            <table class="st-detail-table">
+              <thead>
+                <tr>
+                  <th>Values</th>
+                  <th>Current MMIT</th>
+                  <th>Current P360</th>
+                  <th>Proposed</th>
+                  <th>Steward Approved</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div class="st-detail-note-row">
+            <button>↻ Update Notes</button>
+          </div>
+        </div>
+        <div class="st-history-card">
+          <div class="st-history-title">↻ Edit History <span style="margin-left:auto">⤢</span></div>
+          <div class="st-history-body">
+            <div class="st-history-event">
+              <h4>Gowtham Sakarya changed 2 properties using [Uat] Update impact_dcr_materialization_dataset Exported Flag</h4>
+              <p>Oct 16, 2026, 2:05:54</p>
+              <dl class="st-history-grid">
+                <dt>Exported Date</dt><dd>Oct 16, 2026, 10:56 PM</dd>
+                <dt>Exported Status</dt><dd>true</dd>
+              </dl>
+            </div>
+            <div class="st-history-event">
+              <h4>${esc(row.submitter || "Udayakumar Kongani")} created PDCR -- ${esc(displayPayer === "N/A" ? "GROUP HEALTH COOPERATIVE OF EAU CLAIRE (PRIORITY HEALTH)" : displayPayer)} ${esc(row.indication || "Rheumatoid Arthritis")} ${esc(product)}</h4>
+              <p>Oct 16, 2026, 9:50:27</p>
+              <dl class="st-history-grid">
+                <dt>Proposed Policy Status</dt><dd>1 ST (BRANDED)</dd>
+                <dt>Type</dt><dd>AI-AUTO Created</dd>
+                <dt>Payer Name</dt><dd>${esc(displayPayer)}</dd>
+                <dt>Approved Geography Value</dt><dd>${esc(row.state || "NATIONAL")}</dd>
+                <dt>Approved Additional Information</dt><dd>Approved DCR by auto approve process</dd>
+                <dt>Approved Reject Type</dt><dd>AUTO-APPROVED</dd>
+                <dt>Approved Number of Steps</dt><dd>1</dd>
+                <dt>Brand</dt><dd>${esc(product)}</dd>
+                <dt>Current For Approval Step Therapy Placement</dt><dd>No Step</dd>
+                <dt>Current For Submission Policy Status</dt><dd>DRUG COVERED WITH NO PA</dd>
+                <dt>Proposed Number of Steps</dt><dd>1</dd>
+                <dt>Assignment Type</dt><dd>UNASSIGNED</dd>
+                <dt>Proposed Geography Value</dt><dd>${esc(row.state || "NATIONAL")}</dd>
+                <dt>Indication</dt><dd>${esc(row.indication || "Rheumatoid Arthritis")}</dd>
+                <dt>Status</dt><dd><span class="st-status approved">APPROVED</span></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside>
+        <div class="st-detail-side-card">
+          <div class="st-side-title">▣ Summary <span style="margin-left:auto">⤢</span></div>
+          <div class="st-side-body">
+            <div class="st-summary-box">
+              <h4>Payer Information</h4>
+              <div class="st-summary-line"><div class="st-summary-label">Primary Key</div>cfc706ec-45bc-4f38-bdca-21767d8b5fe2</div>
+              <div class="st-summary-line"><div class="st-summary-label">DCR Identifier</div>${esc(row.id || "DCR-CF70")}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Payer</div>${esc(displayPayer)}</div>
+              <div class="st-summary-line"><div class="st-summary-label">BoB</div>${esc(row.bob || "MEDICAID_MANAGED")}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Product</div>${esc(product)}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Indication</div>${esc(row.indication || "Rheumatoid Arthritis")}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Benefit Type</div>${esc(row.benefit || "Pharmacy")} BENEFIT</div>
+              <div class="st-summary-line"><div class="st-summary-label">Payer MDM ID</div>${esc(lives)}</div>
+            </div>
+            <div class="st-summary-box">
+              <h4>Change Request Information</h4>
+              <div class="st-summary-line"><div class="st-summary-label">Date Submitted</div>${esc(date)}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Submitter</div>${esc(row.submitter || "Udayakumar Kongani")}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Steward Assigned</div>${esc(steward)}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Status</div>${esc(displayStatus.toUpperCase())}</div>
+              <div class="st-summary-line"><div class="st-summary-label">Active Status</div>PROCESSING</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>`;
+
+  document.getElementById("stewardshipListView").classList.add("hidden");
+  detail.classList.remove("hidden");
+  document.body.classList.add("stewardship-detail-active");
+  document.getElementById("stReturnToRequests").addEventListener("click", hideStewardshipDetail);
+  window.scrollTo(0, 0);
+}
+
 function renderStewardshipTable(rows, filter) {
   const cols = ["", "Dcr Identifier", "Payer", "PBM", "PBM Role", "Book of Business", "Product", "Indication", "Benefit Type",
     "Number of Lives", "Date Submitted↕", "State", "Submitter", "Steward Assigned", "Status",
@@ -2275,6 +2705,13 @@ function renderStewardshipTable(rows, filter) {
   }).join("");
   const empty = shown.length ? "" : `<tr><td colspan="${cols.length}" style="text-align:center;color:var(--muted);padding:24px">No matching requests</td></tr>`;
   document.getElementById("stewardshipTable").innerHTML = head + `<tbody>${body}${empty}</tbody>`;
+  document.querySelectorAll("#stewardshipTable tbody tr").forEach((tr, i) => {
+    if (!shown[i]) return;
+    tr.addEventListener("click", (event) => {
+      if (event.target.closest("input, button, a")) return;
+      showStewardshipDetail(shown[i], i);
+    });
+  });
 }
 
 let currentStewardTab = "all";
@@ -2346,6 +2783,14 @@ function showScreen(screen) {
   const isSteward = screen === "stewardship";
   const isCoverage = screen === "coverage";
   const isDashboard = screen === "dashboard" || screen === "policywins";
+
+  if (!isSteward) {
+    document.body.classList.remove("stewardship-detail-active");
+    const detailView = document.getElementById("stewardshipDetailView");
+    const listView = document.getElementById("stewardshipListView");
+    if (detailView) detailView.classList.add("hidden");
+    if (listView) listView.classList.remove("hidden");
+  }
 
   document.body.classList.toggle("stewardship-active", isSteward);
   document.getElementById("screen-dashboard").classList.toggle("hidden", !isDashboard);
