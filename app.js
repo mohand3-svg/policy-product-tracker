@@ -1129,6 +1129,9 @@ const bulkModal = document.getElementById("bulkModal");
 document.getElementById("bulkAssignBtn").addEventListener("click", () => {
   const sel = getSelectedRows();
   const hint = document.getElementById("bulkHint");
+  currentBulkMode = "coverage";
+  bulkModal.dataset.mode = "coverage";
+  bulkModal.dataset.ids = sel.map(r => r.id).join(",");
   hint.textContent = `${sel.length} record(s) will be assigned to the selected reviewer.`;
   hint.classList.remove("warn");
   document.getElementById("reviewerSelect").value = "";
@@ -1145,6 +1148,20 @@ document.getElementById("bulkAssignMe").addEventListener("click", () => {
 document.getElementById("bulkAssignConfirm").addEventListener("click", () => {
   const reviewer = document.getElementById("reviewerSelect").value;
   if (!reviewer) { showToast("Please select a reviewer", true); return; }
+  if (currentBulkMode === "stewardship" || bulkModal.dataset.mode === "stewardship") {
+    const ids = (bulkModal.dataset.ids || "").split(",").filter(Boolean);
+    ids.forEach(id => {
+      const r = ST_ROWS.find(x => x.id === id);
+      if (r) r.steward = reviewer.replace(/\s+\(Steward\)$/, "");
+    });
+    buildStFilters();
+    renderStTool();
+    const sa = document.getElementById("stSelectAll");
+    if (sa) sa.checked = false;
+    bulkModal.classList.remove("open");
+    showToast(`Assigned ${reviewer} to ${ids.length} stewardship request(s)`, false);
+    return;
+  }
   const targets = getSelectedRows();
   targets.forEach(r => logHistory(r.id, "Steward Assigned", "—", reviewer));
   bulkModal.classList.remove("open");
@@ -2185,6 +2202,7 @@ let ST_ROWS = SEED_ROWS.map(r => ({ ...r }));
 const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
 let ST_SUBVIEW = "all";   // all | open | mine | completed
 let stBuilt = false;
+let currentBulkMode = "coverage";
 
 function stStewardLabel(v) { return v && v.trim() ? v : "Unassigned"; }
 
@@ -2340,7 +2358,35 @@ function updateStSelCount() {
   const el = document.getElementById("stSelCount");
   if (el) el.textContent = String(n);
   const btn = document.getElementById("stBulkAssignBtn");
-  if (btn) btn.disabled = n === 0;
+  if (btn) btn.disabled = false;
+}
+
+function getSelectedStIds() {
+  return [...document.querySelectorAll(".st-row-cb:checked")]
+    .filter(cb => !cb.closest("tr").hidden)
+    .map(cb => cb.dataset.id);
+}
+
+function getVisibleStIds() {
+  return [...document.querySelectorAll("#stGridBody tr")]
+    .filter(tr => !tr.hidden)
+    .map(tr => tr.querySelector(".st-row-cb")?.dataset.id)
+    .filter(Boolean);
+}
+
+function openStBulkAssignModal() {
+  const ids = getSelectedStIds();
+  const targetIds = ids.length ? ids : getVisibleStIds();
+  const hint = document.getElementById("bulkHint");
+  currentBulkMode = "stewardship";
+  bulkModal.dataset.mode = "stewardship";
+  bulkModal.dataset.ids = targetIds.join(",");
+  hint.textContent = ids.length
+    ? `${ids.length} selected stewardship request(s) will be assigned to the selected reviewer.`
+    : `${targetIds.length} visible stewardship request(s) will be assigned to the selected reviewer.`;
+  hint.classList.toggle("warn", targetIds.length === 0);
+  document.getElementById("reviewerSelect").value = "";
+  bulkModal.classList.add("open");
 }
 
 // ---- wire sub-tabs, select-all, bulk assign ---------------------
@@ -2368,9 +2414,7 @@ document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
   const btn = document.getElementById("stBulkAssignBtn");
   if (!btn) return;
   btn.addEventListener("click", () => {
-    const ids = [...document.querySelectorAll(".st-row-cb:checked")].map(cb => cb.dataset.id);
-    if (ids.length === 0) { showToast("Select at least one request", true); return; }
-    showToast(`Bulk assign selected ${ids.length} request${ids.length === 1 ? "" : "s"}`, false);
+    openStBulkAssignModal();
   });
 })();
 
