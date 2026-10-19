@@ -277,6 +277,19 @@ body.sttool-active .sidebar-saved {
   border-radius: 3px;
   background: #fff;
 }
+.stf-row.disabled {
+  color: #9aa5b4;
+  cursor: not-allowed;
+}
+.stf-row.disabled input[type="checkbox"] {
+  border-color: #c5ccd8;
+  background: #f1f3f6;
+  cursor: not-allowed;
+}
+.stf-row.disabled .stf-count,
+.stf-row.disabled .stf-label {
+  color: #9aa5b4;
+}
 .stf-label {
   overflow: hidden;
   text-overflow: ellipsis;
