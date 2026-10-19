@@ -2518,6 +2518,10 @@ function hideStewardshipDetail() {
 function showStewardshipDetail(row, index) {
   const product = row.product || row.brand || "ACTEMRA IV";
   const displayPayer = index === 0 ? "N/A" : row.payer;
+  const pbmName = row.pbm || "Express Scripts";
+  const isPbmRecord = displayPayer === "N/A";
+  const detailEntityLabel = isPbmRecord ? "PBM" : "Payer";
+  const detailEntityName = isPbmRecord ? pbmName : displayPayer;
   const displayStatus = index === 0 ? "Approved" : row.status;
   const steward = index % 7 === 0 ? "System Admin" : row.steward;
   const lives = row.lives ? fmt(row.lives) : "40,000,000";
@@ -2557,7 +2561,7 @@ function showStewardshipDetail(row, index) {
           <div class="st-detail-head">
             <div class="st-detail-payer">
               <span class="st-info-dot">i</span>
-              <span>${esc(displayPayer === "N/A" ? "GROUP HEALTH COOPERATIVE OF EAU CLAIRE (PRIORITY HEALTH)" : displayPayer)}</span>
+              <span>${esc(detailEntityName)}</span>
               <div class="st-detail-tags">
                 <span class="st-detail-tag blue">Status ${esc(displayStatus.toUpperCase())}</span>
                 <span class="st-detail-tag">BoB ${esc(row.bob || "MEDICAID_MANAGED")}</span>
@@ -2599,12 +2603,12 @@ function showStewardshipDetail(row, index) {
               </dl>
             </div>
             <div class="st-history-event">
-              <h4>${esc(row.submitter || "Udayakumar Kongani")} created PDCR -- ${esc(displayPayer === "N/A" ? "GROUP HEALTH COOPERATIVE OF EAU CLAIRE (PRIORITY HEALTH)" : displayPayer)} ${esc(row.indication || "Rheumatoid Arthritis")} ${esc(product)}</h4>
+              <h4>${esc(row.submitter || "Udayakumar Kongani")} created PDCR -- ${esc(detailEntityName)} ${esc(row.indication || "Rheumatoid Arthritis")} ${esc(product)}</h4>
               <p>Oct 16, 2026, 9:50:27</p>
               <dl class="st-history-grid">
                 <dt>Proposed Policy Status</dt><dd>1 ST (BRANDED)</dd>
                 <dt>Type</dt><dd>AI-AUTO Created</dd>
-                <dt>Payer Name</dt><dd>${esc(displayPayer)}</dd>
+                <dt>${esc(detailEntityLabel)} Name</dt><dd>${esc(detailEntityName)}</dd>
                 <dt>Approved Geography Value</dt><dd>${esc(row.state || "NATIONAL")}</dd>
                 <dt>Approved Additional Information</dt><dd>Approved DCR by auto approve process</dd>
                 <dt>Approved Reject Type</dt><dd>AUTO-APPROVED</dd>
@@ -2627,10 +2631,10 @@ function showStewardshipDetail(row, index) {
           <div class="st-side-title">▣ Summary <span style="margin-left:auto">⤢</span></div>
           <div class="st-side-body">
             <div class="st-summary-box">
-              <h4>Payer Information</h4>
+              <h4>${esc(detailEntityLabel)} Information</h4>
               <div class="st-summary-line"><div class="st-summary-label">Primary Key</div>cfc706ec-45bc-4f38-bdca-21767d8b5fe2</div>
               <div class="st-summary-line"><div class="st-summary-label">DCR Identifier</div>${esc(row.id || "DCR-CF70")}</div>
-              <div class="st-summary-line"><div class="st-summary-label">Payer</div>${esc(displayPayer)}</div>
+              <div class="st-summary-line"><div class="st-summary-label">${esc(detailEntityLabel)}</div>${esc(detailEntityName)}</div>
               <div class="st-summary-line"><div class="st-summary-label">BoB</div>${esc(row.bob || "MEDICAID_MANAGED")}</div>
               <div class="st-summary-line"><div class="st-summary-label">Product</div>${esc(product)}</div>
               <div class="st-summary-line"><div class="st-summary-label">Indication</div>${esc(row.indication || "Rheumatoid Arthritis")}</div>
