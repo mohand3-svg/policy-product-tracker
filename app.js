@@ -2759,6 +2759,7 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
     const showWins = tab === "wins";
     const showStTool = tab === "sttool";
     const showDrafts = tab === "drafts";
+    document.body.classList.toggle("sttool-active", showStTool);
 
     stewardshipView.hidden = !showStewardship;
     metricView.hidden = !showMetrics;

@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=83" />
+<link rel="stylesheet" href="styles.css?v=84" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -171,28 +171,132 @@
         </div>
       </div>
 
-      <!-- ===== STEWARDSHIP TOOL FILTERS (populated by JS) ===== -->
-      <div id="stToolFilters" hidden>
-        <div class="filter-group">
-          <div class="fg-title" data-toggle>DCR STATUS <span class="chev">▾</span></div>
-          <div class="fg-body" id="stFilterStatus"></div>
-        </div>
-        <div class="filter-group">
-          <div class="fg-title" data-toggle>STEWARD <span class="chev">▾</span></div>
-          <div class="fg-body" id="stFilterSteward"></div>
-        </div>
-        <div class="filter-group">
-          <div class="fg-title" data-toggle>PAYER <span class="chev">▾</span></div>
-          <div class="fg-body" id="stFilterPayer"></div>
-        </div>
-        <div class="filter-group">
-          <div class="fg-title" data-toggle>BRAND <span class="chev">▾</span></div>
-          <div class="fg-body" id="stFilterBrand"></div>
-        </div>
-        <div class="filter-group">
-          <div class="fg-title" data-toggle>BOOK OF BUSINESS <span class="chev">▾</span></div>
-          <div class="fg-body" id="stFilterBob"></div>
-        </div>
+      <!-- ===== STEWARDSHIP TOOL FILTERS ===== -->
+      <div id="stToolFilters" class="st-tool-filters" hidden>
+        <section class="stf-section">
+          <h3 class="stf-title">Status</h3>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">NEW</span><span class="stf-count">482</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">APPROVED</span><span class="stf-count">269</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">IN PROGRESS</span><span class="stf-count">70</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">REJECTED</span><span class="stf-count">47</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">REVERTED</span><span class="stf-count">5</span></label>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">Payer</h3>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">3M (EMPLOYER)</span><span class="stf-count">115</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">CIGNA</span><span class="stf-count">63</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">84 LUMBER COMPANY (EMPLOYER)</span><span class="stf-count">44</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">AETNA</span><span class="stf-count">34</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">DELAWARE FIRST HEALTH</span><span class="stf-count">33</span></label>
+          <button class="stf-show-more" type="button">Show more</button>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">Product</h3>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">OCREVUS ZUNOVO</span><span class="stf-count">273</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">ACTEMRA SC</span><span class="stf-count">104</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">VABYSMO</span><span class="stf-count">85</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">ALECENSA</span><span class="stf-count">46</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">OCREVUS</span><span class="stf-count">30</span></label>
+          <button class="stf-show-more" type="button">Show more</button>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title has-search"><span>Book Of Business <small>Keeping values</small></span><span class="stf-search">⌕</span></h3>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">COMMERCIAL</span><span class="stf-count">691</span><span class="stf-bar wide"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">MEDICARE_ADVANTAGE</span><span class="stf-count">106</span><span class="stf-bar sm"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">MEDICAID_MANAGED</span><span class="stf-count">49</span><span class="stf-bar xs"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">GOVERNMENT</span><span class="stf-count">20</span><span class="stf-bar tiny"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">MEDICAID_FFS</span><span class="stf-count">5</span><span class="stf-bar tiny"></span></label>
+          <button class="stf-show-more" type="button">Show more</button>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">Indication</h3>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">Multiple Sclerosis</span><span class="stf-count">294</span><span class="stf-bar wide"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">Rheumatoid Arthritis</span><span class="stf-count">231</span><span class="stf-bar med"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">Neovascular Age Related Macular Degeneration</span><span class="stf-count">66</span><span class="stf-bar sm"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">ALK mutation positive</span><span class="stf-count">53</span><span class="stf-bar sm"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">Primary Progressive Multiple Sclerosis</span><span class="stf-count">33</span><span class="stf-bar xs"></span></label>
+          <button class="stf-show-more" type="button">Show more</button>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">Benefit Type</h3>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">MEDICAL BENEFIT</span><span class="stf-count">541</span><span class="stf-bar wide"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">PHARMACY BENEFIT</span><span class="stf-count">332</span><span class="stf-bar med"></span></label>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">Submitter</h3>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">pharma PPDQABOT</span><span class="stf-count">265</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">Pradeep Lingampally</span><span class="stf-count">153</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">Adriana Jazbor-Indyk</span><span class="stf-count">89</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">Udayakumar Kongari</span><span class="stf-count">76</span></label>
+          <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">Koushik Gadey</span><span class="stf-count">55</span></label>
+          <button class="stf-show-more" type="button">Show more</button>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">Steward Assigned</h3>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">Unknown user or group</span><span class="stf-count">482</span><span class="stf-bar wide"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">System Admin</span><span class="stf-count">89</span><span class="stf-bar sm"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">Pradeep Lingampally</span><span class="stf-count">68</span><span class="stf-bar sm"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">pharma PPDQABOT</span><span class="stf-count">29</span><span class="stf-bar tiny"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">Thomas Flanagan</span><span class="stf-count">26</span><span class="stf-bar tiny"></span></label>
+          <button class="stf-show-more" type="button">Show more</button>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">DCR Identifier</h3>
+          <input class="stf-text-input" type="text" aria-label="DCR Identifier" />
+        </section>
+
+        <section class="stf-section stf-date-section">
+          <h3 class="stf-title">Date Submitted</h3>
+          <div class="stf-date-top">
+            <button class="stf-select-btn" type="button">Time range <span>⌄</span></button>
+            <span class="stf-toggle" aria-hidden="true"><span></span></span>
+            <span class="stf-relative">Relative to today</span>
+          </div>
+          <label class="stf-date-label">After (inclusive)</label>
+          <div class="stf-date-input"><input type="text" placeholder="Start time" /><button type="button">EDT ▾</button></div>
+          <label class="stf-date-label">Before (inclusive)</label>
+          <div class="stf-date-input"><input type="text" placeholder="End time" /><button type="button">EDT ▾</button></div>
+        </section>
+
+        <section class="stf-section">
+          <h3 class="stf-title">State</h3>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">NATIONAL</span><span class="stf-count">701</span><span class="stf-bar wide"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label muted">No value</span><span class="stf-count">50</span><span class="stf-bar xs"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">CA</span><span class="stf-count">16</span><span class="stf-bar tiny"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">AK</span><span class="stf-count">11</span><span class="stf-bar tiny"></span></label>
+          <label class="stf-row"><input type="checkbox" /><span class="stf-label">AR</span><span class="stf-count">8</span><span class="stf-bar tiny"></span></label>
+          <button class="stf-show-more" type="button">Show more</button>
+        </section>
+
+        <section class="stf-section stf-impact-section">
+          <h3 class="stf-title has-caret"><span>Filter On [iMPAct]Treated Life</span><span>⌃</span></h3>
+          <div class="stf-chip-line"><span class="stf-diamond">◇</span><span>[Uat] [iMPAct] Lives</span><strong>164</strong></div>
+          <div class="stf-range-box">
+            <div class="stf-range-title">Lives</div>
+            <div class="stf-chart">
+              <span class="stf-ylabel">100</span>
+              <span class="stf-rail"></span>
+              <span class="stf-handle"></span>
+              <span class="stf-tick t1"></span>
+              <span class="stf-tick t2"></span>
+              <span class="stf-tick t3"></span>
+              <span class="stf-xlabels"><span>4000000</span><span>12000000</span><span>20000000</span></span>
+            </div>
+            <div class="stf-range-inputs">
+              <div class="stf-number"><input type="text" placeholder="Min value" /><span>⌃<br />⌄</span></div>
+              <span class="stf-dash">-</span>
+              <div class="stf-number"><input type="text" placeholder="Max value" /><span>⌃<br />⌄</span></div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <!-- ===== AI DRAFT DCR FILTERS ===== -->
@@ -974,7 +1078,7 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="app.js?v=83"></script>
+<script src="app.js?v=84"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>
