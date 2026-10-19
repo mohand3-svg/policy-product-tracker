@@ -3100,7 +3100,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   wireHelpTooltips();
   applySnapshotMode();
   refresh();
-  showScreen("dashboard");
+  const requestedScreen = new URLSearchParams(window.location.search).get("screen");
+  showScreen(requestedScreen === "stewardship" ? "stewardship" : "dashboard");
   if (SNAPSHOT) showSubtab("dcrutil"); // leadership build lands on utilization
 });
 

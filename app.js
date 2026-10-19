@@ -2734,9 +2734,14 @@ function showMetricSubtab(which) {
 const winsView = document.getElementById("winsView");
 document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
   t.addEventListener("click", () => {
+    const tab = t.dataset.tab;
+    if (tab === "sttool") {
+      window.location.href = "stewardship-dashboard.html?screen=stewardship";
+      return;
+    }
+
     document.querySelectorAll(".nav-tab").forEach(x => x.classList.remove("active"));
     t.classList.add("active");
-    const tab = t.dataset.tab;
     const showMetrics = tab === "metric";
     const showStewardship = tab === "stewardship";
     const showWins = tab === "wins";
