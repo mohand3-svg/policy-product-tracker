@@ -2128,13 +2128,15 @@ function renderStewardshipTable(rows, filter) {
 
 let currentStewardTab = "all";
 function syncStewardActions() {
-  const hideActions = currentStewardTab === "completed";
+  const hideAllActions = currentStewardTab === "completed";
+  const hideAssignAction = currentStewardTab === "completed" || currentStewardTab === "my";
   const bulkBtn = document.querySelector(".st-bulk-btn");
   if (bulkBtn) {
     bulkBtn.textContent = currentStewardTab === "my" ? "⌘ Bulk Approve/Reject" : "👤 Bulk Assign";
+    bulkBtn.classList.toggle("hidden", hideAllActions);
   }
-  document.querySelectorAll(".st-bulk-btn, .st-assign-btn").forEach((btn) => {
-    btn.classList.toggle("hidden", hideActions);
+  document.querySelectorAll(".st-assign-btn").forEach((btn) => {
+    btn.classList.toggle("hidden", hideAssignAction);
   });
 }
 
