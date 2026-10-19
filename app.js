@@ -2178,7 +2178,6 @@ function setWinDetailStatus(newStatus) {
    DSA tab can show a static stewardship request queue in-place.
    ============================================================ */
 const ST_CURRENT_USER = "A. Martinez";   // "My Workload" owner (matches CURRENT_USER)
-const ST_STEWARDS = ["Syed Riyaz", "Adriana Jazbor", "A. Martinez", "J. Chen", "R. Patel", "S. Okafor", "L. Nguyen"];
 
 // Working copy so mock re-assignment doesn't mutate the tracker's ROWS.
 let ST_ROWS = SEED_ROWS.map(r => ({ ...r }));
@@ -2344,30 +2343,6 @@ function updateStSelCount() {
   if (btn) btn.disabled = n === 0;
 }
 
-// Mock-assign the given request ids to the steward chosen in the dropdown.
-function stAssign(ids) {
-  const sel = document.getElementById("stAssignee");
-  const steward = sel ? sel.value : "";
-  if (!steward) { showToast("Pick a steward first", true); return; }
-  let n = 0;
-  ids.forEach(id => {
-    const r = ST_ROWS.find(x => x.id === id);
-    if (r) { r.steward = steward; n++; }
-  });
-  buildStFilters();          // steward counts changed
-  renderStTool();
-  const sa = document.getElementById("stSelectAll");
-  if (sa) sa.checked = false;
-  showToast(`Assigned ${n} request${n === 1 ? "" : "s"} to ${steward}`, false);
-}
-
-function populateStAssignee() {
-  const sel = document.getElementById("stAssignee");
-  if (!sel) return;
-  sel.innerHTML = `<option value="">Assign to…</option>` +
-    ST_STEWARDS.map(s => `<option value="${sfEsc(s)}">${sfEsc(s)}</option>`).join("");
-}
-
 // ---- wire sub-tabs, select-all, bulk assign ---------------------
 document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
   tab.addEventListener("click", () => {
@@ -2395,7 +2370,7 @@ document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
   btn.addEventListener("click", () => {
     const ids = [...document.querySelectorAll(".st-row-cb:checked")].map(cb => cb.dataset.id);
     if (ids.length === 0) { showToast("Select at least one request", true); return; }
-    stAssign(ids);
+    showToast(`Bulk assign selected ${ids.length} request${ids.length === 1 ? "" : "s"}`, false);
   });
 })();
 
@@ -2770,7 +2745,7 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
       winsFilters.hidden = true;
       if (stToolFilters) stToolFilters.hidden = false;
       if (draftFilters) draftFilters.hidden = true;
-      if (!stBuilt) { buildStFilters(); populateStAssignee(); stBuilt = true; }
+      if (!stBuilt) { buildStFilters(); stBuilt = true; }
       renderStTool();
     } else if (showDrafts) {
       stewardshipFilters.hidden = true;

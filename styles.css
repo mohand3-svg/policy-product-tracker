@@ -925,10 +925,6 @@ body {
   gap: 12px; padding: 12px 20px;
 }
 .st-toolbar-right { display: flex; align-items: center; gap: 10px; }
-.st-assignee {
-  padding: 8px 10px; font-size: 13px; border: 1px solid var(--border);
-  border-radius: 6px; color: #374151; background: #fff;
-}
 .st-toolbar .btn-bulk {
   background: #fff; color: #2563eb; border: 1px solid #b9ccf5;
   display: inline-flex; align-items: center; gap: 6px;
