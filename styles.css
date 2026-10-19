@@ -919,16 +919,11 @@ body {
 .sttab:hover { color: #374151; }
 .sttab.active { color: #2563eb; border-bottom-color: #2563eb; }
 
-/* Toolbar: search + assignee + bulk assign */
+/* Toolbar: assignee + bulk assign */
 .st-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: flex-end;
   gap: 12px; padding: 12px 20px;
 }
-.st-search {
-  flex: 0 1 320px; padding: 8px 12px; font-size: 13px;
-  border: 1px solid var(--border); border-radius: 6px; color: #374151;
-}
-.st-search:focus { outline: none; border-color: #93b4f5; box-shadow: 0 0 0 2px #e5eefc; }
 .st-toolbar-right { display: flex; align-items: center; gap: 10px; }
 .st-assignee {
   padding: 8px 10px; font-size: 13px; border: 1px solid var(--border);

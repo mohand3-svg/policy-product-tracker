@@ -2228,9 +2228,8 @@ function buildStFilters() {
   buildStFilter("stFilterBob", stTally("bob"), "bob");
 }
 
-// Apply sidebar filters + free-text search + active sub-tab.
+// Apply sidebar filters + active sub-tab.
 function stFilteredRows() {
-  const q = (document.getElementById("stSearch")?.value || "").trim().toLowerCase();
   let rows = ST_ROWS.filter(r =>
     (stFilters.status.size === 0 || stFilters.status.has(r.dcr)) &&
     (stFilters.steward.size === 0 || stFilters.steward.has(stStewardLabel(r.steward))) &&
@@ -2238,10 +2237,6 @@ function stFilteredRows() {
     (stFilters.brand.size === 0 || stFilters.brand.has(r.brand)) &&
     (stFilters.bob.size === 0 || stFilters.bob.has(r.bob))
   );
-  if (q) {
-    rows = rows.filter(r =>
-      [r.id, r.payer, r.brand, r.indication, r.steward].join(" ").toLowerCase().includes(q));
-  }
   switch (ST_SUBVIEW) {
     case "open":
       return rows.filter(r => ["New", "BridgingIssues"].includes(r.dcr));
@@ -2373,7 +2368,7 @@ function populateStAssignee() {
     ST_STEWARDS.map(s => `<option value="${sfEsc(s)}">${sfEsc(s)}</option>`).join("");
 }
 
-// ---- wire sub-tabs, search, select-all, bulk assign -------------
+// ---- wire sub-tabs, select-all, bulk assign ---------------------
 document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
   tab.addEventListener("click", () => {
     document.querySelectorAll(".sttab").forEach(t => t.classList.remove("active"));
@@ -2384,11 +2379,6 @@ document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
     renderStTool();
   });
 });
-
-(function wireStSearch() {
-  const s = document.getElementById("stSearch");
-  if (s) s.addEventListener("input", renderStTool);
-})();
 
 (function wireStSelectAll() {
   const sa = document.getElementById("stSelectAll");
