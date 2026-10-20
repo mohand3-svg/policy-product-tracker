@@ -697,6 +697,18 @@ function currentTrackerContext() {
   return null;
 }
 
+function updateCompetitorBrandFilterState() {
+  const selectedBrands = [...document.querySelectorAll(".brand-cb:checked")];
+  const selectedIndications = [...document.querySelectorAll(".indication-cb:checked")];
+  const enabled = selectedBrands.length === 1 && selectedIndications.length === 1;
+  const group = document.getElementById("competitorBrandFilterGroup");
+  if (group) group.classList.toggle("disabled-filter", !enabled);
+  document.querySelectorAll(".competitor-brand-cb").forEach(cb => {
+    cb.disabled = !enabled;
+    if (!enabled) cb.checked = false;
+  });
+}
+
 function updateManualGridButtons() {
   const ctx = currentTrackerContext();
   const rowBtn = document.getElementById("addManualRowBtn");
@@ -785,6 +797,7 @@ function setTrackerFilterSelection(row) {
     cb.checked = cb.value === row.indication;
   });
   selectedBrandOrder = [row.brand];
+  updateCompetitorBrandFilterState();
 }
 
 // ---- blank tracker creation ------------------------------------
@@ -1197,6 +1210,7 @@ document.getElementById("historyClose").addEventListener("click", () => historyM
 // ============ FILTERS ============
 function handleTrackerFilterChange(cb) {
   if (cb.classList.contains("brand-cb")) syncBrandSelectionOrder(cb);
+  updateCompetitorBrandFilterState();
   renderRows();
 }
 document.querySelectorAll(".filter-cb").forEach(cb => {
@@ -1205,6 +1219,7 @@ document.querySelectorAll(".filter-cb").forEach(cb => {
 document.getElementById("resetFilters").addEventListener("click", () => {
   document.querySelectorAll(".filter-cb").forEach(c => c.checked = false);
   selectedBrandOrder = [];
+  updateCompetitorBrandFilterState();
   // Clear wins filter state too, so switching tabs stays consistent
   winFilters.brand.clear(); winFilters.subInd.clear();
   winFilters.bob.clear(); winFilters.benefit.clear();
@@ -3533,6 +3548,7 @@ document.getElementById("savedTableBody").addEventListener("click", (e) => {
 
 // ============ INIT ============
 renderManualFilterOptions();
+updateCompetitorBrandFilterState();
 renderRows();
 applyMultiResult();
 sfRender();

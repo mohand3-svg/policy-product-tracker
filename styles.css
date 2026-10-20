@@ -103,6 +103,19 @@ body {
   cursor: pointer; font-size: 12px; font-weight: 600;
 }
 .filter-group { border-bottom: 1px solid #eef0f4; padding: 8px 0; }
+.filter-group.disabled-filter {
+  opacity: .48;
+}
+.filter-group.disabled-filter .fg-title,
+.filter-group.disabled-filter label {
+  color: #8d98a8;
+}
+.filter-group.disabled-filter label {
+  cursor: not-allowed;
+}
+.filter-group.disabled-filter input {
+  cursor: not-allowed;
+}
 .fg-title {
   font-weight: 700; font-size: 11px; letter-spacing: .4px;
   color: var(--muted); cursor: pointer;
