@@ -1358,6 +1358,7 @@ body.sttool-active .sidebar-saved {
   background: #fff; color: #2563eb; border: 1px solid #b9ccf5;
   display: inline-flex; align-items: center; gap: 6px;
 }
+.st-toolbar .btn-bulk[hidden] { display: none; }
 .st-toolbar .btn-bulk.st-bulk-review {
   color: #0b5cad;
   border-color: #2e6bd6;
