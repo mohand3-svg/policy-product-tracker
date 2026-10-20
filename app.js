@@ -2196,22 +2196,130 @@ function setWinDetailStatus(newStatus) {
    ============================================================ */
 const ST_CURRENT_USER = "A. Martinez";   // "My Workload" owner (matches CURRENT_USER)
 
-// Working copy so mock re-assignment doesn't mutate the tracker's ROWS.
-let ST_ROWS = SEED_ROWS.slice(3).map(r => ({ ...r }));
-
-const ST_STATUS_BY_ID = {
-  "REQ-1042": "APPROVED",
-  "REQ-1043": "APPROVED",
-  "REQ-1044": "APPROVED",
-  "REQ-1045": "IN PROGRESS",
-  "REQ-1046": "NEW",
-  "REQ-1047": "NEW",
-  "REQ-1048": "IN PROGRESS",
-  "REQ-1049": "REJECTED",
-  "REQ-1050": "REVERTED",
-  "REQ-1051": "NEW",
-};
 const ST_STATUS_ORDER = ["NEW", "APPROVED", "IN PROGRESS", "REJECTED", "REVERTED"];
+const ST_SAMPLE_PAYER_ROWS = [
+  { payer: "", pbmRole: "" },
+  { payer: "DOMTAR CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "KROLL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "REGIS CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "VOLKSWAGEN GROUP OF AMERICA", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AMEREN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MERCEDES-BENZ U.S. INTERNATIONAL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "HEARST CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AMGEN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SONIC", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "NEW JERSEY TRANSIT CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CUYAHOGA COUNTY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "OCCIDENTAL PETROLEUM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SERCO", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "INTEL CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CHIQUITA BRANDS INTERNATIONAL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "RED ROBIN GOURMET BURGERS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "BASF", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MCDONALD'S", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "UNITY HEALTH SYSTEM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "J.B. HUNT TRANSPORT SERVICES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DOMINION ENERGY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "HNI", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AGGREKO", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "VF CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SAINT LOUIS UNIVERSITY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DARTMOUTH-HITCHCOCK", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TEXAS A&M UNIVERSITY SYSTEM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "EMERSON ELECTRIC", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SANDIA NATIONAL LABORATORIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ERIE COUNTY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SNAP-ON", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MCLANE COMPANY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "UNIVERSITY OF LOUISVILLE", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "JOHN HANCOCK FINANCIAL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "PG&E", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "GENERAL MILLS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "EXXON MOBIL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AVERITT", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "NAVY FEDERAL CREDIT UNION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "BIC CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TEACHERS RETIREMENT SYSTEM (TRS)", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TEXAS CHILDREN'S HEALTH", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "COUNTY OF SUMMIT", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "JOHNSON & JOHNSON", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CRATE AND BARREL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MOHAWK INDUSTRIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ALBUQUERQUE PUBLIC SCHOOLS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "WENDY'S COMPANY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "COREWELL HEALTH", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AMAZON.COM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "UNITED PARCEL SERVICE", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "WILLIAMS LEA", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AKRON PUBLIC SCHOOLS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SHAW INDUSTRIES GROUP", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "NISKAYUNA CENTRAL SCHOOL DISTRICT", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CRACKER BARREL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DETROIT DIESEL CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "L3HARRIS TECHNOLOGIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "STATE OF MISSOURI", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "INTERPUBLIC GROUP", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "KAMAN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TENNESSEE VALLEY AUTHORITY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "STATE OF NEW MEXICO", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "KNOLL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CUMMINS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "RHEEM MANUFACTURING", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ABBOTT LABORATORIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "LAND O'LAKES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "WEGMANS FOOD MARKETS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CURATORS OF THE UNIVERSITY OF MISSOURI", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DARTMOUTH COLLEGE", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "STATE OF ALABAMA", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ABERCROMBIE AND FITCH", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CHICO'S FAS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "HERSHEY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "H. E. BUTT GROCERY COMPANY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ST. JOSEPH'S HOSPITAL HEALTH CENTER", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CONCORDIA HEALTH PLAN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CHEVRON", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DSM HOLDING COMPANY", pbmRole: "NATIONAL FORMULARY" },
+];
+
+function makeStSampleRow(row, index) {
+  const statuses = ST_STATUS_ORDER;
+  const stewards = ["System Admin", ST_CURRENT_USER, "Koushik Gadey", "Udayakumar Kongari", ""];
+  const mmitValues = ["Correct", "UnderMMITReview", "IncorrectAssessmentError", "New", "BridgingMDM"];
+  const accessValues = ["At Par", "Advantaged", "Disadvantaged"];
+  const day = String(16 + (index % 9)).padStart(2, "0");
+  const minute = String((20 + index * 7) % 60).padStart(2, "0");
+  const status = index === 0 ? "NEW" : statuses[index % statuses.length];
+  return {
+    id: `REQ-${String(5000 + index).padStart(4, "0")}`,
+    steward: stewards[index % stewards.length],
+    parentPayer: "CIGNA",
+    payer: row.payer,
+    pbm: "EXPRESS SCRIPTS",
+    pbmRole: row.pbmRole,
+    brand: "ITOVEBI",
+    indication: "BREAST",
+    bob: "COMMERCIAL",
+    benefit: "PHARMACY BENEFIT",
+    form: String(700000 + index),
+    lives: 12000 + (index * 1379),
+    mmitHpm: index % 4 === 0 ? "Not Covered" : "Clinical Criteria Required",
+    mmit: mmitValues[index % mmitValues.length],
+    dcr: status,
+    dcrCode: status === "NEW" ? "" : `DCR-${String(7000 + index)}`,
+    gne: index % 3 === 0 ? "NOT COVERED" : "TO PI WITH CRITERIA",
+    relAccess: accessValues[index % accessValues.length],
+    pa: index % 2 === 0 ? "Yes" : "No",
+    comments: "<Free Text>",
+    gate: "",
+    submitted: `Oct ${day}, 2026, 9:${minute} AM`,
+    last: `Oct ${day}, 2026, 10:${minute} AM`,
+    state: "NATIONAL",
+    status,
+  };
+}
+
+// Working copy so mock re-assignment doesn't mutate the tracker's ROWS.
+let ST_ROWS = ST_SAMPLE_PAYER_ROWS.map(makeStSampleRow);
 
 const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
 let ST_SUBVIEW = "all";   // all | open | mine | completed
@@ -2219,7 +2327,7 @@ let stBuilt = false;
 let currentBulkMode = "coverage";
 
 function stStewardLabel(v) { return v && v.trim() ? v : "Unassigned"; }
-function stWorkflowStatus(r) { return ST_STATUS_BY_ID[r.id] || "NEW"; }
+function stWorkflowStatus(r) { return r.status || "NEW"; }
 
 // Tally distinct values (with counts) across ST_ROWS for a field.
 function stTally(field, transform) {
@@ -2367,21 +2475,21 @@ function renderStTool() {
   body.innerHTML = rows.map((r, i) => `
     <tr>
       <td class="stcol-check"><input type="checkbox" class="st-row-cb" data-id="${sfEsc(r.id)}" /></td>
-      <td>${sfEsc(i === 0 ? "N/A" : r.payer)}</td>
-      <td>${sfEsc(i < 3 ? "Express Scripts" : "N/A")}</td>
-      <td>${sfEsc(i < 3 ? "National Formulary" : "N/A")}</td>
+      <td>${sfEsc(r.payer)}</td>
+      <td>${sfEsc(r.pbm)}</td>
+      <td>${sfEsc(r.pbmRole)}</td>
       <td>${sfEsc(r.brand)}</td>
       <td>${sfEsc(r.indication)}</td>
       <td>${sfEsc(r.bob)}</td>
       <td>${sfEsc(r.benefit)}</td>
       <td class="st-id">DCR-${sfEsc(String(1000 + i))}</td>
       <td class="st-lives">${Number(r.lives).toLocaleString()}</td>
-      <td>${sfEsc(i % 2 ? "Oct 16, 2026, 9:44 AM" : "Oct 16, 2026, 9:50 AM")}</td>
-      <td>NATIONAL</td>
+      <td>${sfEsc(r.submitted || (i % 2 ? "Oct 16, 2026, 9:44 AM" : "Oct 16, 2026, 9:50 AM"))}</td>
+      <td>${sfEsc(r.state || "NATIONAL")}</td>
       <td class="st-link-cell">Udaya Kumar Konga</td>
       <td class="${(!r.steward || !r.steward.trim()) ? "st-unassigned" : "st-steward"}">${sfEsc(stStewardLabel(r.steward))}</td>
       <td>${stStatusBadge(stWorkflowStatus(r))}</td>
-      <td>${sfEsc(i % 2 ? "Oct 16, 2026, 9:46 AM" : "Oct 16, 2026, 9:50 AM")}</td>
+      <td>${sfEsc(r.last || (i % 2 ? "Oct 16, 2026, 9:46 AM" : "Oct 16, 2026, 9:50 AM"))}</td>
       <td class="st-flag">${i % 4 === 1 ? "⚑" : ""}</td>
       <td class="st-link-cell">Open DCRs</td>
     </tr>`).join("");
