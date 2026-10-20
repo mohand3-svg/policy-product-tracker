@@ -2536,11 +2536,13 @@ function renderStDetail(id) {
   CURRENT_ST_DETAIL = id;
   const dcrId = stDcrIdentifier(r);
   const payerLabel = r.payer && r.payer !== "N/A" ? r.payer : "N/A";
-  const entityLabel = payerLabel === "N/A" && stHasPopulatedPbm(r) ? r.pbm : payerLabel;
+  const isPbmOnly = payerLabel === "N/A" && stHasPopulatedPbm(r);
+  const entityLabel = isPbmOnly ? r.pbm : payerLabel;
   const set = (elId, val) => { const e = document.getElementById(elId); if (e) e.textContent = val; };
   const status = stWorkflowStatus(r);
 
   set("stdPayer", entityLabel);
+  set("stdSummaryInfoTitle", isPbmOnly ? "PBM Information" : "Payer Information");
   set("stdBob", r.bob);
   set("stdProduct", r.brand);
   const statusEl = document.getElementById("stdStatusChip");
