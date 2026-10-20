@@ -2933,9 +2933,9 @@ const stfPayerPanel = document.getElementById("stfPayerPanel");
 const stfPbmPanel = document.getElementById("stfPbmPanel");
 const stfPbmRoleSection = document.getElementById("stfPbmRoleSection");
 stfModeButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
+  btn.addEventListener("change", () => {
     const isPbm = btn.dataset.stfMode === "pbm";
-    stfModeButtons.forEach(x => x.classList.toggle("active", x === btn));
+    stfModeButtons.forEach(x => x.closest("label")?.classList.toggle("active", x === btn));
     if (stfPayerPanel) stfPayerPanel.hidden = isPbm;
     if (stfPbmPanel) stfPbmPanel.hidden = !isPbm;
     if (stfPbmRoleSection) stfPbmRoleSection.hidden = !isPbm;

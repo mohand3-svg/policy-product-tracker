@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=95" />
+<link rel="stylesheet" href="styles.css?v=96" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -183,10 +183,16 @@
         </section>
 
         <section class="stf-section stf-payer-pbm-section">
-          <h3 class="stf-title">Payer</h3>
-          <div class="stf-switch" role="group" aria-label="Filter by Payer or PBM">
-            <button class="active" type="button" data-stf-mode="payer">Payer</button>
-            <button type="button" data-stf-mode="pbm">PBM</button>
+          <h3 class="stf-title stf-search-by-title"><span class="stf-info-icon">ⓘ</span> Search By <span class="req">*</span></h3>
+          <div class="stf-search-switch" role="radiogroup" aria-label="Filter by Payer or PBM">
+            <label class="active">
+              <input type="radio" name="stfEntityMode" value="payer" checked data-stf-mode="payer" />
+              <span>Payer</span>
+            </label>
+            <label>
+              <input type="radio" name="stfEntityMode" value="pbm" data-stf-mode="pbm" />
+              <span>PBM</span>
+            </label>
           </div>
           <div class="stf-mode-panel" id="stfPayerPanel">
             <label class="stf-row no-bar"><input type="checkbox" /><span class="stf-label">3M (EMPLOYER)</span><span class="stf-count">115</span></label>
@@ -1097,7 +1103,7 @@
 
   <div class="toast" id="toast"></div>
 
-<script src="app.js?v=95"></script>
+<script src="app.js?v=96"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>
