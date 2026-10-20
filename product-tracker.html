@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=97" />
+<link rel="stylesheet" href="styles.css?v=98" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -843,6 +843,83 @@
           </div>
         </div>
       </div><!-- /#stewardshipToolView -->
+
+      <!-- ===== STEWARDSHIP REQUEST DETAIL VIEW ===== -->
+      <div id="stDetailView" hidden>
+        <div class="std-actionbar">
+          <button class="link-btn std-back" id="stdBack">↩ Return to Requests</button>
+          <div class="std-actions">
+            <button class="std-abtn danger" id="stdReject">⊘ Reject</button>
+            <button class="std-abtn primary" id="stdApprove">✔ Approve</button>
+            <button class="std-abtn edit" id="stdEdit">✎ Edit</button>
+            <button class="std-abtn revert" id="stdRevert">↶ Revert</button>
+          </div>
+        </div>
+
+        <div class="std-layout">
+          <div class="std-main">
+            <div class="std-head">
+              <div class="std-head-left">
+                <span class="std-info">ⓘ</span>
+                <span class="std-payer" id="stdPayer">—</span>
+                <span class="std-chip-label">Status</span><span id="stdStatusChip"></span>
+                <span class="std-chip-label">BoB</span><span class="std-chip" id="stdBob">—</span>
+                <span class="std-chip-label">Product</span><span class="std-chip" id="stdProduct">—</span>
+              </div>
+              <div class="std-head-right">
+                <div class="std-steward-label">STEWARD ASSIGNED</div>
+                <select class="std-steward-select" id="stdSteward"></select>
+              </div>
+            </div>
+
+            <table class="std-values" id="stdValuesTable">
+              <thead>
+                <tr>
+                  <th class="std-vlabel">Values</th>
+                  <th>Current MMIT</th>
+                  <th>Current P360</th>
+                  <th>Proposed</th>
+                  <th>Steward Approved</th>
+                </tr>
+              </thead>
+              <tbody id="stdValuesBody"></tbody>
+            </table>
+
+            <section class="std-history">
+              <div class="std-history-head">
+                <span>↻</span>
+                <strong>Edit History</strong>
+              </div>
+              <div class="std-history-body" id="stdHistoryBody"></div>
+            </section>
+          </div>
+
+          <aside class="std-summary">
+            <div class="std-summary-title">📄 Summary</div>
+            <div class="std-summary-card">
+              <div class="std-summary-h">Payer Information</div>
+              <div class="std-kv"><span>Primary Key</span><b id="stdSumPrimary">—</b></div>
+              <div class="std-kv"><span>DCR Identifier</span><b id="stdSumDcr">—</b></div>
+              <div class="std-kv"><span>Payer</span><b id="stdSumPayer">—</b></div>
+              <div class="std-kv"><span>PBM</span><b id="stdSumPbm">—</b></div>
+              <div class="std-kv"><span>PBM Role</span><b id="stdSumPbmRole">—</b></div>
+              <div class="std-kv"><span>BoB</span><b id="stdSumBob">—</b></div>
+              <div class="std-kv"><span>Product</span><b id="stdSumProduct">—</b></div>
+              <div class="std-kv"><span>Indication</span><b id="stdSumIndication">—</b></div>
+              <div class="std-kv"><span>Benefit Type</span><b id="stdSumBenefit">—</b></div>
+              <div class="std-kv"><span>Payer MMIT ID</span><b id="stdSumMmit">—</b></div>
+            </div>
+            <div class="std-summary-card">
+              <div class="std-summary-h">Change Request Information</div>
+              <div class="std-kv"><span>Date Submitted</span><b id="stdSumSubmitted">—</b></div>
+              <div class="std-kv"><span>Submitter</span><b id="stdSumSubmitter">—</b></div>
+              <div class="std-kv"><span>Steward Assigned</span><b id="stdSumSteward">—</b></div>
+              <div class="std-kv"><span>Status</span><b id="stdSumStatus">—</b></div>
+              <div class="std-kv"><span>Active Status</span><b id="stdSumActive">PROCESSING</b></div>
+            </div>
+          </aside>
+        </div>
+      </div><!-- /#stDetailView -->
     </main>
   </div>
 
@@ -1103,7 +1180,7 @@
 
   <div class="toast" id="toast"></div>
 
-<script src="app.js?v=97"></script>
+<script src="app.js?v=98"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>

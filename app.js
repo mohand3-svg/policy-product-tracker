@@ -2340,8 +2340,10 @@ let ST_ROWS = [
 const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
 let ST_SUBVIEW = "all";   // all | open | mine | completed
 let ST_ENTITY_MODE = "payer";
+let CURRENT_ST_DETAIL = null;
 let stBuilt = false;
 let currentBulkMode = "coverage";
+const ST_STEWARD_OPTIONS = ["System Admin", ST_CURRENT_USER, "Koushik Gadey", "Udayakumar Kongari", "Pradeep Lingampally"];
 
 function stStewardLabel(v) { return v && v.trim() ? v : "Unassigned"; }
 function stWorkflowStatus(r) { return r.status || "NEW"; }
@@ -2479,6 +2481,161 @@ function renderStKpis() {
     </div>`).join("");
 }
 
+function stDcrIdentifier(r) {
+  const n = Number(String(r.id || "").replace(/\D/g, "")) || 1000;
+  const token = ((n * 2654435761) >>> 0).toString(36).slice(0, 5).toUpperCase();
+  return `DCR-${token}`;
+}
+
+function stPrimaryKey(r) {
+  const seed = `${r.id || ""}${r.payer || ""}${r.brand || ""}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
+  return `ctr${Math.abs(hash).toString(16).padStart(8, "0").slice(0, 8)}-${Math.abs(hash * 17).toString(16).slice(0, 4)}`;
+}
+
+function stField(value, emphasis) {
+  const val = value === undefined || value === null || value === "" ? "—" : value;
+  return `<div class="std-field ${emphasis ? "std-p360" : ""}">${sfEsc(val)}</div>`;
+}
+
+function stDetailRow(label, mmit, p360, proposed, approved, approvedNote) {
+  return `<tr>
+    <td class="std-vlabel">${sfEsc(label)}</td>
+    <td>${stField(mmit)}</td>
+    <td>${stField(p360, true)}</td>
+    <td>${stField(proposed)}</td>
+    <td>${stField(approved)}${approvedNote ? `<div class="std-note">${sfEsc(approvedNote)}</div>` : ""}</td>
+  </tr>`;
+}
+
+function stDetailStatusChip(status) {
+  const s = status || "NEW";
+  const cls = s === "APPROVED" ? "std-status ok"
+    : s === "REJECTED" ? "std-status bad"
+    : s === "REVERTED" ? "std-status purple"
+    : s === "IN PROGRESS" ? "std-status warn"
+    : "std-status new";
+  return `<span class="${cls}">${sfEsc(s)}</span>`;
+}
+
+function populateStDetailSteward(current) {
+  const sel = document.getElementById("stdSteward");
+  if (!sel) return;
+  const currentLabel = stStewardLabel(current);
+  const opts = ST_STEWARD_OPTIONS.includes(currentLabel)
+    ? ST_STEWARD_OPTIONS.slice()
+    : [currentLabel, ...ST_STEWARD_OPTIONS];
+  sel.innerHTML = opts.map(s =>
+    `<option value="${sfEsc(s)}"${s === currentLabel ? " selected" : ""}>${sfEsc(s)}</option>`).join("");
+}
+
+function renderStDetail(id) {
+  const r = ST_ROWS.find(row => row.id === id);
+  if (!r) { showToast("Stewardship request not found", true); return; }
+  CURRENT_ST_DETAIL = id;
+  const dcrId = stDcrIdentifier(r);
+  const payerLabel = r.payer && r.payer !== "N/A" ? r.payer : "N/A";
+  const set = (elId, val) => { const e = document.getElementById(elId); if (e) e.textContent = val; };
+  const status = stWorkflowStatus(r);
+
+  set("stdPayer", payerLabel);
+  set("stdBob", r.bob);
+  set("stdProduct", r.brand);
+  const statusEl = document.getElementById("stdStatusChip");
+  if (statusEl) statusEl.innerHTML = stDetailStatusChip(status);
+  populateStDetailSteward(r.steward);
+
+  const rows = [
+    ["Prior Authorization Required", "—", r.pa || "No", "Yes", "Yes"],
+    ["Step Edit", "—", "No", "Yes", "Yes"],
+    ["Number of Steps", "0", "0", "1", "1"],
+    ["Step Products", "—", "—", "Test Steps for Auto creation", "Test Steps for Auto creation"],
+    ["Derived Simplified Policy Status", "—", r.gne || "COVERED (NO BIOLOGIC STEPS)", "—", "—"],
+    ["Policy Status", "—", r.mmitHpm || "DRUG COVERED WITH NO PA", "1 ST (BRANDED)", "1 ST (BRANDED)"],
+    ["Step Therapy Placement", "—", "No Step", "ST Single Brand", "ST Single Brand"],
+    ["Policy Link", "—", "—", "", "—"],
+    ["Site of Care Link", "—", "—", "—", "—"],
+    ["PA Form Link", "—", "", "", "—"],
+    ["Effective Policy Date*", "—", "—", "Fri, Oct 16, 2026", "Fri, Oct 16, 2026"],
+    ["State", "—", r.state || "NATIONAL", r.state || "NATIONAL", r.state || "NATIONAL"],
+    ["Platform/Tool Used to Access Data", "—", "", "—", "—"],
+    ["Evidence For Policy Change", "—", "", "—", "Auto Approved Wins"],
+    ["Additional Information", "—", "", "—", "Approved DCR by auto approve process"],
+  ];
+  const body = document.getElementById("stdValuesBody");
+  if (body) body.innerHTML = rows.map(row => stDetailRow(...row)).join("");
+
+  set("stdSumPrimary", stPrimaryKey(r));
+  set("stdSumDcr", dcrId);
+  set("stdSumPayer", payerLabel);
+  set("stdSumPbm", r.pbm || "N/A");
+  set("stdSumPbmRole", r.pbmRole || "N/A");
+  set("stdSumBob", r.bob);
+  set("stdSumProduct", r.brand);
+  set("stdSumIndication", r.indication);
+  set("stdSumBenefit", r.benefit);
+  set("stdSumMmit", r.form || "—");
+  set("stdSumSubmitted", r.submitted || "Oct 16, 2026, 9:50 AM");
+  set("stdSumSubmitter", "Udayakumar Kongari");
+  set("stdSumSteward", stStewardLabel(r.steward));
+  set("stdSumStatus", status);
+  set("stdSumActive", status === "APPROVED" ? "APPROVED" : "PROCESSING");
+
+  const history = document.getElementById("stdHistoryBody");
+  if (history) {
+    history.innerHTML = `
+      <div class="std-history-entry">
+        <div class="std-avatar">GK</div>
+        <div class="std-history-copy">
+          <div><b>Gowtham Sakarya</b> changed 2 properties using <b>[Uat] Update impact_dcr_materialization_dataset Exported Flag</b></div>
+          <div class="std-history-meta">${sfEsc(r.last || "Oct 16, 2026, 10:56 PM")}</div>
+          <div class="std-history-grid">
+            <span>Exported Date</span><b>${sfEsc(r.last || "Oct 16, 2026, 10:56 PM")}</b>
+            <span>Exported Status</span><b>true</b>
+          </div>
+        </div>
+      </div>
+      <div class="std-history-entry">
+        <div class="std-avatar">UK</div>
+        <div class="std-history-copy">
+          <div><b>Udayakumar Kongari</b> created PDCR — ${sfEsc(payerLabel)} ${sfEsc(r.indication)} ${sfEsc(r.brand)} using <b>[Uat] Create [iMPAct] DCR Based on Policy Tracker</b></div>
+          <div class="std-history-meta">${sfEsc(r.submitted || "Oct 16, 2026, 9:50 AM")}</div>
+          <div class="std-history-grid">
+            <span>Proposed Policy Status</span><b>1 ST (BRANDED)</b>
+            <span>Type</span><b>AI-AUTO Created</b>
+            <span>Payer Name</span><b>${sfEsc(payerLabel)}</b>
+            <span>Approved Geography Value</span><b>${sfEsc(r.state || "NATIONAL")}</b>
+            <span>Approved Benefit Type</span><b>${sfEsc(r.benefit)}</b>
+            <span>Brand</span><b>${sfEsc(r.brand)}</b>
+            <span>Indication</span><b>${sfEsc(r.indication)}</b>
+            <span>Status</span><b><span class="std-mini-status">${sfEsc(status)}</span></b>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+
+function openStDetail(id) {
+  renderStDetail(id);
+  const list = document.getElementById("stewardshipToolView");
+  const detail = document.getElementById("stDetailView");
+  if (list) list.hidden = true;
+  if (detail) detail.hidden = false;
+  document.body.classList.add("st-detail-active");
+  window.scrollTo && window.scrollTo(0, 0);
+}
+
+function closeStDetail() {
+  const detail = document.getElementById("stDetailView");
+  const list = document.getElementById("stewardshipToolView");
+  if (detail) detail.hidden = true;
+  if (list) list.hidden = false;
+  document.body.classList.remove("st-detail-active");
+  CURRENT_ST_DETAIL = null;
+  renderStTool();
+}
+
 function renderStTool() {
   const body = document.getElementById("stGridBody");
   if (!body) return;
@@ -2495,7 +2652,7 @@ function renderStTool() {
   }
 
   body.innerHTML = rows.map((r, i) => `
-    <tr>
+    <tr class="st-click-row" data-st-id="${sfEsc(r.id)}" tabindex="0">
       <td class="stcol-check"><input type="checkbox" class="st-row-cb" data-id="${sfEsc(r.id)}" /></td>
       <td>${sfEsc(r.payer)}</td>
       <td>${sfEsc(r.pbm)}</td>
@@ -2504,7 +2661,7 @@ function renderStTool() {
       <td>${sfEsc(r.indication)}</td>
       <td>${sfEsc(r.bob)}</td>
       <td>${sfEsc(r.benefit)}</td>
-      <td class="st-id">DCR-${sfEsc(String(1000 + i))}</td>
+      <td class="st-id">${sfEsc(stDcrIdentifier(r))}</td>
       <td class="st-lives">${Number(r.lives).toLocaleString()}</td>
       <td>${sfEsc(r.submitted || (i % 2 ? "Oct 16, 2026, 9:44 AM" : "Oct 16, 2026, 9:50 AM"))}</td>
       <td>${sfEsc(r.state || "NATIONAL")}</td>
@@ -2517,13 +2674,31 @@ function renderStTool() {
     </tr>`).join("");
 
   wireStRowChecks();
+  wireStRowOpen();
   ensureInlineTableFilters("stGrid", ["Dcr's URL"]);
   updateStSelCount();
 }
 
 function wireStRowChecks() {
   document.querySelectorAll(".st-row-cb").forEach(cb =>
-    cb.addEventListener("change", updateStSelCount));
+    cb.addEventListener("change", ev => {
+      ev.stopPropagation();
+      updateStSelCount();
+    }));
+}
+function wireStRowOpen() {
+  document.querySelectorAll("#stGridBody .st-click-row").forEach(row => {
+    row.addEventListener("click", ev => {
+      if (ev.target.closest("input, button, a, select, label")) return;
+      openStDetail(row.dataset.stId);
+    });
+    row.addEventListener("keydown", ev => {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      if (ev.target.closest("input, button, a, select, label")) return;
+      ev.preventDefault();
+      openStDetail(row.dataset.stId);
+    });
+  });
 }
 function updateStSelCount() {
   const n = [...document.querySelectorAll(".st-row-cb:checked")]
@@ -2603,6 +2778,39 @@ document.querySelectorAll(".sttab[data-stview]").forEach(tab => {
   });
   const footerBtn = document.getElementById("stFooterAssignBtn");
   if (footerBtn) footerBtn.addEventListener("click", openStBulkAssignModal);
+})();
+
+(function wireStDetailActions() {
+  const back = document.getElementById("stdBack");
+  if (back) back.addEventListener("click", closeStDetail);
+
+  const steward = document.getElementById("stdSteward");
+  if (steward) steward.addEventListener("change", () => {
+    const row = ST_ROWS.find(r => r.id === CURRENT_ST_DETAIL);
+    if (!row) return;
+    row.steward = steward.value;
+    renderStDetail(row.id);
+    showToast(`Steward reassigned to ${steward.value}`, false);
+  });
+
+  [
+    ["stdApprove", "APPROVED"],
+    ["stdReject", "REJECTED"],
+    ["stdRevert", "REVERTED"],
+  ].forEach(([id, status]) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const row = ST_ROWS.find(r => r.id === CURRENT_ST_DETAIL);
+      if (!row) return;
+      row.status = status;
+      renderStDetail(row.id);
+      showToast(`${stDcrIdentifier(row)} updated to ${status}`, false);
+    });
+  });
+
+  const edit = document.getElementById("stdEdit");
+  if (edit) edit.addEventListener("click", () => showToast("Edit mode enabled for this mock detail view", false));
 })();
 
 /* ============================================================
@@ -2973,6 +3181,9 @@ document.querySelectorAll(".nav-tab[data-tab]").forEach(t => {
     // Leaving any tab closes the win detail page.
     const dv = document.getElementById("winDetailView");
     if (dv) dv.hidden = true;
+    const stDetail = document.getElementById("stDetailView");
+    if (stDetail) stDetail.hidden = true;
+    document.body.classList.remove("st-detail-active");
 
     if (showMetrics) {
       stewardshipFilters.hidden = false;
