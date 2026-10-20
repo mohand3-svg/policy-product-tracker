@@ -2245,16 +2245,19 @@ function buildStFilters() {
   buildStFilter("stFilterBob", stTally("bob"), "bob");
 }
 
-// Apply sidebar filters + active sub-tab.
-function stFilteredRows() {
-  let rows = ST_ROWS.filter(r =>
+// Apply sidebar filters, then optionally narrow to a sub-tab.
+function stRowsAfterSidebarFilters() {
+  return ST_ROWS.filter(r =>
     (stFilters.status.size === 0 || stFilters.status.has(r.dcr)) &&
     (stFilters.steward.size === 0 || stFilters.steward.has(stStewardLabel(r.steward))) &&
     (stFilters.payer.size === 0 || stFilters.payer.has(r.payer)) &&
     (stFilters.brand.size === 0 || stFilters.brand.has(r.brand)) &&
     (stFilters.bob.size === 0 || stFilters.bob.has(r.bob))
   );
-  switch (ST_SUBVIEW) {
+}
+
+function stRowsForSubview(view, rows = stRowsAfterSidebarFilters()) {
+  switch (view) {
     case "open":
       return rows.filter(r => ["New", "BridgingIssues"].includes(r.dcr));
     case "mine":
@@ -2265,6 +2268,24 @@ function stFilteredRows() {
     default:
       return rows;
   }
+}
+
+function stFilteredRows() {
+  return stRowsForSubview(ST_SUBVIEW);
+}
+
+function updateStTabCounts() {
+  const baseRows = stRowsAfterSidebarFilters();
+  const counts = {
+    All: stRowsForSubview("all", baseRows).length,
+    Open: stRowsForSubview("open", baseRows).length,
+    Mine: stRowsForSubview("mine", baseRows).length,
+    Completed: stRowsForSubview("completed", baseRows).length,
+  };
+  Object.entries(counts).forEach(([key, value]) => {
+    const el = document.getElementById(`stCount${key}`);
+    if (el) el.textContent = String(value);
+  });
 }
 
 function stStatusBadge(dcr) {
@@ -2310,6 +2331,7 @@ function renderStKpis() {
 function renderStTool() {
   const body = document.getElementById("stGridBody");
   if (!body) return;
+  updateStTabCounts();
   const rows = stFilteredRows();
   const cnt = document.getElementById("stRowCount");
   if (cnt) cnt.textContent = String(rows.length);

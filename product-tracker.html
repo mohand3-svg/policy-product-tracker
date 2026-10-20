@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Policy Intelligence Stewardship Tool</title>
-<link rel="stylesheet" href="styles.css?v=88" />
+<link rel="stylesheet" href="styles.css?v=89" />
 </head>
 <body>
   <!-- ============ TOP NAV ============ -->
@@ -794,10 +794,10 @@
 
         <div class="st-page-card">
           <div class="st-subtabs">
-            <a class="sttab active" data-stview="all">All Requests</a>
-            <a class="sttab" data-stview="open">Open Requests</a>
-            <a class="sttab" data-stview="mine">My Requests</a>
-            <a class="sttab" data-stview="completed">Completed Requests</a>
+            <a class="sttab active" data-stview="all">All Requests <span class="sttab-count" id="stCountAll">0</span></a>
+            <a class="sttab" data-stview="open">Open Requests <span class="sttab-count" id="stCountOpen">0</span></a>
+            <a class="sttab" data-stview="mine">My Requests <span class="sttab-count" id="stCountMine">0</span></a>
+            <a class="sttab" data-stview="completed">Completed Requests <span class="sttab-count" id="stCountCompleted">0</span></a>
           </div>
           <div class="st-toolbar">
             <div class="st-toolbar-right">
@@ -1097,7 +1097,7 @@
 
   <div class="toast" id="toast"></div>
 
-<script src="app.js?v=88"></script>
+<script src="app.js?v=89"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>
