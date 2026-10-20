@@ -2584,6 +2584,24 @@ function renderStDetail(id) {
   set("stdSumSteward", stStewardLabel(r.steward));
   set("stdSumStatus", status);
   set("stdSumActive", status === "APPROVED" ? "APPROVED" : "PROCESSING");
+  const pbmLinkWrap = document.getElementById("stdPbmDcrLinkWrap");
+  const pbmLink = document.getElementById("stdPbmDcrLink");
+  if (pbmLinkWrap && pbmLink) {
+    pbmLinkWrap.hidden = !isPbmOnly;
+    if (isPbmOnly) {
+      const params = new URLSearchParams({
+        entityMode: "pbm",
+        pbm: r.pbm || "Express Scripts",
+        pbmRole: "National",
+        bob: r.bob || "COMMERCIAL",
+        product: r.brand || "ITOVEBI",
+        indication: r.indication || "BREAST",
+        benefit: r.benefit || "PHARMACY BENEFIT",
+        source: "dsa-stewardship",
+      });
+      pbmLink.href = `multi-form.html?${params.toString()}`;
+    }
+  }
 
   const history = document.getElementById("stdHistoryBody");
   if (history) {

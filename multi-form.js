@@ -592,5 +592,47 @@ function showToast(msg, isErr) {
 }
 
 // ---- init -------------------------------------------------------
+function canonicalDeepLinkValue(field, value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const upper = raw.toUpperCase();
+  if (field === "pbm") {
+    const match = STATIC_OPTIONS.pbm.find(opt => opt.toUpperCase() === upper);
+    return match || raw;
+  }
+  if (field === "pbmRole") {
+    if (upper.includes("NATIONAL")) return "National";
+    if (upper.includes("CUSTOM")) return "Custom";
+    if (upper.includes("FORMULARY")) return "Formulary Management";
+    return raw;
+  }
+  const values = [...new Set(ROWS.map((r, index) => rowValue(r, field, index)).filter(Boolean))];
+  const match = values.find(opt => String(opt).toUpperCase() === upper);
+  return match || raw;
+}
+
+function applyDeepLinkFilters() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.toString()) return;
+  const mode = params.get("entityMode") || params.get("mode") || params.get("searchBy");
+  if (mode) filter.entityMode = String(mode).toLowerCase() === "pbm" ? "pbm" : "payer";
+
+  ["parentPayer", "payer", "pbm", "pbmRole", "bob", "product", "indication", "benefit"].forEach(field => {
+    const value = params.get(field);
+    if (value) filter[field] = canonicalDeepLinkValue(field, value);
+  });
+
+  if (filter.entityMode === "pbm") {
+    filter.parentPayer = "";
+    filter.payer = "";
+    if (!filter.pbmRole) filter.pbmRole = "National";
+    if (!filter.benefit) filter.benefit = "PHARMACY BENEFIT";
+  } else {
+    filter.pbm = "";
+    filter.pbmRole = "";
+  }
+}
+
+applyDeepLinkFilters();
 syncEntityMode();
 render();
