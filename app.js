@@ -2536,10 +2536,11 @@ function renderStDetail(id) {
   CURRENT_ST_DETAIL = id;
   const dcrId = stDcrIdentifier(r);
   const payerLabel = r.payer && r.payer !== "N/A" ? r.payer : "N/A";
+  const entityLabel = payerLabel === "N/A" && stHasPopulatedPbm(r) ? r.pbm : payerLabel;
   const set = (elId, val) => { const e = document.getElementById(elId); if (e) e.textContent = val; };
   const status = stWorkflowStatus(r);
 
-  set("stdPayer", payerLabel);
+  set("stdPayer", entityLabel);
   set("stdBob", r.bob);
   set("stdProduct", r.brand);
   const statusEl = document.getElementById("stdStatusChip");
@@ -2599,12 +2600,12 @@ function renderStDetail(id) {
       <div class="std-history-entry">
         <div class="std-avatar">UK</div>
         <div class="std-history-copy">
-          <div><b>Udayakumar Kongari</b> created PDCR — ${sfEsc(payerLabel)} ${sfEsc(r.indication)} ${sfEsc(r.brand)} using <b>[Uat] Create [iMPAct] DCR Based on Policy Tracker</b></div>
+          <div><b>Udayakumar Kongari</b> created PDCR — ${sfEsc(entityLabel)} ${sfEsc(r.indication)} ${sfEsc(r.brand)} using <b>[Uat] Create [iMPAct] DCR Based on Policy Tracker</b></div>
           <div class="std-history-meta">${sfEsc(r.submitted || "Oct 16, 2026, 9:50 AM")}</div>
           <div class="std-history-grid">
             <span>Proposed Policy Status</span><b>1 ST (BRANDED)</b>
             <span>Type</span><b>AI-AUTO Created</b>
-            <span>Payer Name</span><b>${sfEsc(payerLabel)}</b>
+            <span>Payer Name</span><b>${sfEsc(entityLabel)}</b>
             <span>Approved Geography Value</span><b>${sfEsc(r.state || "NATIONAL")}</b>
             <span>Approved Benefit Type</span><b>${sfEsc(r.benefit)}</b>
             <span>Brand</span><b>${sfEsc(r.brand)}</b>
