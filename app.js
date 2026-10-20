@@ -2197,7 +2197,7 @@ function setWinDetailStatus(newStatus) {
 const ST_CURRENT_USER = "A. Martinez";   // "My Workload" owner (matches CURRENT_USER)
 
 // Working copy so mock re-assignment doesn't mutate the tracker's ROWS.
-let ST_ROWS = SEED_ROWS.map(r => ({ ...r }));
+let ST_ROWS = SEED_ROWS.slice(3).map(r => ({ ...r }));
 
 const ST_STATUS_BY_ID = {
   "REQ-1042": "APPROVED",
