@@ -319,7 +319,8 @@ function buildCustomManualCell(r, column) {
 }
 
 function buildStandardTextCells(r) {
-  const competitorCells = selectedCompetitorBrands()
+  const competitors = selectedCompetitorBrands();
+  const competitorCells = competitors
     .map(competitor => sfEsc(relativeAccessPositionForCompetitor(r, competitor)));
   const textCells = [
     sfEsc(r.parentPayer || "—"), sfEsc(r.payer), sfEsc(r.brand), sfEsc(r.indication),
@@ -331,7 +332,7 @@ function buildStandardTextCells(r) {
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
-    sfEsc(r.relAccess || "—"),
+    sfEsc(baseRelativeAccessDisplay(r)),
     ...competitorCells,
     sfEsc(r.mmitHpm),
   ];
@@ -358,10 +359,27 @@ function buildManualTextCells(r) {
     buildManualCell(r, "reporterLink1", "<free text>"),
     buildManualCell(r, "reporterLink2", "<free text>"),
     buildManualCell(r, "reporterLink3", "<free text>"),
-    buildManualCell(r, "relAccess", "<free text>"),
+    buildBaseRelativeAccessManualCell(r),
     ...selectedCompetitorBrands().map(competitor => buildCompetitorRapCell(r, competitor)),
     buildManualCell(r, "mmitHpm", "<free text>"),
   ];
+}
+
+function baseRelativeAccessDisplay(r) {
+  return selectedCompetitorBrands().length ? (r.relAccess || "—") : "";
+}
+
+function buildBaseRelativeAccessManualCell(r) {
+  return selectedCompetitorBrands().length
+    ? buildManualCell(r, "relAccess", "<free text>")
+    : buildReadOnlyBlankCell();
+}
+
+function buildReadOnlyBlankCell() {
+  const td = document.createElement("td");
+  td.className = "relative-access-blank";
+  td.textContent = "";
+  return td;
 }
 
 function buildCompetitorRapCell(r, competitor) {
