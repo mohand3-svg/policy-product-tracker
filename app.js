@@ -2198,7 +2198,7 @@ const ST_CURRENT_USER = "A. Martinez";   // "My Workload" owner (matches CURRENT
 
 const ST_STATUS_ORDER = ["NEW", "APPROVED", "IN PROGRESS", "REJECTED", "REVERTED"];
 const ST_SAMPLE_PAYER_ROWS = [
-  { payer: "", pbmRole: "" },
+  { payer: "N/A", pbmRole: "N/A" },
   { payer: "DOMTAR CORPORATION", pbmRole: "NATIONAL FORMULARY" },
   { payer: "KROLL", pbmRole: "NATIONAL FORMULARY" },
   { payer: "REGIS CORPORATION", pbmRole: "NATIONAL FORMULARY" },
