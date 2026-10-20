@@ -1846,7 +1846,7 @@ function renderWinsPage() {
   }
 
   if (rows.length === 0) {
-    body.innerHTML = `<tr><td colspan="24" class="wins-empty">No policy wins match the current filters</td></tr>`;
+    body.innerHTML = `<tr><td colspan="23" class="wins-empty">No policy wins match the current filters</td></tr>`;
     ensureInlineTableFilters("winsGrid", ["Action"]);
     updateWinsSelCount();
     return;
@@ -1861,7 +1861,6 @@ function renderWinsPage() {
       ${winCell(w.brand)}
       ${winCell(w.subInd)}
       ${winCell(w.benefit)}
-      ${winCell(pbmCoverageForPolicy(w, i))}
       ${winCell(w.lives, "wc-lives")}
       ${winCell(w.simpleBefore)}
       ${winCell(w.simpleAfter)}
