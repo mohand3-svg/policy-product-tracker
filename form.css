@@ -89,6 +89,20 @@
 .form-main { flex: 1; display: flex; flex-direction: column; padding: 18px 20px; overflow: hidden; }
 .form-main-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
 .payer-details { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+.details-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.details-title-row .payer-details { margin-bottom: 0; }
+.record-count-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 9px;
+  border: 1px solid #cfd8e6;
+  border-radius: 999px;
+  background: #f6f8fc;
+  color: #43536a;
+  font-size: 12px;
+  font-weight: 700;
+}
 .user-guide { font-size: 12.5px; color: #2563eb; }
 .form-main-actions { display: flex; gap: 8px; }
 

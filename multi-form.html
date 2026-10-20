@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>UAT Policy Intelligence Update Form — Multiple Policies</title>
 <link rel="stylesheet" href="styles.css?v=78" />
-<link rel="stylesheet" href="form.css?v=52" />
+<link rel="stylesheet" href="form.css?v=53" />
 </head>
 <body class="form-page">
   <!-- ===== TOP BAR ===== -->
@@ -79,7 +79,10 @@
     <main class="form-main populated">
       <div class="form-main-head">
         <div>
-          <h2 class="payer-details" id="detailsTitle">Payer Details</h2>
+          <div class="details-title-row">
+            <h2 class="payer-details" id="detailsTitle">Payer Details</h2>
+            <span class="record-count-badge" id="recordCountBadge">0 records</span>
+          </div>
           <div class="user-guide">ⓘ User guide for Multiple Policies update form</div>
         </div>
         <div class="form-main-actions">
@@ -121,7 +124,7 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <script src="multi-form.js?v=66"></script>
+  <script src="multi-form.js?v=67"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>

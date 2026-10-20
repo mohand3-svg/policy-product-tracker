@@ -361,6 +361,8 @@ function cell(v) {
 function render() {
   renderChips();
   const rows = visibleRows();
+  const countBadge = document.getElementById("recordCountBadge");
+  if (countBadge) countBadge.textContent = `${rows.length} record${rows.length === 1 ? "" : "s"}`;
 
   let html = rows.map((r, i) => {
     const originalIndex = ROWS.indexOf(r);
