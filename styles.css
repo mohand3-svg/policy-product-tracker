@@ -861,6 +861,14 @@ body.sttool-active.st-detail-active .content {
   min-width: 210px; white-space: normal;
 }
 .manual-custom-header { min-width: 150px; cursor: text; }
+.competitor-rap-header {
+  min-width: 210px;
+}
+.competitor-rap-cell {
+  color: #374151;
+  font-weight: 700;
+  white-space: nowrap;
+}
 .manual-custom-header:focus {
   outline: 2px solid #7aa7f8; outline-offset: -2px; background: #f4f8ff;
 }

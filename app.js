@@ -319,6 +319,8 @@ function buildCustomManualCell(r, column) {
 }
 
 function buildStandardTextCells(r) {
+  const competitorCells = selectedCompetitorBrands()
+    .map(competitor => sfEsc(relativeAccessPositionForCompetitor(r, competitor)));
   const textCells = [
     sfEsc(r.parentPayer || "—"), sfEsc(r.payer), sfEsc(r.brand), sfEsc(r.indication),
     sfEsc(r.bob), sfEsc(r.benefit), fmtLives(r.lives),
@@ -330,6 +332,7 @@ function buildStandardTextCells(r) {
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
     sfEsc(r.relAccess || "—"),
+    ...competitorCells,
     sfEsc(r.mmitHpm),
   ];
   return textCells.map(html => {
@@ -356,14 +359,36 @@ function buildManualTextCells(r) {
     buildManualCell(r, "reporterLink2", "<free text>"),
     buildManualCell(r, "reporterLink3", "<free text>"),
     buildManualCell(r, "relAccess", "<free text>"),
+    ...selectedCompetitorBrands().map(competitor => buildCompetitorRapCell(r, competitor)),
     buildManualCell(r, "mmitHpm", "<free text>"),
   ];
+}
+
+function buildCompetitorRapCell(r, competitor) {
+  const td = document.createElement("td");
+  td.className = "competitor-rap-cell";
+  td.textContent = relativeAccessPositionForCompetitor(r, competitor);
+  return td;
 }
 
 function renderTrackerHeaders(showCustomColumns) {
   const row = document.getElementById("trackerHeaderRow");
   if (!row) return;
   row.querySelectorAll(".manual-custom-header").forEach(th => th.remove());
+  row.querySelectorAll(".competitor-rap-header").forEach(th => th.remove());
+
+  const rapHeader = [...row.children].find(th => th.textContent.trim() === "Relative Access Position");
+  if (rapHeader) {
+    let anchor = rapHeader;
+    selectedCompetitorBrands().forEach(competitor => {
+      const th = document.createElement("th");
+      th.className = "competitor-rap-header";
+      th.textContent = `Relative Access Position (${competitor})`;
+      row.insertBefore(th, anchor.nextSibling);
+      anchor = th;
+    });
+  }
+
   if (!showCustomColumns) return;
   const action = row.lastElementChild;
   CUSTOM_COLUMNS.forEach(col => {
@@ -587,6 +612,15 @@ const ACCESS_SCORE = {
   "At Par": 2,
   "Advantaged": 3,
 };
+const COMPETITOR_ACCESS_SCORE = {
+  "AVSOLA": 1,
+  "AVTOZMA IV": 2,
+  "AVTOZMA SC": 3,
+  "BIOSIMILAR MARKET BASKET": 2,
+  "CIMZIA": 1,
+  "ETICOVO": 3,
+  "INFLECTRA": 2,
+};
 
 function syncBrandSelectionOrder(changedCb) {
   if (changedCb && changedCb.classList.contains("brand-cb")) {
@@ -629,6 +663,21 @@ function relativeAccessPositionForRow(r) {
   if (gneScore == null || competitorScore == null) return "NA";
   if (competitorScore > gneScore) return "Advantaged";
   if (competitorScore < gneScore) return "Disadvantaged";
+  return "At Par";
+}
+
+function selectedCompetitorBrands() {
+  return [...document.querySelectorAll(".competitor-brand-cb:checked")]
+    .filter(cb => !cb.disabled)
+    .map(cb => cb.value);
+}
+
+function relativeAccessPositionForCompetitor(r, competitor) {
+  const selectedBrand = [...document.querySelectorAll(".brand-cb:checked")].map(cb => cb.value)[0] || r.brand;
+  const gneScore = brandAccessScore(selectedBrand) || ACCESS_SCORE[r.relAccess] || 2;
+  const competitorScore = COMPETITOR_ACCESS_SCORE[competitor] || 2;
+  if (gneScore > competitorScore) return "Advantaged";
+  if (gneScore < competitorScore) return "Disadvantaged";
   return "At Par";
 }
 
