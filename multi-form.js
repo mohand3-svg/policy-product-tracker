@@ -13,7 +13,6 @@
 const SITE = "\"Commercial and medicare…";
 const PA_URL = "https://static.cigna.com/asset…";
 const ITOVEBI_PAYER_ROWS = [
-  { payer: "", pbmRole: "" },
   { payer: "DOMTAR CORPORATION", pbmRole: "NATIONAL FORMULARY" },
   { payer: "KROLL", pbmRole: "NATIONAL FORMULARY" },
   { payer: "REGIS CORPORATION", pbmRole: "NATIONAL FORMULARY" },
