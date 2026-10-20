@@ -8,31 +8,138 @@
 // Demo payer-policy rows (mirrors the screenshot).
 // Columns: parentPayer, payer, bob, product, indication, benefit, pa,
 //          stepEdit, numSteps, placement, stepProducts, status,
-//          simplified, policyLink, siteLink, paLink, effDate
+//          simplified, policyLink, siteLink, paLink, effDate,
+//          displayed PBM, displayed PBM Role
 const SITE = "\"Commercial and medicare…";
 const PA_URL = "https://static.cigna.com/asset…";
-const ROWS = [
-  ["Cigna", "NA", "COMMERCIAL", "XOLAIR", "Multiple Sclerosis", "PHARMACY BENEFIT", "Yes", "Yes", 1, "ST Single Generic", "1 of [montelukast, cetirizine]", "BIO MANAGED", "COVERED – WITH STEPS", "https://payer.example/selecthealth-xolair", SITE, PA_URL, "2026-11-01"],
-  ["Cigna", "UNIVERSITY OF ROCHESTER", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "PHARMACY BENEFIT", "Yes", "No", 0, "No Step", "N/A", "TO PI WITH CRITERIA", "COVERED – NO STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["Cigna", "COLGATE UNIVERSITY", "COMMERCIAL", "OCREVUS", "Multiple Sclerosis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
-  ["Cigna", "EVANGELICAL LUTHERAN CHURCH IN AMERICA", "COMMERCIAL", "XELJANZ", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
-  ["INTERMOUNTAIN HEALTH CARE", "SELECTHEALTH", "MEDICARE_ADVANTAGE", "SIMLANDI(CF) AUTOINJECTOR", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
-  ["INTERMOUNTAIN HEALTH CARE", "SELECTHEALTH", "MEDICARE_ADVANTAGE", "REMICADE", "Rheumatoid Arthritis", "MEDICAL BENEFIT", "Yes", "Yes", 3, "ST Multiple Brands", "Renflexis and 1 of [Non …", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["BUILDERS FIRSTSOURCE", "BUILDERS FIRSTSOURCE (EMPLOYER)", "COMMERCIAL", "UNKNOWN", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "No", 0, "No Step", "N/A", "UNKNOWN", "UNKNOWN", "N/A", "N/A", "N/A", "N/A"],
-  ["CVS HEALTH", "AETNA (VA)", "MEDICAID_MANAGED", "RINVOQ", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "Yes", 1, "ST Single Generic", "FOC-QA", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["BLUECROSS BLUESHIELD", "BLUECROSS BLUESHIELD (AL)", "MEDICARE_ADVANTAGE", "LUCENTIS", "Diabetic Macular Edema", "MEDICAL BENEFIT", "Yes", "Yes", 1, "ST Single Generic", "1 of [Avastin, Bevacizumab,…", "1 ST (NON-BR)", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["MAIL HANDLERS BENEFIT", "MAIL HANDLERS BENEFIT", "COMMERCIAL", "YUSIMRY", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "Yes", 4, "ST Generic and Brand", "1 of [methotrexat…", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["UBS", "UBS (EMPLOYER)", "COMMERCIAL", "YUFLYMA", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "Yes", 4, "ST Generic and Brand", "1 of [methotrexat…", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["INTERMOUNTAIN HEALTH CARE", "SELECTHEALTH", "MEDICARE_ADVANTAGE", "INFLIXIMAB", "Rheumatoid Arthritis", "MEDICAL BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
-  ["CENTENE", "SILVERSUMMIT", "COMMERCIAL", "XOLAIR VIAL", "Food Allergy", "MEDICAL BENEFIT", "Yes", "Yes", 1, "ST Single Generic", "FOC-13743 QA Round 2 …", "TO PI WITH CRITERIA", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["84 LUMBER COMPANY", "84 LUMBER COMPANY (EMPLOYER)", "COMMERCIAL", "HADLIMA", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "Yes", 1, "ST Single Generic", "FOC-QA", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["SOUTHEASTERN INDIANA", "SOUTHEASTERN INDIANA", "COMMERCIAL", "HADLIMA", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "Yes", 9, "ST Multiple Brands", "1 of [Hydroxychlor…", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["CENTENE", "NEW HAMPSHIRE", "COMMERCIAL", "XOLAIR PFS", "Food Allergy", "MEDICAL BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
-  ["MODA HEALTH", "MODA HEALTH", "MEDICAID_MANAGED", "INFLECTRA", "Rheumatoid Arthritis", "MEDICAL BENEFIT", "Yes", "No", 0, "No Step", "N/A", "PA REQUIRED", "COVERED – NO STEPS", "N/A", SITE, PA_URL, "N/A"],
-  ["BLUECROSS BLUESHIELD", "BLUECROSS BLUESHIELD", "COMMERCIAL", "TYENNE IV", "Rheumatoid Arthritis", "MEDICAL BENEFIT", "No", "No", 0, "No Step", "N/A", "UNKNOWN", "UNKNOWN", "N/A", "N/A", "N/A", "N/A"],
-  ["GENERAL ELECTRIC", "GENERAL ELECTRIC (EMPLOYER)", "COMMERCIAL", "SIMLANDI(CF) AUTOINJECTOR", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
-  ["AMERICAN NATIONAL RE", "AMERICAN NATIONAL RE", "COMMERCIAL", "KEVZARA", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "Yes", "Yes", 3, "ST Multiple Generics", "1 of [Non Biological …", "BIO MANAGED", "COVERED – WITH STEPS", "N/A", SITE, PA_URL, "N/A"],
+const ITOVEBI_PAYER_ROWS = [
+  { payer: "", pbmRole: "" },
+  { payer: "DOMTAR CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "KROLL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "REGIS CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "VOLKSWAGEN GROUP OF AMERICA", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AMEREN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MERCEDES-BENZ U.S. INTERNATIONAL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "HEARST CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AMGEN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SONIC", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "NEW JERSEY TRANSIT CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CUYAHOGA COUNTY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "OCCIDENTAL PETROLEUM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SERCO", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "INTEL CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CHIQUITA BRANDS INTERNATIONAL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "RED ROBIN GOURMET BURGERS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "BASF", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MCDONALD'S", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "UNITY HEALTH SYSTEM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "J.B. HUNT TRANSPORT SERVICES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DOMINION ENERGY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "HNI", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AGGREKO", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "VF CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SAINT LOUIS UNIVERSITY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DARTMOUTH-HITCHCOCK", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TEXAS A&M UNIVERSITY SYSTEM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "EMERSON ELECTRIC", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SANDIA NATIONAL LABORATORIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ERIE COUNTY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SNAP-ON", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MCLANE COMPANY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "UNIVERSITY OF LOUISVILLE", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "JOHN HANCOCK FINANCIAL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "PG&E", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "GENERAL MILLS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "EXXON MOBIL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AVERITT", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "NAVY FEDERAL CREDIT UNION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "BIC CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TEACHERS RETIREMENT SYSTEM (TRS)", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TEXAS CHILDREN'S HEALTH", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "COUNTY OF SUMMIT", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "JOHNSON & JOHNSON", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CRATE AND BARREL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "MOHAWK INDUSTRIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ALBUQUERQUE PUBLIC SCHOOLS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "WENDY'S COMPANY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "COREWELL HEALTH", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AMAZON.COM", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "UNITED PARCEL SERVICE", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "WILLIAMS LEA", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "AKRON PUBLIC SCHOOLS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "SHAW INDUSTRIES GROUP", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "NISKAYUNA CENTRAL SCHOOL DISTRICT", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CRACKER BARREL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DETROIT DIESEL CORPORATION", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "L3HARRIS TECHNOLOGIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "STATE OF MISSOURI", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "INTERPUBLIC GROUP", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "KAMAN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "TENNESSEE VALLEY AUTHORITY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "STATE OF NEW MEXICO", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "KNOLL", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CUMMINS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "RHEEM MANUFACTURING", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ABBOTT LABORATORIES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "LAND O'LAKES", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "WEGMANS FOOD MARKETS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CURATORS OF THE UNIVERSITY OF MISSOURI", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DARTMOUTH COLLEGE", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "STATE OF ALABAMA", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ABERCROMBIE AND FITCH", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CHICO'S FAS", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "HERSHEY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "H. E. BUTT GROCERY COMPANY", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "ST. JOSEPH'S HOSPITAL HEALTH CENTER", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CONCORDIA HEALTH PLAN", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "CHEVRON", pbmRole: "NATIONAL FORMULARY" },
+  { payer: "DSM HOLDING COMPANY", pbmRole: "NATIONAL FORMULARY" },
 ];
+
+const POLICY_SAMPLES = [
+  ["No", "No", 0, "No Step", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A"],
+  ["Yes", "No", 0, "No Step", "N/A", "PA REQUIRED", "COVERED - NO STEPS", "N/A", SITE, PA_URL, "2026-11-01"],
+  ["Yes", "Yes", 1, "ST Single Brand", "Itovebi", "1 ST (BRANDED)", "COVERED - WITH STEPS", "https://payer.example/itovebi-policy", SITE, PA_URL, "2026-11-15"],
+  ["No", "Yes", 2, "ST Multiple Brands", "Truqap and Piqray", "TO PI WITH CRITERIA", "COVERED - WITH STEPS", "N/A", SITE, PA_URL, "2026-12-01"],
+  ["Yes", "Yes", 1, "ST Single Generic", "1 of [tamoxifen, anastrozole]", "BIO MANAGED", "COVERED - WITH STEPS", "N/A", SITE, PA_URL, "2027-01-01"],
+];
+
+function slugifyPayer(payer, index) {
+  return (payer || `pbm-row-${index + 1}`)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function makeItovebiRow(row, index) {
+  const sample = POLICY_SAMPLES[index % POLICY_SAMPLES.length];
+  const policyLink = sample[7] === "N/A"
+    ? "N/A"
+    : `https://payer.example/itovebi-${slugifyPayer(row.payer, index)}`;
+  return [
+    "Cigna",
+    row.payer,
+    "COMMERCIAL",
+    "ITOVEBI",
+    "BREAST",
+    "PHARMACY BENEFIT",
+    sample[0],
+    sample[1],
+    sample[2],
+    sample[3],
+    sample[4],
+    sample[5],
+    sample[6],
+    policyLink,
+    sample[8],
+    sample[9],
+    sample[10],
+    "EXPRESS SCRIPTS",
+    row.pbmRole,
+  ];
+}
+
+const ROWS = ITOVEBI_PAYER_ROWS.map(makeItovebiRow);
 
 // Number of empty placeholder rows to render (fills the grid like the screenshot).
 const MIN_ROWS = 22;
@@ -162,6 +269,8 @@ function rowPbmRole(r) {
 }
 
 function displayPbmValue(r, index, field) {
+  const payloadIndex = field === "pbm" ? 17 : 18;
+  if (r.length > payloadIndex) return r[payloadIndex] || "";
   if (index > 2) return "N/A";
   if (field === "pbmRole") return "National Formulary";
   return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
@@ -193,11 +302,13 @@ function activeFilterKeys() {
 
 function filterMatches(field, rowDisplayValue, selectedValue) {
   if (!selectedValue) return true;
-  if (field === "pbmRole" && selectedValue === "National") return true;
+  const display = String(rowDisplayValue || "").toUpperCase();
+  const selected = String(selectedValue || "").toUpperCase();
+  if (field === "pbmRole" && selected === "NATIONAL") return display.includes("NATIONAL");
   if (field === "pbmRole" && selectedValue === "Formulary Management") {
-    return rowDisplayValue === "FORMULARY MANAGEMENT";
+    return display === "FORMULARY MANAGEMENT";
   }
-  return rowDisplayValue === selectedValue;
+  return display === selected;
 }
 
 function visibleRows() {

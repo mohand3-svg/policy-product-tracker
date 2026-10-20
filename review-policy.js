@@ -134,7 +134,7 @@ function rowPbmRole(r) {
 
 function displayPbmValue(r, index, field) {
   const payloadIndex = field === "pbm" ? 17 : 18;
-  if (r[payloadIndex]) return r[payloadIndex];
+  if (r.length > payloadIndex) return r[payloadIndex] || "";
   if (index > 2) return "N/A";
   return field === "pbm" ? rowPbm(r) : rowPbmRole(r);
 }
