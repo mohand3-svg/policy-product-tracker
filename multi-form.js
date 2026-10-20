@@ -138,7 +138,23 @@ function makeItovebiRow(row, index) {
   ];
 }
 
-const ROWS = ITOVEBI_PAYER_ROWS.map(makeItovebiRow);
+const NON_PBM_ROWS = [
+  ["UnitedHealthcare Group", "UnitedHealthcare", "COMMERCIAL", "OCREVUS ZUNOVO", "Multiple Sclerosis", "MEDICAL BENEFIT", "Yes", "No", 0, "No Step", "N/A", "TO PI WITH CRITERIA", "COVERED - NO STEPS", "https://payer.example/ocrevus-zunovo-uhc", SITE, PA_URL, "2026-12-15", "", ""],
+  ["CVS Health Corporation", "Aetna", "COMMERCIAL", "VABYSMO", "Neovascular Age Related Macular Degeneration", "MEDICAL BENEFIT", "Yes", "Yes", 1, "ST Single Brand", "Lucentis", "1 ST (BRANDED)", "COVERED - WITH STEPS", "https://payer.example/vabysmo-aetna", SITE, PA_URL, "2026-11-20", "", ""],
+  ["Humana Inc", "Humana", "MEDICARE_ADVANTAGE", "ACTEMRA SC", "Rheumatoid Arthritis", "PHARMACY BENEFIT", "No", "No", 0, "Not Covered", "N/A", "NOT COVERED", "NOT COVERED", "N/A", "N/A", "N/A", "N/A", "", ""],
+  ["Blue Cross Blue Shield", "BCBS Texas", "COMMERCIAL", "XOLAIR", "Food Allergy", "MEDICAL BENEFIT", "Yes", "Yes", 2, "ST Multiple Brands", "Dupixent and 1 of [antihistamine]", "BIO MANAGED", "COVERED - WITH STEPS", "https://payer.example/xolair-bcbs-texas", SITE, PA_URL, "2027-01-15", "", ""],
+  ["Kaiser Permanente", "Kaiser Permanente California", "COMMERCIAL", "ALECENSA", "ALK mutation positive NSCLC", "PHARMACY BENEFIT", "Yes", "No", 0, "No Step", "N/A", "PA REQUIRED", "COVERED - NO STEPS", "N/A", SITE, PA_URL, "2026-12-01", "", ""],
+  ["Centene Corporation", "Sunflower Health Plan", "MEDICAID_MANAGED", "LUCENTIS", "Diabetic Macular Edema", "MEDICAL BENEFIT", "No", "Yes", 1, "ST Single Generic", "Bevacizumab", "TO PI WITH CRITERIA", "COVERED - WITH STEPS", "https://payer.example/lucentis-sunflower", SITE, PA_URL, "2027-02-01", "", ""],
+  ["Elevance Health", "Anthem Blue Cross", "COMMERCIAL", "RITUXAN", "Rheumatoid Arthritis", "MEDICAL BENEFIT", "Yes", "Yes", 3, "ST Multiple Brands", "Ruxience and Truxima", "BIO MANAGED", "COVERED - WITH STEPS", "N/A", SITE, PA_URL, "2026-10-30", "", ""],
+  ["Molina Healthcare", "Molina Ohio", "MEDICAID_MANAGED", "OCREVUS", "Primary Progressive Multiple Sclerosis", "MEDICAL BENEFIT", "Yes", "No", 0, "No Step", "N/A", "PA REQUIRED", "COVERED - NO STEPS", "https://payer.example/ocrevus-molina-ohio", SITE, PA_URL, "2027-03-01", "", ""],
+  ["Highmark Health", "Highmark Blue Shield", "COMMERCIAL", "TYENNE IV", "Rheumatoid Arthritis", "MEDICAL BENEFIT", "No", "No", 0, "Not Covered", "N/A", "UNKNOWN", "UNKNOWN", "N/A", "N/A", "N/A", "N/A", "", ""],
+  ["Oscar Health", "Oscar Health", "COMMERCIAL", "XOLAIR PFS", "Chronic Idiopathic Urticaria", "PHARMACY BENEFIT", "Yes", "Yes", 1, "ST Single Generic", "1 of [cetirizine, loratadine]", "1 ST (BRANDED)", "COVERED - WITH STEPS", "https://payer.example/xolair-pfs-oscar", SITE, PA_URL, "2027-01-05", "", ""],
+];
+
+const ROWS = [
+  ...ITOVEBI_PAYER_ROWS.map(makeItovebiRow),
+  ...NON_PBM_ROWS,
+];
 
 // Number of empty placeholder rows to render (fills the grid like the screenshot).
 const MIN_ROWS = 22;
