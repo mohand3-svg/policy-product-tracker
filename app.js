@@ -2339,11 +2339,16 @@ let ST_ROWS = [
 
 const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
 let ST_SUBVIEW = "all";   // all | open | mine | completed
+let ST_ENTITY_MODE = "payer";
 let stBuilt = false;
 let currentBulkMode = "coverage";
 
 function stStewardLabel(v) { return v && v.trim() ? v : "Unassigned"; }
 function stWorkflowStatus(r) { return r.status || "NEW"; }
+function stHasPopulatedPbm(r) {
+  const pbm = String(r.pbm || "").trim().toUpperCase();
+  return pbm !== "" && pbm !== "N/A";
+}
 
 // Tally distinct values (with counts) across ST_ROWS for a field.
 function stTally(field, transform) {
@@ -2392,6 +2397,7 @@ function buildStFilters() {
 // Apply sidebar filters, then optionally narrow to a sub-tab.
 function stRowsAfterSidebarFilters() {
   return ST_ROWS.filter(r =>
+    (ST_ENTITY_MODE !== "pbm" || stHasPopulatedPbm(r)) &&
     (stFilters.status.size === 0 || stFilters.status.has(stWorkflowStatus(r))) &&
     (stFilters.steward.size === 0 || stFilters.steward.has(stStewardLabel(r.steward))) &&
     (stFilters.payer.size === 0 || stFilters.payer.has(r.payer)) &&
@@ -2935,10 +2941,14 @@ const stfPbmRoleSection = document.getElementById("stfPbmRoleSection");
 stfModeButtons.forEach(btn => {
   btn.addEventListener("change", () => {
     const isPbm = btn.dataset.stfMode === "pbm";
+    ST_ENTITY_MODE = isPbm ? "pbm" : "payer";
     stfModeButtons.forEach(x => x.closest("label")?.classList.toggle("active", x === btn));
     if (stfPayerPanel) stfPayerPanel.hidden = isPbm;
     if (stfPbmPanel) stfPbmPanel.hidden = !isPbm;
     if (stfPbmRoleSection) stfPbmRoleSection.hidden = !isPbm;
+    const stSelectAll = document.getElementById("stSelectAll");
+    if (stSelectAll) stSelectAll.checked = false;
+    renderStTool();
   });
 });
 
