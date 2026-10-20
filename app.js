@@ -331,7 +331,6 @@ function buildStandardTextCells(r) {
     `<span class="freetext">&lt;free text&gt;</span>`,
     sfEsc(r.relAccess || "—"),
     sfEsc(r.mmitHpm),
-    sfEsc(relativeAccessPositionForRow(r)),
   ];
   return textCells.map(html => {
     const td = document.createElement("td");
@@ -358,15 +357,7 @@ function buildManualTextCells(r) {
     buildManualCell(r, "reporterLink3", "<free text>"),
     buildManualCell(r, "relAccess", "<free text>"),
     buildManualCell(r, "mmitHpm", "<free text>"),
-    buildCalculatedRapCell(r),
   ];
-}
-
-function buildCalculatedRapCell(r) {
-  const td = document.createElement("td");
-  td.className = "rap-cell";
-  td.textContent = relativeAccessPositionForRow(r);
-  return td;
 }
 
 function renderTrackerHeaders(showCustomColumns) {
