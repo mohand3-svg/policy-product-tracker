@@ -2281,6 +2281,19 @@ const ST_SAMPLE_PAYER_ROWS = [
   { payer: "DSM HOLDING COMPANY", pbmRole: "NATIONAL FORMULARY" },
 ];
 
+const ST_NON_PBM_ROWS = [
+  { payer: "UnitedHealthcare", pbm: "N/A", pbmRole: "N/A", brand: "OCREVUS ZUNOVO", indication: "Multiple Sclerosis", bob: "COMMERCIAL", benefit: "MEDICAL BENEFIT" },
+  { payer: "Aetna", pbm: "N/A", pbmRole: "N/A", brand: "VABYSMO", indication: "Neovascular Age Related Macular Degeneration", bob: "COMMERCIAL", benefit: "MEDICAL BENEFIT" },
+  { payer: "Humana", pbm: "N/A", pbmRole: "N/A", brand: "ACTEMRA SC", indication: "Rheumatoid Arthritis", bob: "MEDICARE_ADVANTAGE", benefit: "PHARMACY BENEFIT" },
+  { payer: "BCBS Texas", pbm: "N/A", pbmRole: "N/A", brand: "XOLAIR", indication: "Food Allergy", bob: "COMMERCIAL", benefit: "MEDICAL BENEFIT" },
+  { payer: "Kaiser Permanente California", pbm: "N/A", pbmRole: "N/A", brand: "ALECENSA", indication: "ALK mutation positive NSCLC", bob: "COMMERCIAL", benefit: "PHARMACY BENEFIT" },
+  { payer: "Sunflower Health Plan", pbm: "N/A", pbmRole: "N/A", brand: "LUCENTIS", indication: "Diabetic Macular Edema", bob: "MEDICAID_MANAGED", benefit: "MEDICAL BENEFIT" },
+  { payer: "Anthem Blue Cross", pbm: "N/A", pbmRole: "N/A", brand: "RITUXAN", indication: "Rheumatoid Arthritis", bob: "COMMERCIAL", benefit: "MEDICAL BENEFIT" },
+  { payer: "Molina Ohio", pbm: "N/A", pbmRole: "N/A", brand: "OCREVUS", indication: "Primary Progressive Multiple Sclerosis", bob: "MEDICAID_MANAGED", benefit: "MEDICAL BENEFIT" },
+  { payer: "Highmark Blue Shield", pbm: "N/A", pbmRole: "N/A", brand: "TYENNE IV", indication: "Rheumatoid Arthritis", bob: "COMMERCIAL", benefit: "MEDICAL BENEFIT" },
+  { payer: "Oscar Health", pbm: "N/A", pbmRole: "N/A", brand: "XOLAIR PFS", indication: "Chronic Idiopathic Urticaria", bob: "COMMERCIAL", benefit: "PHARMACY BENEFIT" },
+];
+
 function makeStSampleRow(row, index) {
   const statuses = ST_STATUS_ORDER;
   const stewards = ["System Admin", ST_CURRENT_USER, "Koushik Gadey", "Udayakumar Kongari", ""];
@@ -2294,12 +2307,12 @@ function makeStSampleRow(row, index) {
     steward: stewards[index % stewards.length],
     parentPayer: "CIGNA",
     payer: row.payer,
-    pbm: "EXPRESS SCRIPTS",
+    pbm: row.pbm || "EXPRESS SCRIPTS",
     pbmRole: row.pbmRole,
-    brand: "ITOVEBI",
-    indication: "BREAST",
-    bob: "COMMERCIAL",
-    benefit: "PHARMACY BENEFIT",
+    brand: row.brand || "ITOVEBI",
+    indication: row.indication || "BREAST",
+    bob: row.bob || "COMMERCIAL",
+    benefit: row.benefit || "PHARMACY BENEFIT",
     form: String(700000 + index),
     lives: 12000 + (index * 1379),
     mmitHpm: index % 4 === 0 ? "Not Covered" : "Clinical Criteria Required",
@@ -2319,7 +2332,10 @@ function makeStSampleRow(row, index) {
 }
 
 // Working copy so mock re-assignment doesn't mutate the tracker's ROWS.
-let ST_ROWS = ST_SAMPLE_PAYER_ROWS.map(makeStSampleRow);
+let ST_ROWS = [
+  ...ST_SAMPLE_PAYER_ROWS,
+  ...ST_NON_PBM_ROWS,
+].map(makeStSampleRow);
 
 const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
 let ST_SUBVIEW = "all";   // all | open | mine | completed
