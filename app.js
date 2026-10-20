@@ -2199,12 +2199,27 @@ const ST_CURRENT_USER = "A. Martinez";   // "My Workload" owner (matches CURRENT
 // Working copy so mock re-assignment doesn't mutate the tracker's ROWS.
 let ST_ROWS = SEED_ROWS.map(r => ({ ...r }));
 
+const ST_STATUS_BY_ID = {
+  "REQ-1042": "APPROVED",
+  "REQ-1043": "APPROVED",
+  "REQ-1044": "APPROVED",
+  "REQ-1045": "IN PROGRESS",
+  "REQ-1046": "NEW",
+  "REQ-1047": "NEW",
+  "REQ-1048": "IN PROGRESS",
+  "REQ-1049": "REJECTED",
+  "REQ-1050": "REVERTED",
+  "REQ-1051": "NEW",
+};
+const ST_STATUS_ORDER = ["NEW", "APPROVED", "IN PROGRESS", "REJECTED", "REVERTED"];
+
 const stFilters = { status: new Set(), steward: new Set(), payer: new Set(), brand: new Set(), bob: new Set() };
 let ST_SUBVIEW = "all";   // all | open | mine | completed
 let stBuilt = false;
 let currentBulkMode = "coverage";
 
 function stStewardLabel(v) { return v && v.trim() ? v : "Unassigned"; }
+function stWorkflowStatus(r) { return ST_STATUS_BY_ID[r.id] || "NEW"; }
 
 // Tally distinct values (with counts) across ST_ROWS for a field.
 function stTally(field, transform) {
@@ -2238,7 +2253,12 @@ function buildStFilter(containerId, values, setKey, labelFn) {
 }
 
 function buildStFilters() {
-  buildStFilter("stFilterStatus", stTally("dcr"), "status", v => DCR_LABELS[v] || v);
+  const statusCounts = {};
+  ST_ROWS.forEach(r => {
+    const status = stWorkflowStatus(r);
+    statusCounts[status] = (statusCounts[status] || 0) + 1;
+  });
+  buildStFilter("stFilterStatus", ST_STATUS_ORDER.map(s => [s, statusCounts[s] || 0]), "status");
   buildStFilter("stFilterSteward", stTally("steward", stStewardLabel), "steward");
   buildStFilter("stFilterPayer", stTally("payer"), "payer");
   buildStFilter("stFilterBrand", stTally("brand"), "brand");
@@ -2248,7 +2268,7 @@ function buildStFilters() {
 // Apply sidebar filters, then optionally narrow to a sub-tab.
 function stRowsAfterSidebarFilters() {
   return ST_ROWS.filter(r =>
-    (stFilters.status.size === 0 || stFilters.status.has(r.dcr)) &&
+    (stFilters.status.size === 0 || stFilters.status.has(stWorkflowStatus(r))) &&
     (stFilters.steward.size === 0 || stFilters.steward.has(stStewardLabel(r.steward))) &&
     (stFilters.payer.size === 0 || stFilters.payer.has(r.payer)) &&
     (stFilters.brand.size === 0 || stFilters.brand.has(r.brand)) &&
@@ -2259,11 +2279,11 @@ function stRowsAfterSidebarFilters() {
 function stRowsForSubview(view, rows = stRowsAfterSidebarFilters()) {
   switch (view) {
     case "open":
-      return rows.filter(r => ["New", "BridgingIssues"].includes(r.dcr));
+      return rows.filter(r => ["NEW", "IN PROGRESS"].includes(stWorkflowStatus(r)));
     case "mine":
       return rows.filter(r => r.steward === ST_CURRENT_USER);
     case "completed":
-      return rows.filter(r => ["NotRequired", "DCRCreated"].includes(r.dcr));
+      return rows.filter(r => ["APPROVED", "REJECTED", "REVERTED"].includes(stWorkflowStatus(r)));
     case "all":
     default:
       return rows;
@@ -2288,11 +2308,12 @@ function updateStTabCounts() {
   });
 }
 
-function stStatusBadge(dcr) {
-  const label = DCR_LABELS[dcr] || dcr || "-";
-  const cls = dcr === "DCRCreated" ? "st-badge ok"
-    : dcr === "BridgingIssues" ? "st-badge warn"
-    : dcr === "NotRequired" ? "st-badge muted"
+function stStatusBadge(status) {
+  const label = status || "-";
+  const cls = status === "APPROVED" ? "st-badge ok"
+    : status === "IN PROGRESS" ? "st-badge warn"
+    : status === "REJECTED" ? "st-badge rejected"
+    : status === "REVERTED" ? "st-badge purple"
     : "st-badge new";
   return `<span class="${cls}">${sfEsc(label)}</span>`;
 }
@@ -2359,7 +2380,7 @@ function renderStTool() {
       <td>NATIONAL</td>
       <td class="st-link-cell">Udaya Kumar Konga</td>
       <td class="${(!r.steward || !r.steward.trim()) ? "st-unassigned" : "st-steward"}">${sfEsc(stStewardLabel(r.steward))}</td>
-      <td>${stStatusBadge(i === 0 ? "DCRCreated" : r.dcr)}</td>
+      <td>${stStatusBadge(stWorkflowStatus(r))}</td>
       <td>${sfEsc(i % 2 ? "Oct 16, 2026, 9:46 AM" : "Oct 16, 2026, 9:50 AM")}</td>
       <td class="st-flag">${i % 4 === 1 ? "⚑" : ""}</td>
       <td class="st-link-cell">Open DCRs</td>

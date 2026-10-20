@@ -1406,6 +1406,7 @@ body.sttool-active .sidebar-saved {
 .st-badge.ok     { background: #d8f3e0; color: #1e7a45; }
 .st-badge.warn   { background: #fdf0c8; color: #9a7a00; }
 .st-badge.info   { background: #dbe7ff; color: #1e40af; }
+.st-badge.rejected { background: #fde2df; color: #b42318; }
 .st-badge.purple { background: #ece0fb; color: #6d28d9; }
 .st-badge.muted  { background: #eef0f4; color: #6b7280; }
 .st-badge.new    { background: #f1f3f7; color: #6b7280; }
