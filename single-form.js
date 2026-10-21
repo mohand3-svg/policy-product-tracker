@@ -815,11 +815,14 @@ function commitFilterModal() {
 }
 
 // ---- wire the Save Filter button + list actions -----------------
-document.getElementById("saveFilterBtn").addEventListener("click", () => {
-  // Always open the modal; the empty-selection case is handled inside
-  // (Save is disabled with a hint) so the button always gives feedback.
-  openFilterModal("new");
-});
+const saveFilterBtn = document.getElementById("saveFilterBtn");
+if (saveFilterBtn) {
+  saveFilterBtn.addEventListener("click", () => {
+    // Always open the modal; the empty-selection case is handled inside
+    // (Save is disabled with a hint) so the button always gives feedback.
+    openFilterModal("new");
+  });
+}
 
 // ---- saved-filters table modal (open/close + row actions) -------
 const savedModal = document.getElementById("savedModal");
@@ -834,9 +837,11 @@ function openSavedModal() {
 function closeSavedModal() {
   savedModal.classList.remove("show");
 }
-document.getElementById("openSavedBtn").addEventListener("click", openSavedModal);
-document.getElementById("savedCloseBtn").addEventListener("click", closeSavedModal);
-savedModal.addEventListener("click", (e) => { if (e.target === savedModal) closeSavedModal(); });
+const openSavedBtn = document.getElementById("openSavedBtn");
+const savedCloseBtn = document.getElementById("savedCloseBtn");
+if (openSavedBtn) openSavedBtn.addEventListener("click", openSavedModal);
+if (savedCloseBtn) savedCloseBtn.addEventListener("click", closeSavedModal);
+if (savedModal) savedModal.addEventListener("click", (e) => { if (e.target === savedModal) closeSavedModal(); });
 
 // Live search over the saved filters.
 if (savedSearchInput) {
@@ -846,7 +851,8 @@ if (savedSearchInput) {
   });
 }
 
-document.getElementById("savedTableBody").addEventListener("click", (e) => {
+const savedTableBody = document.getElementById("savedTableBody");
+if (savedTableBody) savedTableBody.addEventListener("click", (e) => {
   // Edit / Delete take priority and must not trigger the row's apply.
   const btn = e.target.closest("[data-act]");
   if (btn) {
@@ -878,10 +884,12 @@ document.getElementById("savedTableBody").addEventListener("click", (e) => {
   }
 });
 
-document.getElementById("filterCancelBtn").addEventListener("click", closeFilterModal);
-document.getElementById("filterSaveBtn").addEventListener("click", commitFilterModal);
-filterModal.addEventListener("click", (e) => { if (e.target === filterModal) closeFilterModal(); });
-filterName.addEventListener("keydown", (e) => {
+const filterCancelBtn = document.getElementById("filterCancelBtn");
+const filterSaveBtn = document.getElementById("filterSaveBtn");
+if (filterCancelBtn) filterCancelBtn.addEventListener("click", closeFilterModal);
+if (filterSaveBtn) filterSaveBtn.addEventListener("click", commitFilterModal);
+if (filterModal) filterModal.addEventListener("click", (e) => { if (e.target === filterModal) closeFilterModal(); });
+if (filterName) filterName.addEventListener("keydown", (e) => {
   if (e.key === "Enter") commitFilterModal();
   if (e.key === "Escape") closeFilterModal();
 });

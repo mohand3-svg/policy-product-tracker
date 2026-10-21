@@ -33,7 +33,6 @@
         <span class="search-title">Search Policy</span>
         <div class="search-actions">
           <button class="link-btn" id="resetBtn">↻ Reset</button>
-          <button class="link-btn" id="saveFilterBtn" title="Save the current filter selection">☆ Save Filter</button>
           <button class="search-btn" id="searchBtn" disabled>🔍 Search</button>
         </div>
       </div>
@@ -77,13 +76,6 @@
 
       <label class="fld-label" style="border:0;">STATE</label>
       <div class="fld-value" id="stateVal">NATIONAL</div>
-
-      <!-- ===== SAVED FILTERS ===== -->
-      <div class="saved-filters">
-        <button class="saved-open-btn" id="openSavedBtn">
-          ☆ Saved Filters <span class="saved-count" id="savedCount">0</span>
-        </button>
-      </div>
     </aside>
 
     <!-- ===== MAIN ===== -->
@@ -104,55 +96,8 @@
     </main>
   </div>
 
-  <!-- ===== SAVE / EDIT FILTER MODAL ===== -->
-  <div class="modal-overlay" id="filterModal">
-    <div class="modal-card">
-      <h3 class="modal-title" id="filterModalTitle">Save Filter</h3>
-      <label class="modal-label" for="filterNameInput">Filter name</label>
-      <input type="text" class="modal-input" id="filterNameInput" placeholder="e.g. Cigna MS – Aug batch" maxlength="60" />
-      <div class="modal-preview" id="filterPreview"></div>
-      <div class="modal-actions">
-        <button class="form-btn ghost" id="filterCancelBtn">Cancel</button>
-        <button class="form-btn primary" id="filterSaveBtn">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SAVED FILTERS TABLE MODAL ===== -->
-  <div class="modal-overlay" id="savedModal">
-    <div class="modal-card modal-wide">
-      <div class="modal-head-row">
-        <h3 class="modal-title">☆ Saved Filters</h3>
-        <button class="modal-x" id="savedCloseBtn" title="Close">✕</button>
-      </div>
-      <div class="saved-search-row">
-        <input type="text" class="saved-search" id="savedSearch"
-               placeholder="🔍 Search saved filters by name, criteria or creator…" />
-      </div>
-      <p class="saved-hint-line">Click a row to load that filter into the search panel.</p>
-      <p class="saved-empty-note" id="savedTableEmpty">
-        No saved filters yet. Set your fields and click <strong>Save Filter</strong>.
-      </p>
-      <div class="saved-table-wrap" id="savedTableWrap">
-        <table class="saved-table" id="savedFiltersTable">
-          <thead>
-            <tr>
-              <th>Filter Name</th>
-              <th>Filter Criteria</th>
-              <th>Created By</th>
-              <th>Created On</th>
-              <th class="col-actions">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="savedTableBody"></tbody>
-        </table>
-      </div>
-      <p class="saved-no-match" id="savedNoMatch">No filters match your search.</p>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
-  <script src="single-form.js?v=59"></script>
+  <script src="single-form.js?v=60"></script>
   <script src="inline-filters.js?v=5"></script>
 </body>
 </html>
