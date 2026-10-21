@@ -464,3 +464,90 @@ textarea.pin { resize: vertical; min-height: 38px; }
 .url-input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,.15); }
 .url-input.url-err { border-color: #d81f2a; background: #fff5f5; }
 .url-input.url-err:focus { box-shadow: 0 0 0 2px rgba(216,31,42,.18); }
+
+/* ===== My Submissions page ===== */
+.submissions-page .form-layout { background: #f4f6fa; height: calc(100vh - 54px); }
+
+.submissions-sidebar {
+  width: 300px; flex-shrink: 0; background: #fff;
+  border-right: 1px solid #d8dde7; overflow-y: auto;
+}
+.sub-filter-head {
+  height: 60px; display: flex; align-items: center; gap: 12px;
+  padding: 0 18px; border-bottom: 1px solid #d8dde7;
+  color: #1f2937;
+}
+.sub-filter-icon {
+  width: 30px; height: 30px; display: grid; place-items: center;
+  background: #dbeafe; color: #2563eb; border-radius: 2px;
+  font-size: 14px;
+}
+.sub-filter-title { font-size: 16px; font-weight: 800; }
+.sub-filter-expand { margin-left: auto; color: #526176; font-size: 16px; transform: rotate(45deg); }
+
+.sub-filter-group { padding: 18px 18px 14px; border-bottom: 1px solid #eef0f4; }
+.sub-filter-group h3 {
+  margin: 0 0 10px; color: #5d6b80; font-size: 11px; font-weight: 800;
+  text-transform: uppercase;
+}
+.sub-filter-search-title {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.sub-filter-search-title small {
+  display: block; color: #2563eb; font-size: 10px; font-weight: 500;
+  text-transform: none;
+}
+.sub-filter-group label {
+  display: grid; grid-template-columns: 18px minmax(0,1fr) 24px 52px;
+  align-items: center; gap: 8px; min-height: 30px;
+  color: #1f2937; font-size: 12px;
+}
+.sub-filter-group input { width: 16px; height: 16px; margin: 0; }
+.sub-filter-selected { background: #eef1f5; margin: 0 -8px; padding: 0 8px; border-radius: 2px; }
+.sub-count { color: #43536a; text-align: right; font-size: 11px; }
+.sub-bar { height: 8px; background: #e7ebf3; border-radius: 999px; overflow: hidden; }
+.sub-bar i { display: block; height: 100%; background: #2e6bd6; border-radius: 999px; }
+
+.submissions-main {
+  flex: 1; overflow: hidden; background: #fff;
+  display: flex; flex-direction: column;
+}
+.submissions-title-row {
+  height: 60px; display: flex; align-items: center; gap: 14px;
+  padding: 0 18px; border-bottom: 1px solid #d8dde7; background: #fff;
+}
+.submissions-title-row h1 {
+  margin: 0; font-size: 18px; font-weight: 800; color: #111827;
+}
+.submission-count {
+  min-width: 24px; height: 24px; display: inline-flex; align-items: center;
+  justify-content: center; border-radius: 5px; background: #eef0f4;
+  color: #43536a; font-size: 12px; font-weight: 800;
+}
+.submissions-table-wrap { flex: 1; overflow: auto; background: #fff; }
+.submissions-table {
+  width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px;
+}
+.submissions-table th {
+  height: 48px; text-align: left; background: #f6f8fc; color: #526176;
+  font-weight: 800; border-bottom: 1px solid #d8dde7;
+  border-right: 1px solid #eef0f4; padding: 0 14px;
+}
+.submissions-table td {
+  height: 38px; color: #1f2937; border-bottom: 1px solid #e5e7eb;
+  padding: 0 14px; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; font-weight: 500;
+}
+.submissions-table tr.selected td {
+  background: #eaf2ff;
+  box-shadow: inset 0 1px 0 #6ea2ff, inset 0 -1px 0 #6ea2ff;
+}
+.submissions-table tr.sub-empty-row td { height: 22px; background: #fff; }
+.submissions-table .sub-sort { width: 36px; text-align: center; color: #526176; font-size: 14px; }
+.sub-status {
+  display: inline-block; padding: 3px 10px; border-radius: 3px;
+  font-size: 12px; font-weight: 800;
+}
+.sub-status.approved { background: #dff4e9; color: #08754a; border: 1px solid #76c7a3; }
+.sub-status.progress { background: #fff3cd; color: #b78300; border: 1px solid #f1c94b; }
+.sub-status.rejected { background: #fde2e2; color: #c62828; border: 1px solid #ef9a9a; }
