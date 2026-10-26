@@ -56,6 +56,9 @@
 }
 .fld-box { color: #333; background: #f8f9fc; }
 .fld-select i { color: #9aa1ad; font-style: normal; }
+.fld-help {
+  margin: 5px 0 0; color: #6b7280; font-size: 11.5px; line-height: 1.35;
+}
 .pbm-role-menu {
   position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30;
   background: #fff; border: 1px solid #d4d8e2; border-radius: 6px;
