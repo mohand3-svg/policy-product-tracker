@@ -112,6 +112,7 @@ function slugifyPayer(payer, index) {
 
 function makeItovebiRow(row, index) {
   const sample = POLICY_SAMPLES[index % POLICY_SAMPLES.length];
+  const hasPbmFormulary = index < 6;
   const policyLink = sample[7] === "N/A"
     ? "N/A"
     : `https://payer.example/itovebi-${slugifyPayer(row.payer, index)}`;
@@ -133,8 +134,8 @@ function makeItovebiRow(row, index) {
     sample[8],
     sample[9],
     sample[10],
-    "EXPRESS SCRIPTS",
-    row.pbmRole,
+    hasPbmFormulary ? "EXPRESS SCRIPTS" : "N/A",
+    hasPbmFormulary ? row.pbmRole : "N/A",
   ];
 }
 
