@@ -192,11 +192,11 @@ const filter = {
 
 const STATIC_OPTIONS = {
   pbm: ["Express Scripts", "OptumRX", "CVS"],
-  pbmRole: ["National"],
+  pbmRole: ["National Formulary"],
 };
 
 const PBM_ROLE_OPTIONS = [
-  { label: "National", disabled: false },
+  { label: "National Formulary", disabled: false },
   { label: "Custom", disabled: true },
   { label: "Formulary Management", disabled: true },
 ];
@@ -319,7 +319,7 @@ function filterMatches(field, rowDisplayValue, selectedValue) {
   if (!selectedValue) return true;
   const display = String(rowDisplayValue || "").toUpperCase();
   const selected = String(selectedValue || "").toUpperCase();
-  if (field === "pbmRole" && selected === "NATIONAL") return display.includes("NATIONAL");
+  if (field === "pbmRole" && selected === "NATIONAL FORMULARY") return display.includes("NATIONAL");
   if (field === "pbmRole" && selectedValue === "Formulary Management") {
     return display === "FORMULARY MANAGEMENT";
   }
@@ -352,7 +352,7 @@ function setEntityMode(mode) {
   } else {
     filter.parentPayer = "";
     filter.payer = "";
-    filter.pbmRole = "National";
+    filter.pbmRole = "National Formulary";
     filter.benefit = "PHARMACY BENEFIT";
     ["bob", "product", "indication"].forEach(field => {
       if (filter[field] && !optionValues(field).includes(filter[field])) filter[field] = "";
@@ -601,7 +601,7 @@ function canonicalDeepLinkValue(field, value) {
     return match || raw;
   }
   if (field === "pbmRole") {
-    if (upper.includes("NATIONAL")) return "National";
+    if (upper.includes("NATIONAL")) return "National Formulary";
     if (upper.includes("CUSTOM")) return "Custom";
     if (upper.includes("FORMULARY")) return "Formulary Management";
     return raw;
@@ -625,7 +625,7 @@ function applyDeepLinkFilters() {
   if (filter.entityMode === "pbm") {
     filter.parentPayer = "";
     filter.payer = "";
-    if (!filter.pbmRole) filter.pbmRole = "National";
+    if (!filter.pbmRole) filter.pbmRole = "National Formulary";
     if (!filter.benefit) filter.benefit = "PHARMACY BENEFIT";
   } else {
     filter.pbm = "";

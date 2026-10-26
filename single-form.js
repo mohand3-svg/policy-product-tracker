@@ -10,7 +10,7 @@
 const OPTIONS = {
   payer: ["UNITEDHEALTHCARE", "AETNA", "HUMANA", "CIGNA", "WELLCARE", "CVS HEALTH", "UNITED FEDERATION OF TEACHERS", "UNIVERSITY OF ROCHESTER", "DOMTAR CORPORATION"],
   pbm: ["Express Scripts", "OptumRX", "CVS"],
-  pbmRole: ["National"],
+  pbmRole: ["National Formulary"],
   bob: ["COMMERCIAL", "MEDICAID_MANAGED", "MEDICARE_ADVANTAGE", "MEDICAID_FFS", "GOVERNMENT"],
   product: ["OCREVUS ZUNOVO", "VABYSMO", "ACTEMRA SC", "XOLAIR VIAL", "OCREVUS", "ITOVEBI"],
   indication: ["Multiple Sclerosis", "Rheumatoid Arthritis", "Neovascular AMD", "Food Allergy", "BREAST", "BC (Her2-ve)"],
@@ -18,7 +18,7 @@ const OPTIONS = {
 };
 
 const PBM_ROLE_OPTIONS = [
-  { label: "National", disabled: false },
+  { label: "National Formulary", disabled: false },
   { label: "Custom", disabled: true },
   { label: "Formulary Management", disabled: true },
 ];
@@ -209,7 +209,7 @@ function setEntityMode(mode) {
     setFieldValue("pbmRole", "");
   } else {
     setFieldValue("payer", "");
-    setFieldValue("pbmRole", "National");
+    setFieldValue("pbmRole", "National Formulary");
     setFieldValue("benefit", "PHARMACY BENEFIT");
   }
   syncEntityMode();
@@ -249,7 +249,7 @@ function selectedPbmRoleMatches(record) {
   if (!selection.pbmRole) return true;
   const roleMap = {
     Custom: ["CUSTOMIZED FORMULARY"],
-    National: ["NATIONAL FORMULARY"],
+    "National Formulary": ["NATIONAL FORMULARY"],
     "Formulary Management": ["FORMULARY MANAGEMENT", "PHARMACY BENEFIT MANAGER"],
   };
   const allowed = roleMap[selection.pbmRole] || [selection.pbmRole];
