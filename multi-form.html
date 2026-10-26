@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>UAT Policy Intelligence Update Form — Multiple Policies</title>
 <link rel="stylesheet" href="styles.css?v=78" />
-<link rel="stylesheet" href="form.css?v=55" />
+<link rel="stylesheet" href="form.css?v=56" />
 </head>
 <body class="form-page">
   <!-- ===== TOP BAR ===== -->
@@ -67,9 +67,11 @@
       <div class="fld-select" data-field="benefit"><span>Search…</span><i>▾</i></div>
 
       <div class="entity-field" data-mode-field="pbm" hidden>
-        <label class="fld-label">Formulary (PBM Role) <span class="req">*</span></label>
+        <label class="fld-label formulary-label">
+          <span class="field-info" tabindex="0" aria-label="Currently, only National Formulary data is available">i</span>
+          Formulary (PBM Role) <span class="req">*</span>
+        </label>
         <div class="fld-select" data-field="pbmRole"><span>Search…</span><i>▾</i></div>
-        <p class="fld-help">Currently, only National Formulary data is available</p>
       </div>
 
       <label class="fld-label">STATE</label>
