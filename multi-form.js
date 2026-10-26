@@ -118,7 +118,7 @@ function makeItovebiRow(row, index) {
     : `https://payer.example/itovebi-${slugifyPayer(row.payer, index)}`;
   return [
     "Cigna",
-    row.payer,
+    hasPbmFormulary ? "N/A" : row.payer,
     "COMMERCIAL",
     "ITOVEBI",
     "BREAST",
