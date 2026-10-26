@@ -471,7 +471,7 @@ function populatePayerDetails() {
 
   // Summary strip (two columns of key/value).
   const entitySummary = selection.entityMode === "pbm"
-    ? [["▤", "PBM", pbmDisplay], ["▤", "PBM Role", pbmRoleDisplay]]
+    ? [["▤", "PBM", pbmDisplay], ["▤", "Formulary (PBM Role)", pbmRoleDisplay]]
     : [["ⓘ", "Payer", payerDisplay]];
   const summary = [
     ...entitySummary,
