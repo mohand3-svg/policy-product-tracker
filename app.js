@@ -1927,21 +1927,17 @@ function renderWinsPage() {
   }
 
   if (rows.length === 0) {
-    body.innerHTML = `<tr><td colspan="25" class="wins-empty">No policy wins match the current filters</td></tr>`;
+    body.innerHTML = `<tr><td colspan="23" class="wins-empty">No policy wins match the current filters</td></tr>`;
     ensureInlineTableFilters("winsGrid", ["Action"]);
     updateWinsSelCount();
     return;
   }
 
-  body.innerHTML = rows.map((w, i) => {
-    const pbm = winPbmDetails(w, i);
-    return `
+  body.innerHTML = rows.map(w => `
     <tr class="${w._dup && w._dup.dupType === "potential" ? "win-row-dup" : ""}">
       <td class="wcol-check"><input type="checkbox" class="win-row-cb" data-id="${sfEsc(w.winId)}" /></td>
       <td class="win-id"><a class="win-id-link" data-id="${sfEsc(w.winId)}">${sfEsc(w.winId)}</a>${dupBadge(w._dup)}</td>
       ${winCell(w.payer)}
-      ${winCell(pbm.pbm)}
-      ${winCell(pbm.pbmRole)}
       ${winCell(w.bob)}
       ${winCell(w.brand)}
       ${winCell(w.subInd)}
@@ -1962,8 +1958,7 @@ function renderWinsPage() {
       ${winLinkCell(w.medPharmLink)}
       ${winLinkCell(w.paLink)}
       ${winCell(w.dcrTriggered)}
-    </tr>`;
-  }).join("");
+    </tr>`).join("");
 
   wireWinRowChecks();
   ensureInlineTableFilters("winsGrid", ["Action"]);
