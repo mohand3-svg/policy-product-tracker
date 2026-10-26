@@ -2386,7 +2386,7 @@ function makeStSampleRow(row, index) {
   const accessValues = ["At Par", "Advantaged", "Disadvantaged"];
   const day = String(16 + (index % 9)).padStart(2, "0");
   const minute = String((20 + index * 7) % 60).padStart(2, "0");
-  const status = index === 0 ? "NEW" : statuses[index % statuses.length];
+  const status = index === 0 ? "APPROVED" : statuses[index % statuses.length];
   return {
     id: `REQ-${String(5000 + index).padStart(4, "0")}`,
     steward: stewards[index % stewards.length],
