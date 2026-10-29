@@ -360,10 +360,14 @@ function buildManualTextCells(r) {
 
 function buildStandardRelativeAccessCells(r) {
   const primaryCompetitor = primaryRelativeAccessCompetitor();
-  const values = [
-    sfEsc(baseRelativeAccessDisplay(r, primaryCompetitor)),
-    ...additionalRelativeAccessCompetitors().map(competitor => sfEsc(relativeAccessPositionForCompetitor(r, competitor))),
-  ];
+  const competitors = primaryCompetitor ? selectedCompetitorBrands() : [""];
+  const values = competitors.flatMap(competitor => {
+    if (!competitor) return [sfEsc(baseRelativeAccessDisplay(r, competitor))];
+    return [
+      sfEsc(baseRelativeAccessDisplay(r, competitor)),
+      sfEsc(hpmForCompetitor(competitor)),
+    ];
+  });
   return values.map(html => {
     const td = document.createElement("td");
     td.innerHTML = html;
@@ -373,10 +377,14 @@ function buildStandardRelativeAccessCells(r) {
 
 function buildManualRelativeAccessCells(r) {
   const primaryCompetitor = primaryRelativeAccessCompetitor();
-  return [
-    buildBaseRelativeAccessManualCell(r, primaryCompetitor),
-    ...additionalRelativeAccessCompetitors().map(competitor => buildCompetitorRapCell(r, competitor)),
-  ];
+  const competitors = primaryCompetitor ? selectedCompetitorBrands() : [""];
+  return competitors.flatMap(competitor => {
+    if (!competitor) return [buildBaseRelativeAccessManualCell(r, competitor)];
+    return [
+      buildBaseRelativeAccessManualCell(r, competitor),
+      buildCompetitorHpmCell(competitor),
+    ];
+  });
 }
 
 function baseRelativeAccessDisplay(r, competitor = primaryRelativeAccessCompetitor()) {
@@ -403,11 +411,19 @@ function buildCompetitorRapCell(r, competitor) {
   return td;
 }
 
+function buildCompetitorHpmCell(competitor) {
+  const td = document.createElement("td");
+  td.className = "competitor-hpm-cell";
+  td.textContent = hpmForCompetitor(competitor);
+  return td;
+}
+
 function renderTrackerHeaders(showCustomColumns) {
   const row = document.getElementById("trackerHeaderRow");
   if (!row) return;
   row.querySelectorAll(".manual-custom-header").forEach(th => th.remove());
   row.querySelectorAll(".competitor-rap-header").forEach(th => th.remove());
+  row.querySelectorAll(".competitor-hpm-header").forEach(th => th.remove());
 
   const rapHeader = [...row.children].find(th => th.dataset.baseRapHeader === "true");
   if (rapHeader) {
@@ -416,12 +432,25 @@ function renderTrackerHeaders(showCustomColumns) {
       ? `Relative Access Position (${primaryCompetitor})`
       : "Relative Access Position";
     let anchor = rapHeader;
-    additionalRelativeAccessCompetitors().forEach(competitor => {
+    if (primaryCompetitor) {
       const th = document.createElement("th");
-      th.className = "competitor-rap-header";
-      th.textContent = `Relative Access Position (${competitor})`;
+      th.className = "competitor-hpm-header";
+      th.textContent = `HPM (${primaryCompetitor})`;
       row.insertBefore(th, anchor.nextSibling);
       anchor = th;
+    }
+    additionalRelativeAccessCompetitors().forEach(competitor => {
+      const rapTh = document.createElement("th");
+      rapTh.className = "competitor-rap-header";
+      rapTh.textContent = `Relative Access Position (${competitor})`;
+      row.insertBefore(rapTh, anchor.nextSibling);
+      anchor = rapTh;
+
+      const hpmTh = document.createElement("th");
+      hpmTh.className = "competitor-hpm-header";
+      hpmTh.textContent = `HPM (${competitor})`;
+      row.insertBefore(hpmTh, anchor.nextSibling);
+      anchor = hpmTh;
     });
   }
 
@@ -661,6 +690,15 @@ const COMPETITOR_ACCESS_SCORE = {
   "ETICOVO": 3,
   "INFLECTRA": 2,
 };
+const COMPETITOR_HPM_STATUS = {
+  "AVSOLA": "NOT COVERED",
+  "AVTOZMA IV": "TO PI WITH CRITERIA",
+  "AVTOZMA SC": "DRUG COVERED WITH NO PA",
+  "BIOSIMILAR MARKET BASKET": "TO PI WITH CRITERIA",
+  "CIMZIA": "NOT COVERED",
+  "ETICOVO": "DRUG COVERED WITH NO PA",
+  "INFLECTRA": "TO PI WITH CRITERIA",
+};
 
 function syncBrandSelectionOrder(changedCb) {
   if (changedCb && changedCb.classList.contains("brand-cb")) {
@@ -727,6 +765,10 @@ function relativeAccessPositionForCompetitor(r, competitor) {
   if (gneScore > competitorScore) return "Advantaged";
   if (gneScore < competitorScore) return "Disadvantaged";
   return "At Par";
+}
+
+function hpmForCompetitor(competitor) {
+  return COMPETITOR_HPM_STATUS[competitor] || "TO PI WITH CRITERIA";
 }
 
 // ---- filtering ---------------------------------------------------
