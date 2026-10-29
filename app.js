@@ -514,11 +514,12 @@ function renderRows() {
       tr.appendChild(tdGne);
     }
 
+    // PA and PI Summary (editable free text)
+    tr.appendChild(buildFreeText(r, "pa"));
+
     const relativeAccessCells = r.manual ? buildManualRelativeAccessCells(r) : buildStandardRelativeAccessCells(r);
     relativeAccessCells.forEach(td => tr.appendChild(td));
 
-    // PA and PI Summary (editable free text)
-    tr.appendChild(buildFreeText(r, "pa"));
     // Comments / Links or Queries
     tr.appendChild(buildFreeText(r, "comments"));
 
