@@ -359,9 +359,10 @@ function buildManualTextCells(r) {
 }
 
 function buildStandardRelativeAccessCells(r) {
+  const primaryCompetitor = primaryRelativeAccessCompetitor();
   const values = [
-    sfEsc(baseRelativeAccessDisplay(r)),
-    ...selectedCompetitorBrands().map(competitor => sfEsc(relativeAccessPositionForCompetitor(r, competitor))),
+    sfEsc(baseRelativeAccessDisplay(r, primaryCompetitor)),
+    ...additionalRelativeAccessCompetitors().map(competitor => sfEsc(relativeAccessPositionForCompetitor(r, competitor))),
   ];
   return values.map(html => {
     const td = document.createElement("td");
@@ -371,19 +372,20 @@ function buildStandardRelativeAccessCells(r) {
 }
 
 function buildManualRelativeAccessCells(r) {
+  const primaryCompetitor = primaryRelativeAccessCompetitor();
   return [
-    buildBaseRelativeAccessManualCell(r),
-    ...selectedCompetitorBrands().map(competitor => buildCompetitorRapCell(r, competitor)),
+    buildBaseRelativeAccessManualCell(r, primaryCompetitor),
+    ...additionalRelativeAccessCompetitors().map(competitor => buildCompetitorRapCell(r, competitor)),
   ];
 }
 
-function baseRelativeAccessDisplay(r) {
-  return selectedCompetitorBrands().length ? (r.relAccess || "—") : "";
+function baseRelativeAccessDisplay(r, competitor = primaryRelativeAccessCompetitor()) {
+  return competitor ? relativeAccessPositionForCompetitor(r, competitor) : "";
 }
 
-function buildBaseRelativeAccessManualCell(r) {
-  return selectedCompetitorBrands().length
-    ? buildManualCell(r, "relAccess", "<free text>")
+function buildBaseRelativeAccessManualCell(r, competitor = primaryRelativeAccessCompetitor()) {
+  return competitor
+    ? buildCompetitorRapCell(r, competitor)
     : buildReadOnlyBlankCell();
 }
 
@@ -407,10 +409,14 @@ function renderTrackerHeaders(showCustomColumns) {
   row.querySelectorAll(".manual-custom-header").forEach(th => th.remove());
   row.querySelectorAll(".competitor-rap-header").forEach(th => th.remove());
 
-  const rapHeader = [...row.children].find(th => th.textContent.trim() === "Relative Access Position");
+  const rapHeader = [...row.children].find(th => th.dataset.baseRapHeader === "true");
   if (rapHeader) {
+    const primaryCompetitor = primaryRelativeAccessCompetitor();
+    rapHeader.textContent = primaryCompetitor
+      ? `Relative Access Position (${primaryCompetitor})`
+      : "Relative Access Position";
     let anchor = rapHeader;
-    selectedCompetitorBrands().forEach(competitor => {
+    additionalRelativeAccessCompetitors().forEach(competitor => {
       const th = document.createElement("th");
       th.className = "competitor-rap-header";
       th.textContent = `Relative Access Position (${competitor})`;
@@ -704,6 +710,14 @@ function selectedCompetitorBrands() {
   return [...document.querySelectorAll(".competitor-brand-cb:checked")]
     .filter(cb => !cb.disabled)
     .map(cb => cb.value);
+}
+
+function primaryRelativeAccessCompetitor() {
+  return selectedCompetitorBrands()[0] || "";
+}
+
+function additionalRelativeAccessCompetitors() {
+  return selectedCompetitorBrands().slice(1);
 }
 
 function relativeAccessPositionForCompetitor(r, competitor) {
