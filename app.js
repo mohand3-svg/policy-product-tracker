@@ -319,9 +319,6 @@ function buildCustomManualCell(r, column) {
 }
 
 function buildStandardTextCells(r) {
-  const competitors = selectedCompetitorBrands();
-  const competitorCells = competitors
-    .map(competitor => sfEsc(relativeAccessPositionForCompetitor(r, competitor)));
   const textCells = [
     sfEsc(r.parentPayer || "—"), sfEsc(r.payer), sfEsc(r.brand), sfEsc(r.indication),
     sfEsc(r.bob), sfEsc(r.benefit), fmtLives(r.lives),
@@ -332,8 +329,6 @@ function buildStandardTextCells(r) {
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
     `<span class="freetext">&lt;free text&gt;</span>`,
-    sfEsc(baseRelativeAccessDisplay(r)),
-    ...competitorCells,
     sfEsc(r.mmitHpm),
   ];
   return textCells.map(html => {
@@ -359,9 +354,26 @@ function buildManualTextCells(r) {
     buildManualCell(r, "reporterLink1", "<free text>"),
     buildManualCell(r, "reporterLink2", "<free text>"),
     buildManualCell(r, "reporterLink3", "<free text>"),
+    buildManualCell(r, "mmitHpm", "<free text>"),
+  ];
+}
+
+function buildStandardRelativeAccessCells(r) {
+  const values = [
+    sfEsc(baseRelativeAccessDisplay(r)),
+    ...selectedCompetitorBrands().map(competitor => sfEsc(relativeAccessPositionForCompetitor(r, competitor))),
+  ];
+  return values.map(html => {
+    const td = document.createElement("td");
+    td.innerHTML = html;
+    return td;
+  });
+}
+
+function buildManualRelativeAccessCells(r) {
+  return [
     buildBaseRelativeAccessManualCell(r),
     ...selectedCompetitorBrands().map(competitor => buildCompetitorRapCell(r, competitor)),
-    buildManualCell(r, "mmitHpm", "<free text>"),
   ];
 }
 
@@ -501,6 +513,9 @@ function renderRows() {
       tdGne.appendChild(buildGneSelect(r));
       tr.appendChild(tdGne);
     }
+
+    const relativeAccessCells = r.manual ? buildManualRelativeAccessCells(r) : buildStandardRelativeAccessCells(r);
+    relativeAccessCells.forEach(td => tr.appendChild(td));
 
     // PA and PI Summary (editable free text)
     tr.appendChild(buildFreeText(r, "pa"));
