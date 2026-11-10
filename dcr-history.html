@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DCR History</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #f4f6f9; color: #1f2937;
+    font-family: Arial, Helvetica, sans-serif; font-size: 14px;
+  }
+  .history-page { min-height: 100vh; padding: 14px 16px 28px; }
+  .history-shell {
+    background: #fff; border: 1px solid #d7dce5; min-height: calc(100vh - 28px);
+  }
+  .history-head {
+    height: 64px; display: flex; align-items: center; gap: 16px;
+    padding: 0 18px; border-bottom: 1px solid #d7dce5;
+  }
+  .history-icon {
+    width: 30px; height: 30px; display: grid; place-items: center;
+    border-radius: 3px; background: #dbeafe; color: #1d5fbf;
+    font-size: 18px; font-weight: 700;
+  }
+  .history-title { font-size: 18px; font-weight: 800; }
+  .history-content { padding: 16px; }
+  .history-summary {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+    border: 1px solid #d7dce5; border-radius: 2px; padding: 22px 32px;
+    background: #fafbfe; margin-bottom: 16px;
+  }
+  .history-stack { display: grid; gap: 14px; }
+  .summary-item { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 12px; align-items: start; }
+  .summary-dot {
+    width: 24px; height: 24px; display: grid; place-items: center;
+    border-radius: 50%; background: #e5e9f0; color: #657084; font-size: 12px;
+  }
+  .summary-label { color: #5f6f86; font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+  .summary-value { color: #111827; font-size: 13px; line-height: 1.25; }
+  .history-table-wrap { border: 1px solid #d7dce5; overflow: auto; }
+  table { width: 100%; min-width: 1320px; border-collapse: collapse; table-layout: fixed; }
+  th {
+    height: 52px; text-align: left; padding: 0 12px; background: #f6f8fc;
+    color: #5f6f86; font-size: 12px; font-weight: 800;
+    border-right: 1px solid #e4e8ef; border-bottom: 1px solid #d7dce5;
+  }
+  td {
+    height: 39px; padding: 0 12px; color: #1f2937; font-size: 13px;
+    border-right: 1px solid #edf0f5; border-bottom: 1px solid #dfe3ea;
+    vertical-align: middle; overflow: hidden; text-overflow: ellipsis;
+  }
+  tr.selected td { background: #f0f5ff; box-shadow: inset 0 1px 0 #6ea2ff, inset 0 -1px 0 #6ea2ff; }
+  .muted { color: #667085; font-style: italic; }
+  .sort-cell { width: 44px; text-align: center; color: #53657c; font-size: 16px; }
+  .status {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 46px; padding: 3px 10px; border-radius: 3px;
+    border: 1px solid #7dadf2; background: #eaf2ff;
+    color: #1f5ead; font-size: 12px; font-weight: 800;
+  }
+  .empty-row td { height: 20px; background: #fff; }
+  .assist-tab {
+    position: fixed; right: 0; top: 306px; width: 32px; height: 76px;
+    border: 1px solid #d0d5dd; border-right: 0; border-radius: 12px 0 0 12px;
+    background: #fff; display: grid; place-items: center; color: #00856f;
+    font-weight: 900; box-shadow: 0 1px 4px rgba(17,24,39,.12);
+  }
+</style>
+</head>
+<body>
+  <main class="history-page">
+    <section class="history-shell">
+      <header class="history-head">
+        <div class="history-icon">↻</div>
+        <div class="history-title">History</div>
+      </header>
+
+      <div class="history-content">
+        <section class="history-summary">
+          <div class="history-stack">
+            <div class="summary-item">
+              <span class="summary-dot">♟</span>
+              <div><div class="summary-label">Payer</div><div class="summary-value">ANTHEM BLUECROSS BLUESHIELD OHIO</div></div>
+            </div>
+            <div class="summary-item">
+              <span class="summary-dot">◆</span>
+              <div><div class="summary-label">Product</div><div class="summary-value">WILSERDLY</div></div>
+            </div>
+            <div class="summary-item">
+              <span class="summary-dot">$</span>
+              <div><div class="summary-label">Benefit Type</div><div class="summary-value">PHARMACY BENEFIT</div></div>
+            </div>
+          </div>
+          <div class="history-stack">
+            <div class="summary-item">
+              <span class="summary-dot">▥</span>
+              <div><div class="summary-label">Book of Business</div><div class="summary-value">COMMERCIAL</div></div>
+            </div>
+            <div class="summary-item">
+              <span class="summary-dot">♆</span>
+              <div><div class="summary-label">Indication</div><div class="summary-value">Metastatic HER2 negative breast cancer</div></div>
+            </div>
+            <div class="summary-item">
+              <span class="summary-dot">◈</span>
+              <div><div class="summary-label">State</div><div class="summary-value">NATIONAL</div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="history-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dcr Identifier</th>
+                <th>State</th>
+                <th>PA Required</th>
+                <th>Step Edit</th>
+                <th>Number of Steps</th>
+                <th>Step Products</th>
+                <th>Policy Status</th>
+                <th>Policy Link</th>
+                <th>Request Date</th>
+                <th>Last Update Date</th>
+                <th class="sort-cell">⇅</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="selected">
+                <td>DCR-F0FB5</td>
+                <td>NATIONAL</td>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>1</td>
+                <td>Test</td>
+                <td>BIO MANAGED 1</td>
+                <td><span class="muted">No value</span></td>
+                <td>Nov 10, 2026, 9:57 a.m.</td>
+                <td>Nov 10, 2026, 9:58 a.m.</td>
+                <td></td>
+                <td><span class="status">NEW</span></td>
+              </tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+              <tr class="empty-row"><td colspan="12"></td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </section>
+  </main>
+  <div class="assist-tab">G</div>
+</body>
+</html>
