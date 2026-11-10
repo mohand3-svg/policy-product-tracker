@@ -2639,6 +2639,30 @@ function stDcrIdentifier(r) {
   return `DCR-${token}`;
 }
 
+function stDcrHistoryUrl(r, index) {
+  const requestDate = r.submitted || (index % 2 ? "Oct 16, 2026, 9:44 AM" : "Oct 16, 2026, 9:50 AM");
+  const lastUpdate = r.last || (index % 2 ? "Oct 16, 2026, 9:46 AM" : "Oct 16, 2026, 9:50 AM");
+  const params = new URLSearchParams({
+    id: stDcrIdentifier(r),
+    payer: r.payer || "N/A",
+    product: r.brand || "—",
+    benefit: r.benefit || "—",
+    bob: r.bob || "—",
+    indication: r.indication || "—",
+    state: r.state || "NATIONAL",
+    paRequired: r.pa || "Yes",
+    stepEdit: r.pa === "No" ? "No" : "Yes",
+    numberOfSteps: r.pa === "No" ? "0" : "1",
+    stepProducts: r.pa === "No" ? "N/A" : "Test",
+    policyStatus: r.gne || "—",
+    policyLink: "No value",
+    requestDate,
+    lastUpdate,
+    status: stWorkflowStatus(r),
+  });
+  return `dcr-history.html?${params.toString()}`;
+}
+
 function stPrimaryKey(r) {
   const seed = `${r.id || ""}${r.payer || ""}${r.brand || ""}`;
   let hash = 0;
@@ -2843,7 +2867,7 @@ function renderStTool() {
       <td>${stStatusBadge(stWorkflowStatus(r))}</td>
       <td>${sfEsc(r.last || (i % 2 ? "Oct 16, 2026, 9:46 AM" : "Oct 16, 2026, 9:50 AM"))}</td>
       <td class="st-flag">${i % 4 === 1 ? "⚑" : ""}</td>
-      <td class="st-link-cell"><a class="st-dcr-open-link" href="dcr-history.html?id=${encodeURIComponent(stDcrIdentifier(r))}">Open DCR</a></td>
+      <td class="st-link-cell"><a class="st-dcr-open-link" href="${sfEsc(stDcrHistoryUrl(r, i))}">Open DCR</a></td>
     </tr>`).join("");
 
   wireStRowChecks();

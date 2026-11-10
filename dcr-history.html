@@ -81,29 +81,29 @@
           <div class="history-stack">
             <div class="summary-item">
               <span class="summary-dot">♟</span>
-              <div><div class="summary-label">Payer</div><div class="summary-value">ANTHEM BLUECROSS BLUESHIELD OHIO</div></div>
+              <div><div class="summary-label">Payer</div><div class="summary-value" data-field="payer">—</div></div>
             </div>
             <div class="summary-item">
               <span class="summary-dot">◆</span>
-              <div><div class="summary-label">Product</div><div class="summary-value">WILSERDLY</div></div>
+              <div><div class="summary-label">Product</div><div class="summary-value" data-field="product">—</div></div>
             </div>
             <div class="summary-item">
               <span class="summary-dot">$</span>
-              <div><div class="summary-label">Benefit Type</div><div class="summary-value">PHARMACY BENEFIT</div></div>
+              <div><div class="summary-label">Benefit Type</div><div class="summary-value" data-field="benefit">—</div></div>
             </div>
           </div>
           <div class="history-stack">
             <div class="summary-item">
               <span class="summary-dot">▥</span>
-              <div><div class="summary-label">Book of Business</div><div class="summary-value">COMMERCIAL</div></div>
+              <div><div class="summary-label">Book of Business</div><div class="summary-value" data-field="bob">—</div></div>
             </div>
             <div class="summary-item">
               <span class="summary-dot">♆</span>
-              <div><div class="summary-label">Indication</div><div class="summary-value">Metastatic HER2 negative breast cancer</div></div>
+              <div><div class="summary-label">Indication</div><div class="summary-value" data-field="indication">—</div></div>
             </div>
             <div class="summary-item">
               <span class="summary-dot">◈</span>
-              <div><div class="summary-label">State</div><div class="summary-value">NATIONAL</div></div>
+              <div><div class="summary-label">State</div><div class="summary-value" data-field="state">—</div></div>
             </div>
           </div>
         </section>
@@ -128,18 +128,18 @@
             </thead>
             <tbody>
               <tr class="selected">
-                <td>DCR-F0FB5</td>
-                <td>NATIONAL</td>
-                <td>Yes</td>
-                <td>Yes</td>
-                <td>1</td>
-                <td>Test</td>
-                <td>BIO MANAGED 1</td>
-                <td><span class="muted">No value</span></td>
-                <td>Nov 10, 2026, 9:57 a.m.</td>
-                <td>Nov 10, 2026, 9:58 a.m.</td>
+                <td data-field="id">—</td>
+                <td data-field="state">—</td>
+                <td data-field="paRequired">—</td>
+                <td data-field="stepEdit">—</td>
+                <td data-field="numberOfSteps">—</td>
+                <td data-field="stepProducts">—</td>
+                <td data-field="policyStatus">—</td>
+                <td><span class="muted" data-field="policyLink">—</span></td>
+                <td data-field="requestDate">—</td>
+                <td data-field="lastUpdate">—</td>
                 <td></td>
-                <td><span class="status">NEW</span></td>
+                <td><span class="status" data-field="status">—</span></td>
               </tr>
               <tr class="empty-row"><td colspan="12"></td></tr>
               <tr class="empty-row"><td colspan="12"></td></tr>
@@ -162,5 +162,36 @@
     </section>
   </main>
   <div class="assist-tab">G</div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const fallback = {
+      id: "DCR-F0FB5",
+      payer: "ANTHEM BLUECROSS BLUESHIELD OHIO",
+      product: "WILSERDLY",
+      benefit: "PHARMACY BENEFIT",
+      bob: "COMMERCIAL",
+      indication: "Metastatic HER2 negative breast cancer",
+      state: "NATIONAL",
+      paRequired: "Yes",
+      stepEdit: "Yes",
+      numberOfSteps: "1",
+      stepProducts: "Test",
+      policyStatus: "BIO MANAGED 1",
+      policyLink: "No value",
+      requestDate: "Nov 10, 2026, 9:57 a.m.",
+      lastUpdate: "Nov 10, 2026, 9:58 a.m.",
+      status: "NEW",
+    };
+    function valueFor(key) {
+      const value = params.get(key);
+      return value && value.trim() ? value : fallback[key];
+    }
+    document.querySelectorAll("[data-field]").forEach(el => {
+      const key = el.dataset.field;
+      el.textContent = valueFor(key) || "—";
+    });
+    const policyLink = document.querySelector('[data-field="policyLink"]');
+    if (policyLink) policyLink.classList.toggle("muted", valueFor("policyLink") === "No value");
+  </script>
 </body>
 </html>
