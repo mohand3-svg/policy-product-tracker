@@ -2645,6 +2645,7 @@ function stDcrHistoryUrl(r, index) {
   const params = new URLSearchParams({
     id: stDcrIdentifier(r),
     payer: r.payer || "N/A",
+    pbm: r.pbm || "",
     product: r.brand || "—",
     benefit: r.benefit || "—",
     bob: r.bob || "—",

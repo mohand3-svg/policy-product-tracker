@@ -81,7 +81,7 @@
           <div class="history-stack">
             <div class="summary-item">
               <span class="summary-dot">♟</span>
-              <div><div class="summary-label">Payer</div><div class="summary-value" data-field="payer">—</div></div>
+              <div><div class="summary-label" data-entity-label>Payer</div><div class="summary-value" data-field="payer">—</div></div>
             </div>
             <div class="summary-item">
               <span class="summary-dot">◆</span>
@@ -167,6 +167,7 @@
     const fallback = {
       id: "DCR-F0FB5",
       payer: "ANTHEM BLUECROSS BLUESHIELD OHIO",
+      pbm: "",
       product: "WILSERDLY",
       benefit: "PHARMACY BENEFIT",
       bob: "COMMERCIAL",
@@ -185,6 +186,15 @@
     function valueFor(key) {
       const value = params.get(key);
       return value && value.trim() ? value : fallback[key];
+    }
+    const payerValue = valueFor("payer");
+    const pbmValue = valueFor("pbm");
+    const entityLabel = document.querySelector("[data-entity-label]");
+    if (payerValue === "N/A" && pbmValue && pbmValue !== "N/A") {
+      if (entityLabel) entityLabel.textContent = "PBM";
+      params.set("payer", pbmValue);
+    } else if (entityLabel) {
+      entityLabel.textContent = "Payer";
     }
     document.querySelectorAll("[data-field]").forEach(el => {
       const key = el.dataset.field;
